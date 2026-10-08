@@ -8,10 +8,11 @@
 
   INSTRUCTOR EDIT GUIDE (search for "[EDIT ME" to jump to each block):
     [EDIT ME 1/4]  Brand colors and fonts ........ CSS custom properties, top of the style block
-    [EDIT ME 2/4]  Week 1 / course start link ..... COURSE_START_URL, top of the script block
+    [EDIT ME 2/4]  Week 1 start link and optional logo . COURSE_START_URL and LOGO_SRC, top of the script block
     [EDIT ME 3/4]  Weekly journey content ......... the WEEKS array (also drives "Under the hood")
     [EDIT ME 4/4]  Grade weights .................. the ASSESSMENT array (must total 100)
-  Logo: save the Wilmington University logo as assets/wilmu-logo.png (shown unaltered on a white plate).
+  Logo: the header, cold open and finale show a green "Wilmington University" wordmark. To use an official logo
+  file instead, set LOGO_SRC in the script block (see [EDIT ME 2/4]).
 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Welcome to AI Literacy for Educators | Wilmington University</title>
@@ -29,11 +30,11 @@
 /* ==========================================================================
    [EDIT ME 1/4]  BRAND TOKENS
    Every color on the page comes from these custom properties.
-   --wilmu-green is the expected Wilmington green. Once assets/wilmu-logo.png is in
-   place, sample the logo and paste its exact hex here; the whole page follows.
+   --wilmu-green is the Wilmington green used for the wordmark, buttons, and highlights.
+   If the university's official green differs, change this one value and the whole page follows.
    ========================================================================== */
 :root{
-  --wilmu-green:      #00693C;  /* primary: deep Wilmington green (logo) */
+  --wilmu-green:      #00693C;  /* primary: deep Wilmington green */
   --wilmu-green-deep: #00331F;  /* dark full-bleed scenes: a deep shade of the primary */
   --wilmu-green-ink:  #001E12;  /* darkest backdrop behind particles and glows */
   --wilmu-tint:       #7BD9A5;  /* the one lighter green: highlights and glows */
@@ -123,12 +124,11 @@ html.js .js-only{display:revert}
 .light .btn,.paper .btn{background:var(--wilmu-green);border-color:var(--wilmu-green);color:#fff}
 .light .btn.ghost,.paper .btn.ghost{background:transparent;color:var(--wilmu-green)}
 
-/* ---------- Logo plate (the logo file is always shown unaltered, on white) ---------- */
+/* ---------- Logo plate: a green Wilmington University wordmark on white. Set LOGO_SRC in the script to show an official logo file instead (shown unaltered). ---------- */
 .logo-plate{--logo-h:40px;display:inline-flex;align-items:center;justify-content:center;background:#fff;border-radius:14px;padding:8px 16px;box-shadow:0 8px 30px rgba(0,20,12,.22)}
 .logo-plate img{display:block;height:var(--logo-h);width:auto;max-width:70vw}
-.logo-fallback{display:none;font:700 calc(var(--logo-h)*.5)/1.1 var(--serif);color:var(--wilmu-green);white-space:nowrap;letter-spacing:.01em}
-.logo-plate.logo-missing img{display:none}
-.logo-plate.logo-missing .logo-fallback{display:inline}
+.logo-fallback{display:inline;font:700 calc(var(--logo-h)*.5)/1.1 var(--serif);color:var(--wilmu-green);white-space:nowrap;letter-spacing:.01em}
+.logo-plate.has-img .logo-fallback{display:none}
 .logo-sm{--logo-h:30px;padding:6px 12px;border-radius:12px}
 .logo-xl{--logo-h:clamp(52px,7vw,84px);padding:12px 24px;border-radius:18px}
 
@@ -655,7 +655,7 @@ html.m-full #principles .prin-lines li.is-past{opacity:.38;transform:none}
 <div class="glow-cursor" id="glow" aria-hidden="true"></div>
 
 <header class="site-header">
-  <span class="logo-plate logo-sm"><img src="assets/wilmu-logo.png" alt="Wilmington University" decoding="async" onerror="this.parentNode.classList.add('logo-missing')"><span class="logo-fallback">Wilmington University</span></span>
+  <span class="logo-plate logo-sm"><span class="logo-fallback">Wilmington University</span></span>
   <p class="hdr-label" id="hdrLabel" aria-hidden="true"></p>
 </header>
 
@@ -685,7 +685,7 @@ html.m-full #principles .prin-lines li.is-past{opacity:.38;transform:none}
     <div class="hero-vignette" aria-hidden="true"></div>
     <div class="hero-fg" id="heroFg">
     <div class="hero-inner" id="heroInner">
-      <span class="logo-plate logo-xl"><img src="assets/wilmu-logo.png" alt="Wilmington University" decoding="async" onerror="this.parentNode.classList.add('logo-missing')"><span class="logo-fallback">Wilmington University</span></span>
+      <span class="logo-plate logo-xl"><span class="logo-fallback">Wilmington University</span></span>
       <p class="eyebrow hero-eyebrow">Welcome &middot; A fully online course</p>
       <h1 id="h-hero" class="hero-title" data-split>AI Literacy for Educators</h1>
       <div class="dq-wrap">
@@ -949,7 +949,7 @@ html.m-full #principles .prin-lines li.is-past{opacity:.38;transform:none}
   <canvas class="field" aria-hidden="true"></canvas>
   <div class="stage">
     <div class="fin-inner">
-      <span class="logo-plate logo-xl rv"><img src="assets/wilmu-logo.png" alt="Wilmington University" decoding="async" onerror="this.parentNode.classList.add('logo-missing')"><span class="logo-fallback">Wilmington University</span></span>
+      <span class="logo-plate logo-xl rv"><span class="logo-fallback">Wilmington University</span></span>
       <h2 id="h-fin" class="fin-title" data-split>Welcome. We're glad you're here.</h2>
       <p class="fin-lede rv">You already know teaching. Over the next weeks you will learn how AI works, how to check it, and how to lead with it, always as the decision-maker in your classroom.</p>
       <div class="cta-wrap rv" style="--d:250ms"><a class="cta" id="cta" href="#"><span class="cta-in">Start Week 1 <svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></span></a></div>
@@ -978,10 +978,12 @@ html.m-full #principles .prin-lines li.is-past{opacity:.38;transform:none}
 'use strict';
 
 /* ==========================================================================
-   [EDIT ME 2/4]  COURSE START LINK
-   Point this at the Week 1 page (or the course home) in your LMS.
+   [EDIT ME 2/4]  COURSE START LINK AND OPTIONAL LOGO
+   Point COURSE_START_URL at the Week 1 page (or the course home) in your LMS.
+   Until it is set, the Start Week 1 button does nothing, so set it before sharing with students.
    ========================================================================== */
 const COURSE_START_URL    = "#";      // instructor: replace with the Week 1 / course home link
+const LOGO_SRC            = "";       // optional: e.g. "assets/wilmu-logo.png". Empty = use the green "Wilmington University" wordmark.
 const COURSE_START_TARGET = "_top";   // "_top" leaves the LMS frame (recommended in Canvas/Blackboard/Moodle); "_self" stays; "_blank" opens a new tab
 
 /* ==========================================================================
@@ -1918,9 +1920,12 @@ function init() {
   heroInner = $('#heroInner');
 
   // logo fallback if the file is missing
-  $$('.logo-plate img').forEach(im => {
-    if (im.complete && im.naturalWidth === 0) im.parentNode.classList.add('logo-missing');
-    im.addEventListener('error', () => im.parentNode.classList.add('logo-missing'));   // also covers frames that block inline handlers
+  // optional official logo: only requested when LOGO_SRC is set; the text wordmark stays if it fails to load
+  if (LOGO_SRC) $$('.logo-plate').forEach(plate => {
+    const im = h('img', { src: LOGO_SRC, alt: 'Wilmington University', decoding: 'async' });
+    im.addEventListener('load', () => plate.classList.add('has-img'));
+    im.addEventListener('error', () => im.remove());
+    plate.insertBefore(im, plate.firstChild);
   });
   // if an LMS blocks the inline onload on the font link, still apply the stylesheet
   $$('link[rel="stylesheet"][media="print"]').forEach(l => { l.media = 'all'; });
