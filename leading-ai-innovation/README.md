@@ -4,6 +4,12 @@ MED 7830: AI Literacy for Educators · Week 7. A complete static seminar with 15
 
 This project lives separately from the repository’s existing welcome `index.html`. The welcome page is preserved. No account, backend, paid API, external font, or runtime package is required. The university-inspired palette and original W course badge are not official university branding.
 
+## Just view it in your browser
+
+Download `view-presentation.html` and double-click it. This single file contains the complete presentation, styles, and JavaScript; it needs no terminal, server, installation, or other folders. If GitHub shows a file viewer, use **Download raw file** first. Browser policies can restrict local files; browser storage and clipboard behavior may differ for local files. Export the manifesto for a durable copy.
+
+The modular `index.html` still uses the development-server instructions below. Regenerate the single-file edition after content changes with `node scripts/standalone.mjs` or `npm run build`.
+
 ## Run and build
 
 Requirements: Python 3 for the development server; Node 20+ for build and content checks. Node 24 and Python 3.12 were used here. No `npm install` is needed.

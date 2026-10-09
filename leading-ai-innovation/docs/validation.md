@@ -37,3 +37,7 @@ Keep the development server running and build first. No runtime dependency or re
 - No physical Chromebook, screen-reader user session, Safari/Firefox run, or university LMS embed test was performed. Native fullscreen and actual OS print dialogs require manual verification in the deployment context. Automated accessibility checks are not a WCAG conformance certification.
 - GitHub Pages output and paths were validated locally, but no remote site was deployed or tested. The manual workflow template is intentionally inactive until an authorized deployment task.
 - UNESCO publication full text and the assigned Bowen/Watson chapter were not accessible; Learning Forward returned 403. The references and source log distinguish reviewed material from unverified reading prompts. Complete source-specific instructional review before university distribution.
+
+## Single-file browser edition
+
+`view-presentation.html` embeds all CSS and JavaScript with no module imports or asset requests. Chromium document injection verified all 15 rendered modules, study mode, inclusive lesson feedback, five-stage simulation/profile, and manifesto generation with zero requests and zero JavaScript errors. The cloud browser policy blocked a direct `file://` navigation, so local Windows double-click behavior was not directly tested on this machine. This edition removes the ES-module/server requirement; local storage and clipboard may be restricted by the user’s browser.
