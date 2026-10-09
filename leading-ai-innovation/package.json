@@ -1,0 +1,9 @@
+{
+  "name": "leading-ai-innovation",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "MED 7830 Week 7 — a human-centered educational leadership seminar",
+  "scripts": {"dev": "python3 -m http.server 8001 --bind 127.0.0.1", "build": "node scripts/build.mjs", "test": "node --test tests/content.test.mjs", "test:browser": "node tests/browser.mjs"},
+  "engines": {"node": ">=20"}
+}

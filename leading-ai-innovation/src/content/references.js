@@ -1,0 +1,31 @@
+export const references = [
+ {id:'brief',title:'Supplied Week 7 master build brief',author:'MED 7830 course specification',year:'Supplied material',note:'Primary instructional foundation: module sequence, essential questions, W.I.L.M.U. domains, and leadership themes. No additional Week 7 handout or textbook chapter was supplied.',status:'Provided and reviewed'},
+ {id:'ed',title:'Artificial Intelligence and the Future of Teaching and Learning: Insights and Recommendations',author:'U.S. Department of Education, Office of Educational Technology',year:'2023',url:'https://files.eric.ed.gov/fulltext/ED631097.pdf',note:'Official report; relevant recommendations reviewed in the original PDF. Recommendations 1–3 (printed pp. 53–56) explicitly address humans in the loop, alignment to educational goals, privacy, notice/explanation, fairness, safe/effective systems, and human alternatives. Verified against the official PDF on October 9, 2026.',status:'Official source accessed and relevant sections reviewed · Oct. 9, 2026'},
+ {id:'unesco',title:'Guidance for Generative AI in Education and Research',author:'UNESCO · Miao, F., & Holmes, W.',year:'2023',url:'https://unesdoc.unesco.org/ark:/48223/pf0000386693',note:'Assigned global guidance. Comparisons in this seminar are reading lenses derived from the supplied brief, not verified passages or legal mandates.',status:'Official record responds, but full publication text could not be retrieved'},
+ {id:'bowen',title:'Teaching with AI: A Practical Guide to a New Era of Human Learning — assigned Chapter 10: Grading and (Re-)Defining Quality',author:'Bowen, J. A., & Watson, C. E.',year:'2025 in supplied syllabus; edition/year not independently verified',url:'https://www.press.jhu.edu/books/title/53869/teaching-ai',note:'The chapter was not supplied or accessed. Module 9 poses original assessment questions to bring to the assigned reading; it does not quote or claim to summarize the chapter. Confirm the course edition and chapter pagination before distribution.',status:'Assigned reading not accessed'},
+ {id:'udl',title:'Universal Design for Learning Guidelines',author:'CAST',year:'2024 · Version 3.0',url:'https://udlguidelines.cast.org/',note:'Further reading on engagement, representation, and action/expression. Classroom redesign suggestions are instructional interpretations, not evidence that AI automatically provides accessibility.',status:'Official source accessed and relevant sections reviewed · Oct. 9, 2026'},
+ {id:'ferpa',title:'Family Educational Rights and Privacy Act (FERPA)',author:'U.S. Department of Education · Student Privacy Policy Office',year:'Official resource',url:'https://studentprivacy.ed.gov/ferpa',note:'FERPA concerns education records at covered educational institutions. A vendor contract or parental permission alone does not settle all disclosure questions; consult institutional privacy staff.',status:'Official source accessed and relevant sections reviewed · Oct. 9, 2026'},
+ {id:'coppa',title:'Complying with COPPA: Frequently Asked Questions',author:'Federal Trade Commission',year:'Official resource',url:'https://www.ftc.gov/business-guidance/resources/complying-coppa-frequently-asked-questions',note:'COPPA concerns covered online operators and children under 13. School-context consent and commercial reuse require careful review. Do not infer a universal ban on AI or universal permission from this summary.',status:'Official source accessed and relevant sections reviewed · Oct. 9, 2026'},
+ {id:'ada',title:'First Steps Toward Complying with the ADA Title II Web Accessibility Rule',author:'U.S. Department of Justice',year:'Official resource',url:'https://www.ada.gov/resources/web-rule-first-steps/',note:'The DOJ resource identifies WCAG 2.1 AA under its Title II web rule and explains entity-specific compliance dates and exceptions. This application targets WCAG 2.2 AA principles; that design target is distinct from the rule’s standard. Also examine Section 504 and IDEA responsibilities with qualified institutional staff.',status:'Official source accessed and relevant sections reviewed · Oct. 9, 2026'},
+ {id:'learning',title:'Standards for Professional Learning',author:'Learning Forward',year:'Professional guidance',url:'https://learningforward.org/standards/',note:'Further reading for designing ongoing, collaborative professional learning. The plans here are original teaching examples, not validated intervention packages.',status:'Source request returned HTTP 403; guidance not reviewed'},
+ {id:'pdsa',title:'Plan–Do–Study–Act (PDSA) Worksheet',author:'Institute for Healthcare Improvement',year:'Improvement resource',url:'https://www.ihi.org/library/tools/plan-do-study-act-pdsa-worksheet',note:'Further reading on disciplined improvement cycles. Transfer to educational settings requires local adaptation; pilot comparisons do not by themselves establish causation.',status:'Official source accessed and relevant sections reviewed · Oct. 9, 2026'}
+];
+export const objectives = [
+'Articulate a student-centered strategic vision for AI implementation.',
+'Explain how change leadership and organizational culture influence adoption.',
+'Design meaningful professional learning for educators.',
+'Evaluate governance, privacy, ethics, accessibility, and equity.',
+'Develop stakeholder engagement strategies.',
+'Critically evaluate AI-supported assessment practices.',
+'Identify meaningful evidence of educational improvement.',
+'Design a responsible and sustainable implementation plan.',
+'Synthesize W.I.L.M.U. into a coherent leadership philosophy.',
+'Articulate personal commitments to ethical, inclusive innovation.'
+];
+export const framework = [
+{letter:'W',title:'What Is AI?',text:'Know capabilities and limitations; define a learning need before selecting a tool.'},
+{letter:'I',title:'Investigate Outputs',text:'Check accuracy, credibility, bias, reliability, and educational appropriateness.'},
+{letter:'L',title:'Lead Responsibly',text:'Apply ethics, privacy, transparency, governance, and professional judgment.'},
+{letter:'M',title:'Maximize Learning',text:'Design inclusive, engaging experiences that reveal authentic understanding.'},
+{letter:'U',title:'Understand the Future',text:'Build agency and adaptability while preserving human-centered education.'}
+];
