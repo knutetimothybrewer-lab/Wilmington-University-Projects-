@@ -34,12 +34,12 @@ The HTML includes a complete static copy of the weeks, portfolio, and assessment
 
 - Independent study, desk, transparent learner, monitor, and classroom layers. Native scrolling drives a reversible approach over 3.5 desktop viewport heights (2.9 on phones).
 - Generated photographic imagery with subtle breathing and parallax. This is **2.5D photographic animation**, not a fully rigged 3D character, motion capture, or a rendered typing sequence.
-- The same classroom architecture persists through Understand, Design, Lead, and the finale. Displays introduce source checking, multiple ways to learn, teacher review, accessibility, and privacy.
+- The same classroom architecture persists through Understand, Design, Lead, and the finale. A matching future-classroom plate crossfades into the scene as the course develops. Displays introduce source checking, multiple ways to learn, teacher review, accessibility, and privacy.
 - Actual HTML copy and controls; no screenshot interface, canvas-only content, or animation libraries.
 - Skip intro, keyboard navigation, arrow-key skill tabs, native expandable weeks, touch-accessible assessment details, and visible focus states.
 - Motion pause stops ambient animation and switches to a static opening. Device reduced-motion preferences are respected automatically. Enlarged text uses a more spacious static reading layout.
-- No continuous JavaScript animation loop: scroll and resize updates use a scheduled animation frame. Ambient CSS animation pauses when the document is hidden.
-- All images, styles, and scripts are local. The shipped page makes no third-party font or API requests. Core site files total approximately 466 KB before transport compression.
+- No continuous JavaScript animation loop: scroll and resize updates use a scheduled animation frame. Short interaction animations settle when motion is paused or the document is hidden. Ambient classroom animation also pauses when its scene leaves the viewport.
+- All images, styles, and scripts are local. The shipped page makes no third-party font or API requests. Core site files total approximately 688 KB before transport compression, including the additional future-classroom image.
 - LMS iframe use was exercised locally. Host-specific LMS sanitization and sandbox policies still require a check in the actual LMS.
 
 ## Asset status
@@ -88,3 +88,15 @@ Review the resulting `index.html` diff. This optional authoring helper uses the 
 The workspace handoff includes `/workspace/deliverables/AI-Literacy-Interactive-Preview.html` (embedded images, styles, and scripts), a source ZIP, desktop/mobile screenshots, and validation results. The single-file preview was served locally and verified with working interactions and no additional network requests. Direct `file:` navigation is blocked by the cloud browser's managed policy, so that navigation mode was not validated here.
 
 The cloud environment's saved startup draft was updated for this file structure and smoke test. Saving the draft does not publish either the environment or this website. Review and save the draft in environment settings, then publish the environment when ready.
+
+## Interactive classroom and portfolio
+
+The classroom studio lets visitors select Understand, Design, or Lead, or use a keyboard-operable Week 0–7 timeline. The classroom crossfades from familiar materials to restrained glass displays while the actual weekly build remains visible. Click Learning choices, Teacher review, or Privacy & trust to manipulate a teaching example. Read, Visualize, and Scaffold offer three versions of one science concept. Review compares a deliberately flawed plant-light statement with an improved explanation. The privacy example contains no real student data.
+
+The optional Play transformation control advances the timeline once, stopping at Week 7. It stops when the scene leaves view, the page becomes hidden, or the global motion control is paused. Automatic playback is disabled with reduced motion or enlarged-text reading mode; manual controls remain available.
+
+All eight portfolio cards open keyboard-accessible native dialogs containing clearly labeled illustrative samples. The slide deck has three navigable slides; differentiated materials have three support choices; the implementation plan has a temporary planning checklist. Explored counts and checkbox selections are previews in memory, not recorded coursework progress. Escape closes the dialog and restores focus to the opener. Weekly cards also link to relevant sample builds.
+
+The prompt lab assembles a selectable prompt with a Copy control. If clipboard access is unavailable, it selects the text for the visitor's normal copy command. No live AI service is connected.
+
+The enhanced smoke test exercises all studio features, keyboard timeline changes, optional tour/global pause, all eight dialogs, slide navigation, support choices, and the sample checklist at 360, 768, and 1440 pixels. Separate checks cover enlarged text, artifact-dialog accessibility, and studio/dialog interactions inside an LMS-style iframe.

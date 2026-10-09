@@ -20,7 +20,16 @@ const path = require("node:path");
           ["weeks", "weeks"],
           ["artifacts", "artifactGrid"],
           ["assessment", "assessmentRows"],
-        ].map(([key, id]) => [key, document.getElementById(id).innerHTML]),
+        ].map(([key, id]) => [
+          key,
+          (() => {
+            const clone = document.getElementById(id).cloneNode(true);
+            clone
+              .querySelectorAll("[data-enhanced-only]")
+              .forEach((el) => el.remove());
+            return clone.innerHTML;
+          })(),
+        ]),
       ),
     );
     let html = fs.readFileSync(file, "utf8");

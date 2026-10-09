@@ -363,6 +363,9 @@
         });
     }
     measure();
+    document.dispatchEvent(
+      new CustomEvent("course:motion", { detail: { staticMode } }),
+    );
   }
   $("#motionToggle").addEventListener("click", () => {
     paused = !paused;
@@ -418,6 +421,12 @@
     }
     if (week !== lastWeek) {
       lastWeek = week;
+      weeks.forEach((w) =>
+        w.classList.toggle("current-week", Number(w.dataset.week) === week),
+      );
+      document.dispatchEvent(
+        new CustomEvent("course:week", { detail: { week, phase } }),
+      );
       const count =
         typeof ARTIFACTS !== "undefined"
           ? ARTIFACTS.filter((a) => a.week <= week).length
@@ -466,7 +475,7 @@
       $(".intro-arrival").style.opacity = 0;
     }
     updateRoom();
-    const sections = ["overview", "journey", "portfolio"];
+    const sections = ["overview", "studio", "journey", "portfolio"];
     let current = "";
     sections.forEach((id) => {
       if ($("#" + id).getBoundingClientRect().top < innerHeight * 0.35)
@@ -493,18 +502,19 @@
     }
   });
   // Focus the destination after in-page navigation, including Skip intro, without trapping Tab.
-  $$('a[href^="#"]').forEach((a) =>
-    a.addEventListener("click", (e) => {
-      const target = $(a.hash);
-      if (!target) return;
-      e.preventDefault();
-      target.tabIndex = -1;
-      target.focus({ preventScroll: true });
-      target.scrollIntoView({
-        behavior: reduced.matches || paused ? "instant" : "smooth",
-        block: "start",
-      });
-    }),
+  $$('a[href^="#"]:not(#artifactDialogLink):not(#studioWeekLink)').forEach(
+    (a) =>
+      a.addEventListener("click", (e) => {
+        const target = $(a.hash);
+        if (!target) return;
+        e.preventDefault();
+        target.tabIndex = -1;
+        target.focus({ preventScroll: true });
+        target.scrollIntoView({
+          behavior: reduced.matches || paused ? "instant" : "smooth",
+          block: "start",
+        });
+      }),
   );
   $$("details").forEach((d) => d.addEventListener("toggle", schedule));
   if (window.IntersectionObserver) {

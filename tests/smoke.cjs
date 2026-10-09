@@ -36,6 +36,113 @@ const axePath = process.env.AXE_CORE_PATH;
     await p.screenshot({ path: `${outputDir}/banner-${width}.png` });
     await p.locator(".welcome-board .button").click();
     await p.waitForFunction(() => document.activeElement.id === "overview");
+    // Classroom studio: manual controls, keyboard timeline, optional tour, and safeguards.
+    await p.locator('[data-studio-phase="Design"]').click();
+    assert.equal(
+      await p.locator("#studioScene").getAttribute("data-phase"),
+      "Design",
+    );
+    await p.locator('[data-studio-feature="access"]').click();
+    await p.locator('[data-format="visual"]').click();
+    assert.match(
+      await p.locator("#studioLearningExample").textContent(),
+      /Follow the water/,
+    );
+    await p.locator('[data-format="scaffold"]').click();
+    assert.match(
+      await p.locator("#studioLearningExample").textContent(),
+      /step by step/,
+    );
+    await p.locator('[data-studio-feature="review"]').click();
+    await p.locator("#studioReviewToggle").click();
+    assert.match(
+      await p.locator("#studioReviewExample").textContent(),
+      /different light needs/,
+    );
+    await p.locator("#studioReviewToggle").click();
+    assert.match(
+      await p.locator("#studioReviewExample").textContent(),
+      /All plants/,
+    );
+    await p.locator('[data-studio-feature="privacy"]').click();
+    await p.locator("#studioPrivacyToggle").click();
+    assert.match(
+      await p.locator("#studioPrivacyExample").textContent(),
+      /unnecessary/,
+    );
+    await p.locator("#studioPrivacyToggle").click();
+    assert.match(
+      await p.locator("#studioPrivacyExample").textContent(),
+      /excluded/,
+    );
+    await p.locator("#studioTimeline").focus();
+    await p.keyboard.press("End");
+    assert.equal(
+      await p.locator("#studioScene").getAttribute("data-phase"),
+      "Lead",
+    );
+    assert.equal(await p.locator("#studioTimeline").inputValue(), "7");
+    await p.keyboard.press("Home");
+    assert.equal(
+      await p.locator("#studioScene").getAttribute("data-phase"),
+      "Understand",
+    );
+    await p.locator("#studioPlay").click();
+    await p.waitForFunction(
+      () => document.querySelector("#studioTimeline").value === "1",
+    );
+    await p.locator("#motionToggle").click();
+    assert.equal(
+      await p.locator("#studioPlay").getAttribute("aria-pressed"),
+      "false",
+    );
+    assert.equal(await p.locator("#studioPlay").isDisabled(), true);
+    await p.locator("#motionToggle").click();
+    assert.equal(await p.locator("#studioPlay").isDisabled(), false);
+    // All artifact dialogs and their richer samples, with native Escape/focus handling.
+    for (let artifact = 0; artifact < 8; artifact++) {
+      const trigger = p.locator(".artifact-preview-button").nth(artifact);
+      await trigger.click();
+      assert.equal(
+        await p.locator("#artifactDialog").evaluate((d) => d.open),
+        true,
+      );
+      assert(await p.locator("#artifactDialogContent").textContent());
+      if (artifact === 2) {
+        await p.locator('[data-slide-direction="1"]').click();
+        assert.equal(
+          await p.locator("#sampleSlideCount").textContent(),
+          "2 / 3",
+        );
+      }
+      if (artifact === 4) {
+        await p.locator('[data-sample-level="2"]').click();
+        assert.match(
+          await p.locator("#sampleLevelContent").textContent(),
+          /two environments/,
+        );
+      }
+      if (artifact === 6) {
+        await p.locator(".sample-checklist input").first().check();
+        assert.equal(
+          await p.locator(".sample-checklist input").first().isChecked(),
+          true,
+        );
+      }
+      await p.keyboard.press("Escape");
+      assert.equal(
+        await p.locator("#artifactDialog").evaluate((d) => d.open),
+        false,
+      );
+      assert.equal(
+        await trigger.evaluate((el) => el === document.activeElement),
+        true,
+      );
+    }
+    assert.match(
+      await p.locator(".portfolio-explore-status").textContent(),
+      /8 of 8/,
+    );
     await p.locator("#tab-check").click();
     await p.locator('.claim[data-error="true"]').click();
     await p.locator("#verifyBtn").click();
@@ -59,6 +166,7 @@ const axePath = process.env.AXE_CORE_PATH;
     );
     await p.locator("#promptReset").click();
     assert.equal(await p.locator("#promptCount").textContent(), "0 / 5");
+    assert.match(await p.locator("#assembledPrompt").inputValue(), /worksheet/);
     await p.locator("#tab-own").click();
     await p.locator('[data-step="3"]').click();
     assert.match(
@@ -85,6 +193,7 @@ const axePath = process.env.AXE_CORE_PATH;
       "welcome",
       "overview",
       "skills",
+      "studio",
       "journey",
       "week-4",
       "rhythm",
@@ -139,7 +248,7 @@ const axePath = process.env.AXE_CORE_PATH;
     reports.push({
       width,
       checks:
-        "PASS: real clicks, keyboard tabs, navigation, details, role highlights, assessment, pause, reverse scroll, assets, no horizontal overflow",
+        "PASS: classroom studio, keyboard timeline, optional tour and global pause, all 8 artifact dialogs, slides, differentiation choices, checklist, real clicks, keyboard tabs, navigation, details, role highlights, assessment, reverse scroll, assets, no horizontal overflow",
     });
     await context.close();
   }

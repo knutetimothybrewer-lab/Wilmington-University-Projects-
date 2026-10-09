@@ -10,9 +10,11 @@
     <meta name="theme-color" content="#f8f8f0" />
     <title>AI Literacy for Educators · Wilmington University</title>
     <link rel="stylesheet" href="assets/style.css" />
+    <link rel="stylesheet" href="assets/experience.css" />
     <link rel="preload" href="assets/study.webp" as="image" />
     <script src="assets/course.js" defer></script>
     <script src="assets/app.js" defer></script>
+    <script src="assets/experience.js" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#overview">Skip to course content</a>
@@ -27,7 +29,8 @@
         ></a
       >
       <nav aria-label="Course sections">
-        <a href="#overview">The course</a><a href="#journey">Your journey</a
+        <a href="#overview">The course</a><a href="#studio">Explore the room</a
+        ><a href="#journey">Your journey</a
         ><a href="#portfolio">Your portfolio</a>
       </nav>
       <button
@@ -117,6 +120,7 @@
           foundations. Room to grow.
         </p>
       </section>
+
       <section
         id="overview"
         class="section overview"
@@ -181,6 +185,235 @@
             TRANSFERABLE SKILLS<br /><span
               >Claude · ChatGPT · Gemini, where available</span
             >
+          </p>
+        </div>
+      </section>
+      <section
+        id="studio"
+        class="section studio"
+        aria-labelledby="studio-title"
+      >
+        <div class="section-top">
+          <p class="eyebrow">STEP INSIDE / A CLASSROOM OF POSSIBILITIES</p>
+          <span class="small-note"
+            >Move the timeline. Make a choice. See what changes.</span
+          >
+        </div>
+        <div class="two-column">
+          <h2 id="studio-title">
+            One classroom.<br /><em>More possibilities.</em>
+          </h2>
+          <p class="lede">
+            Explore how small, thoughtful choices can change a learning space.
+            These are interactive examples—you remain the decision-maker.
+          </p>
+        </div>
+        <div class="studio-controls" data-enhanced-only hidden>
+          <div
+            class="studio-phases"
+            role="group"
+            aria-label="Preview a course arc"
+          >
+            <button data-studio-phase="Understand" aria-pressed="true">
+              <span>01</span> Understand</button
+            ><button data-studio-phase="Design" aria-pressed="false">
+              <span>02</span> Design</button
+            ><button data-studio-phase="Lead" aria-pressed="false">
+              <span>03</span> Lead
+            </button>
+          </div>
+          <button id="studioPlay" class="studio-play" aria-pressed="false">
+            <span class="studio-play-symbol" aria-hidden="true"></span>
+            <span id="studioPlayLabel">Play transformation</span>
+          </button>
+        </div>
+        <div class="studio-layout">
+          <div
+            class="studio-scene"
+            id="studioScene"
+            data-phase="Understand"
+            data-feature="access"
+          >
+            <div class="studio-picture" aria-hidden="true">
+              <img
+                class="studio-present"
+                src="assets/classroom.webp"
+                alt=""
+                width="1672"
+                height="941"
+                loading="lazy"
+              /><img
+                class="studio-future"
+                src="assets/classroom-future.webp"
+                alt=""
+                width="1672"
+                height="941"
+                loading="lazy"
+              />
+            </div>
+            <div class="studio-teaching-wall">
+              <span class="eyebrow" id="studioBoardKicker"
+                >OUR LEARNING SPACE</span
+              >
+              <h3 id="studioBoardTitle">There’s more than one way to learn.</h3>
+              <div class="studio-board-content" id="studioBoardContent">
+                <p>
+                  Read an explanation. Explore a diagram. Work through a
+                  supported example.
+                </p>
+              </div>
+            </div>
+            <div class="studio-glass glass-access" aria-hidden="true">
+              <span>ACCESS & CHOICE</span><b>Read · Visualize · Scaffold</b
+              ><i></i><i></i><i></i>
+            </div>
+            <div class="studio-glass glass-privacy" aria-hidden="true">
+              <span>HUMAN JUDGMENT</span><b>Privacy is part of the plan.</b
+              ><span>Purpose → Review → Protect</span>
+            </div>
+            <div
+              class="studio-hotspots"
+              role="group"
+              aria-label="Explore classroom possibilities"
+              data-enhanced-only
+              hidden
+            >
+              <button
+                class="studio-hotspot hotspot-access"
+                data-studio-feature="access"
+                aria-pressed="true"
+              >
+                <span aria-hidden="true">+</span><b>Learning choices</b></button
+              ><button
+                class="studio-hotspot hotspot-review"
+                data-studio-feature="review"
+                aria-pressed="false"
+              >
+                <span aria-hidden="true">+</span><b>Teacher review</b></button
+              ><button
+                class="studio-hotspot hotspot-privacy"
+                data-studio-feature="privacy"
+                aria-pressed="false"
+              >
+                <span aria-hidden="true">+</span><b>Privacy & trust</b>
+              </button>
+            </div>
+            <div class="studio-scene-label">
+              <span class="status-dot" aria-hidden="true"></span
+              ><span id="studioRoomLabel">Understand · Week 0</span>
+            </div>
+          </div>
+          <aside class="studio-inspector" aria-labelledby="studioFeatureTitle">
+            <p class="eyebrow" id="studioFeatureKicker">01 / ACCESS & CHOICE</p>
+            <h3 id="studioFeatureTitle">One idea.<br />More ways in.</h3>
+            <p id="studioFeatureDescription">
+              Offering multiple ways to encounter an idea can support access.
+              Choose a format to see the same science concept presented
+              differently.
+            </p>
+            <div id="studioAccess" class="studio-feature-panel">
+              <div
+                class="studio-choices"
+                role="group"
+                aria-label="Lesson format"
+                data-enhanced-only
+                hidden
+              >
+                <button data-format="read" aria-pressed="true">Read</button
+                ><button data-format="visual" aria-pressed="false">
+                  Visualize</button
+                ><button data-format="scaffold" aria-pressed="false">
+                  Scaffold
+                </button>
+              </div>
+              <div class="studio-example" id="studioLearningExample">
+                <h4>The water cycle</h4>
+                <p>
+                  Sunlight warms water. It evaporates, condenses into clouds,
+                  and returns as precipitation.
+                </p>
+              </div>
+            </div>
+            <div id="studioReview" class="studio-feature-panel" hidden>
+              <p class="studio-demo-label">SIMULATED DRAFT · A PLANTED ERROR</p>
+              <div class="studio-example" id="studioReviewExample">
+                <h4>“All plants need direct sunlight.”</h4>
+                <p>
+                  This confident generalization needs a teacher’s attention.
+                </p>
+              </div>
+              <button
+                class="button small"
+                id="studioReviewToggle"
+                aria-pressed="false"
+                data-enhanced-only
+                hidden
+              >
+                Apply teacher review
+              </button>
+            </div>
+            <div id="studioPrivacy" class="studio-feature-panel" hidden>
+              <p class="studio-demo-label">
+                FICTIONAL EXAMPLE · NO DATA IS COLLECTED
+              </p>
+              <div class="studio-example" id="studioPrivacyExample">
+                <h4>A safer starting point</h4>
+                <p>
+                  Use a fictional learner profile and only the learning need
+                  required for the task.
+                </p>
+                <ul>
+                  <li>Student name: excluded</li>
+                  <li>Personal identifiers: excluded</li>
+                  <li>Learning need: visual steps</li>
+                </ul>
+              </div>
+              <button
+                class="button small"
+                id="studioPrivacyToggle"
+                aria-pressed="true"
+                data-enhanced-only
+                hidden
+              >
+                Privacy safeguards on
+              </button>
+            </div>
+            <div class="studio-build">
+              <span class="eyebrow" id="studioWeekLabel"
+                >WEEK 0 / YOUR BUILD</span
+              >
+              <p id="studioWeekBuild">
+                Set up accounts and post a “My AI starting point” reflection.
+              </p>
+              <a id="studioWeekLink" href="#week-0"
+                >Explore this week <span aria-hidden="true">→</span></a
+              >
+            </div>
+          </aside>
+        </div>
+        <div class="studio-timeline" data-enhanced-only hidden>
+          <div class="timeline-heading">
+            <label for="studioTimeline"
+              >Move through your learning journey</label
+            ><output id="studioTimelineLabel" for="studioTimeline"
+              >Week 0 · Orientation</output
+            >
+          </div>
+          <input
+            type="range"
+            id="studioTimeline"
+            min="0"
+            max="7"
+            step="1"
+            value="0"
+            aria-valuetext="Week 0: Orientation"
+          />
+          <div class="timeline-marks" aria-hidden="true">
+            <span>Orientation</span><span>Understand</span><span>Design</span
+            ><span>Lead</span>
+          </div>
+          <p id="studioStatus" class="studio-status" role="status">
+            Viewing Understand, Week 0. Learning choices selected.
           </p>
         </div>
       </section>
@@ -415,6 +648,15 @@
                 height="941"
                 loading="lazy"
               />
+              <img
+                class="classroom-future"
+                src="assets/classroom-future.webp"
+                alt=""
+                width="1672"
+                height="941"
+                loading="lazy"
+                aria-hidden="true"
+              />
               <div class="classroom-board" aria-hidden="true">
                 <span class="board-kicker">OUR LEARNING SPACE</span
                 ><strong id="boardTitle">Curiosity belongs here.</strong>
@@ -453,8 +695,323 @@
           </aside>
           <div id="weeks" class="weeks">
             <!-- fallback:weeks:start -->
-<article class="week" id="week-0" data-week="0" data-phase="Understand"><div class="week-meta"><span class="week-number">WEEK 00</span><span class="phase-pill">Understand</span></div><h3>Orientation</h3><p class="week-hook">What does 'AI' actually mean?</p><p class="week-role" hidden="">Relevant to your selected role</p><div class="week-build"><span>YOUR BUILD</span><p>Set up your accounts and post a 'My AI starting point' reflection</p></div><details><summary>Explore this week <span class="plus" aria-hidden="true">+</span></summary><div class="week-detail"><h4>UNDER THE HOOD</h4><p>AI vs. machine learning vs. generative AI</p><h4>WHAT WE’LL EXPLORE</h4><ul><li>The driving question</li><li>AI you already use: spellcheck, captions, read-aloud</li><li>How the course works</li></ul><h4>YOU’LL WALK AWAY WITH</h4><p>Shared vocabulary and a clear starting point</p></div></details></article><article class="week" id="week-1" data-week="1" data-phase="Understand"><div class="week-meta"><span class="week-number">WEEK 01</span><span class="phase-pill">Understand</span></div><h3>How AI Works and Hallucinations</h3><p class="week-hook">Why can confident text be completely wrong?</p><p class="week-role" hidden="">Relevant to your selected role</p><div class="week-build"><span>YOUR BUILD</span><p>Hallucination Hunt: generate a reading passage and answer key, then find and fix every error</p></div><details><summary>Explore this week <span class="plus" aria-hidden="true">+</span></summary><div class="week-detail"><h4>UNDER THE HOOD</h4><p>Tokens and next-word prediction</p><h4>WHAT WE’LL EXPLORE</h4><ul><li>Four types of AI systems: rule-based, adaptive, generative, agentic</li><li>Hallucinations and automation bias</li><li>Human vs. artificial intelligence</li></ul><h4>YOU’LL WALK AWAY WITH</h4><p>You can predict where AI goes wrong and catch it</p></div></details></article><article class="week" id="week-2" data-week="2" data-phase="Understand"><div class="week-meta"><span class="week-number">WEEK 02</span><span class="phase-pill">Understand</span></div><h3>Good Inputs, Good Evaluation</h3><p class="week-hook">Same AI, wildly different results. What changed?</p><p class="week-role" hidden="">Relevant to your selected role</p><div class="week-build"><span>YOUR BUILD</span><p>A prompt library of 5 tested templates plus a credibility check of three AI-cited sources</p></div><details><summary>Explore this week <span class="plus" aria-hidden="true">+</span></summary><div class="week-detail"><h4>UNDER THE HOOD</h4><p>Context windows: the AI only knows what you give it</p><h4>WHAT WE’LL EXPLORE</h4><ul><li>The five-part prompt framework</li><li>Evaluating accuracy, credibility, bias, reliability, educational value</li><li>Lateral reading and source checking</li></ul><h4>YOU’LL WALK AWAY WITH</h4><p>A reusable toolkit of prompts you trust</p></div></details></article><article class="week" id="week-3" data-week="3" data-phase="Design"><div class="week-meta"><span class="week-number">WEEK 03</span><span class="phase-pill">Design</span></div><h3>Human-Centered Lesson Design with UDL</h3><p class="week-hook">Start with learners, not the tool.</p><p class="week-role" hidden="">Relevant to your selected role</p><div class="week-build"><span>YOUR BUILD</span><p>A UDL lesson plan for a real lesson, with a matching slide deck and one-page teaching guide</p></div><details><summary>Explore this week <span class="plus" aria-hidden="true">+</span></summary><div class="week-detail"><h4>UNDER THE HOOD</h4><p>Grounding answers in sources can reduce errors but does not eliminate the need for verification</p><h4>WHAT WE’LL EXPLORE</h4><ul><li>Universal Design for Learning with AI</li><li>Culturally responsive, relational teaching</li><li>When NOT to use AI</li></ul><h4>YOU’LL WALK AWAY WITH</h4><p>A classroom-ready lesson package</p></div></details></article><article class="week" id="week-4" data-week="4" data-phase="Design"><div class="week-meta"><span class="week-number">WEEK 04</span><span class="phase-pill">Design</span></div><h3>Exceptionalities, Accessibility, and Differentiation</h3><p class="week-hook">Who does this tool help, and who might it miss?</p><p class="week-role" hidden="">Relevant to your selected role</p><div class="week-build"><span>YOUR BUILD</span><p>One material in three readiness levels plus an accommodated version for a fictional student profile</p></div><details><summary>Explore this week <span class="plus" aria-hidden="true">+</span></summary><div class="week-detail"><h4>UNDER THE HOOD</h4><p>Bias: training data shapes defaults and assumptions</p><h4>WHAT WE’LL EXPLORE</h4><ul><li>AI and assistive technology</li><li>Accommodations vs. modifications</li><li>Algorithmic bias and equity of access</li></ul><h4>YOU’LL WALK AWAY WITH</h4><p>Materials that work for more of your students</p></div></details></article><article class="week" id="week-5" data-week="5" data-phase="Design"><div class="week-meta"><span class="week-number">WEEK 05</span><span class="phase-pill">Design</span></div><h3>Assessment in AI-Rich Environments</h3><p class="week-hook">If students have AI, what are we really measuring?</p><p class="week-role" hidden="">Relevant to your selected role</p><div class="week-build"><span>YOUR BUILD</span><p>Redesign one assessment to be AI-resilient and set up one student-facing AI practice activity</p></div><details><summary>Explore this week <span class="plus" aria-hidden="true">+</span></summary><div class="week-detail"><h4>UNDER THE HOOD</h4><p>Why AI should not be the final grader, and why AI detectors are unreliable</p><h4>WHAT WE’LL EXPLORE</h4><ul><li>Redesigning assessments to make thinking visible</li><li>Academic integrity</li><li>Student-facing AI tools with teacher oversight</li></ul><h4>YOU’LL WALK AWAY WITH</h4><p>Assessments that still measure real learning</p></div></details></article><article class="week" id="week-6" data-week="6" data-phase="Lead"><div class="week-meta"><span class="week-number">WEEK 06</span><span class="phase-pill">Lead</span></div><h3>Ethics, Law, Privacy, and Choosing Tools</h3><p class="week-hook">Where does your data actually go?</p><p class="week-role" hidden="">Relevant to your selected role</p><div class="week-build"><span>YOUR BUILD</span><p>Draft a classroom AI use policy and family letter, then vet one student-facing tool with the evaluation rubric</p></div><details><summary>Explore this week <span class="plus" aria-hidden="true">+</span></summary><div class="week-detail"><h4>UNDER THE HOOD</h4><p>What 'not used for training' does and does not mean</p><h4>WHAT WE’LL EXPLORE</h4><ul><li>FERPA, IDEA, and student privacy</li><li>Copyright and ownership</li><li>Course guardrails: educators retain responsibility for grades, placements, and IEP decisions</li></ul><h4>YOU’LL WALK AWAY WITH</h4><p>A defensible, policy-aware approach</p></div></details></article><article class="week" id="week-7" data-week="7" data-phase="Lead"><div class="week-meta"><span class="week-number">WEEK 07</span><span class="phase-pill">Lead</span></div><h3>Leadership, the Future, and Capstone</h3><p class="week-hook">What happens after the course ends?</p><p class="week-role" hidden="">Relevant to your selected role</p><div class="week-build"><span>YOUR BUILD</span><p>Capstone: a school AI implementation plan, a student AI literacy lesson, and a 10-minute video</p></div><details><summary>Explore this week <span class="plus" aria-hidden="true">+</span></summary><div class="week-detail"><h4>UNDER THE HOOD</h4><p>Agents and automation: AI that carries out multi-step tasks</p><h4>WHAT WE’LL EXPLORE</h4><ul><li>Future trends and how to evaluate claims</li><li>Metacognitive modeling: thinking aloud while checking AI</li><li>Organizational readiness and monitoring</li></ul><h4>YOU’LL WALK AWAY WITH</h4><p>Your AI Teaching Portfolio and a plan to lead</p></div></details></article>
-<!-- fallback:weeks:end -->
+            <article
+              class="week current-week"
+              id="week-0"
+              data-week="0"
+              data-phase="Understand"
+            >
+              <div class="week-meta">
+                <span class="week-number">WEEK 00</span
+                ><span class="phase-pill">Understand</span>
+              </div>
+              <h3>Orientation</h3>
+              <p class="week-hook">What does 'AI' actually mean?</p>
+              <p class="week-role" hidden="">Relevant to your selected role</p>
+              <div class="week-build">
+                <span>YOUR BUILD</span>
+                <p>
+                  Set up your accounts and post a 'My AI starting point'
+                  reflection
+                </p>
+              </div>
+              <details>
+                <summary>
+                  Explore this week
+                  <span class="plus" aria-hidden="true">+</span>
+                </summary>
+                <div class="week-detail">
+                  <h4>UNDER THE HOOD</h4>
+                  <p>AI vs. machine learning vs. generative AI</p>
+                  <h4>WHAT WE’LL EXPLORE</h4>
+                  <ul>
+                    <li>The driving question</li>
+                    <li>
+                      AI you already use: spellcheck, captions, read-aloud
+                    </li>
+                    <li>How the course works</li>
+                  </ul>
+                  <h4>YOU’LL WALK AWAY WITH</h4>
+                  <p>Shared vocabulary and a clear starting point</p>
+                </div>
+              </details>
+            </article>
+            <article
+              class="week"
+              id="week-1"
+              data-week="1"
+              data-phase="Understand"
+            >
+              <div class="week-meta">
+                <span class="week-number">WEEK 01</span
+                ><span class="phase-pill">Understand</span>
+              </div>
+              <h3>How AI Works and Hallucinations</h3>
+              <p class="week-hook">
+                Why can confident text be completely wrong?
+              </p>
+              <p class="week-role" hidden="">Relevant to your selected role</p>
+              <div class="week-build">
+                <span>YOUR BUILD</span>
+                <p>
+                  Hallucination Hunt: generate a reading passage and answer key,
+                  then find and fix every error
+                </p>
+              </div>
+              <details>
+                <summary>
+                  Explore this week
+                  <span class="plus" aria-hidden="true">+</span>
+                </summary>
+                <div class="week-detail">
+                  <h4>UNDER THE HOOD</h4>
+                  <p>Tokens and next-word prediction</p>
+                  <h4>WHAT WE’LL EXPLORE</h4>
+                  <ul>
+                    <li>
+                      Four types of AI systems: rule-based, adaptive,
+                      generative, agentic
+                    </li>
+                    <li>Hallucinations and automation bias</li>
+                    <li>Human vs. artificial intelligence</li>
+                  </ul>
+                  <h4>YOU’LL WALK AWAY WITH</h4>
+                  <p>You can predict where AI goes wrong and catch it</p>
+                </div>
+              </details>
+            </article>
+            <article
+              class="week"
+              id="week-2"
+              data-week="2"
+              data-phase="Understand"
+            >
+              <div class="week-meta">
+                <span class="week-number">WEEK 02</span
+                ><span class="phase-pill">Understand</span>
+              </div>
+              <h3>Good Inputs, Good Evaluation</h3>
+              <p class="week-hook">
+                Same AI, wildly different results. What changed?
+              </p>
+              <p class="week-role" hidden="">Relevant to your selected role</p>
+              <div class="week-build">
+                <span>YOUR BUILD</span>
+                <p>
+                  A prompt library of 5 tested templates plus a credibility
+                  check of three AI-cited sources
+                </p>
+              </div>
+              <details>
+                <summary>
+                  Explore this week
+                  <span class="plus" aria-hidden="true">+</span>
+                </summary>
+                <div class="week-detail">
+                  <h4>UNDER THE HOOD</h4>
+                  <p>Context windows: the AI only knows what you give it</p>
+                  <h4>WHAT WE’LL EXPLORE</h4>
+                  <ul>
+                    <li>The five-part prompt framework</li>
+                    <li>
+                      Evaluating accuracy, credibility, bias, reliability,
+                      educational value
+                    </li>
+                    <li>Lateral reading and source checking</li>
+                  </ul>
+                  <h4>YOU’LL WALK AWAY WITH</h4>
+                  <p>A reusable toolkit of prompts you trust</p>
+                </div>
+              </details>
+            </article>
+            <article class="week" id="week-3" data-week="3" data-phase="Design">
+              <div class="week-meta">
+                <span class="week-number">WEEK 03</span
+                ><span class="phase-pill">Design</span>
+              </div>
+              <h3>Human-Centered Lesson Design with UDL</h3>
+              <p class="week-hook">Start with learners, not the tool.</p>
+              <p class="week-role" hidden="">Relevant to your selected role</p>
+              <div class="week-build">
+                <span>YOUR BUILD</span>
+                <p>
+                  A UDL lesson plan for a real lesson, with a matching slide
+                  deck and one-page teaching guide
+                </p>
+              </div>
+              <details>
+                <summary>
+                  Explore this week
+                  <span class="plus" aria-hidden="true">+</span>
+                </summary>
+                <div class="week-detail">
+                  <h4>UNDER THE HOOD</h4>
+                  <p>
+                    Grounding answers in sources can reduce errors but does not
+                    eliminate the need for verification
+                  </p>
+                  <h4>WHAT WE’LL EXPLORE</h4>
+                  <ul>
+                    <li>Universal Design for Learning with AI</li>
+                    <li>Culturally responsive, relational teaching</li>
+                    <li>When NOT to use AI</li>
+                  </ul>
+                  <h4>YOU’LL WALK AWAY WITH</h4>
+                  <p>A classroom-ready lesson package</p>
+                </div>
+              </details>
+            </article>
+            <article class="week" id="week-4" data-week="4" data-phase="Design">
+              <div class="week-meta">
+                <span class="week-number">WEEK 04</span
+                ><span class="phase-pill">Design</span>
+              </div>
+              <h3>Exceptionalities, Accessibility, and Differentiation</h3>
+              <p class="week-hook">
+                Who does this tool help, and who might it miss?
+              </p>
+              <p class="week-role" hidden="">Relevant to your selected role</p>
+              <div class="week-build">
+                <span>YOUR BUILD</span>
+                <p>
+                  One material in three readiness levels plus an accommodated
+                  version for a fictional student profile
+                </p>
+              </div>
+              <details>
+                <summary>
+                  Explore this week
+                  <span class="plus" aria-hidden="true">+</span>
+                </summary>
+                <div class="week-detail">
+                  <h4>UNDER THE HOOD</h4>
+                  <p>Bias: training data shapes defaults and assumptions</p>
+                  <h4>WHAT WE’LL EXPLORE</h4>
+                  <ul>
+                    <li>AI and assistive technology</li>
+                    <li>Accommodations vs. modifications</li>
+                    <li>Algorithmic bias and equity of access</li>
+                  </ul>
+                  <h4>YOU’LL WALK AWAY WITH</h4>
+                  <p>Materials that work for more of your students</p>
+                </div>
+              </details>
+            </article>
+            <article class="week" id="week-5" data-week="5" data-phase="Design">
+              <div class="week-meta">
+                <span class="week-number">WEEK 05</span
+                ><span class="phase-pill">Design</span>
+              </div>
+              <h3>Assessment in AI-Rich Environments</h3>
+              <p class="week-hook">
+                If students have AI, what are we really measuring?
+              </p>
+              <p class="week-role" hidden="">Relevant to your selected role</p>
+              <div class="week-build">
+                <span>YOUR BUILD</span>
+                <p>
+                  Redesign one assessment to be AI-resilient and set up one
+                  student-facing AI practice activity
+                </p>
+              </div>
+              <details>
+                <summary>
+                  Explore this week
+                  <span class="plus" aria-hidden="true">+</span>
+                </summary>
+                <div class="week-detail">
+                  <h4>UNDER THE HOOD</h4>
+                  <p>
+                    Why AI should not be the final grader, and why AI detectors
+                    are unreliable
+                  </p>
+                  <h4>WHAT WE’LL EXPLORE</h4>
+                  <ul>
+                    <li>Redesigning assessments to make thinking visible</li>
+                    <li>Academic integrity</li>
+                    <li>Student-facing AI tools with teacher oversight</li>
+                  </ul>
+                  <h4>YOU’LL WALK AWAY WITH</h4>
+                  <p>Assessments that still measure real learning</p>
+                </div>
+              </details>
+            </article>
+            <article class="week" id="week-6" data-week="6" data-phase="Lead">
+              <div class="week-meta">
+                <span class="week-number">WEEK 06</span
+                ><span class="phase-pill">Lead</span>
+              </div>
+              <h3>Ethics, Law, Privacy, and Choosing Tools</h3>
+              <p class="week-hook">Where does your data actually go?</p>
+              <p class="week-role" hidden="">Relevant to your selected role</p>
+              <div class="week-build">
+                <span>YOUR BUILD</span>
+                <p>
+                  Draft a classroom AI use policy and family letter, then vet
+                  one student-facing tool with the evaluation rubric
+                </p>
+              </div>
+              <details>
+                <summary>
+                  Explore this week
+                  <span class="plus" aria-hidden="true">+</span>
+                </summary>
+                <div class="week-detail">
+                  <h4>UNDER THE HOOD</h4>
+                  <p>What 'not used for training' does and does not mean</p>
+                  <h4>WHAT WE’LL EXPLORE</h4>
+                  <ul>
+                    <li>FERPA, IDEA, and student privacy</li>
+                    <li>Copyright and ownership</li>
+                    <li>
+                      Course guardrails: educators retain responsibility for
+                      grades, placements, and IEP decisions
+                    </li>
+                  </ul>
+                  <h4>YOU’LL WALK AWAY WITH</h4>
+                  <p>A defensible, policy-aware approach</p>
+                </div>
+              </details>
+            </article>
+            <article class="week" id="week-7" data-week="7" data-phase="Lead">
+              <div class="week-meta">
+                <span class="week-number">WEEK 07</span
+                ><span class="phase-pill">Lead</span>
+              </div>
+              <h3>Leadership, the Future, and Capstone</h3>
+              <p class="week-hook">What happens after the course ends?</p>
+              <p class="week-role" hidden="">Relevant to your selected role</p>
+              <div class="week-build">
+                <span>YOUR BUILD</span>
+                <p>
+                  Capstone: a school AI implementation plan, a student AI
+                  literacy lesson, and a 10-minute video
+                </p>
+              </div>
+              <details>
+                <summary>
+                  Explore this week
+                  <span class="plus" aria-hidden="true">+</span>
+                </summary>
+                <div class="week-detail">
+                  <h4>UNDER THE HOOD</h4>
+                  <p>
+                    Agents and automation: AI that carries out multi-step tasks
+                  </p>
+                  <h4>WHAT WE’LL EXPLORE</h4>
+                  <ul>
+                    <li>Future trends and how to evaluate claims</li>
+                    <li>
+                      Metacognitive modeling: thinking aloud while checking AI
+                    </li>
+                    <li>Organizational readiness and monitoring</li>
+                  </ul>
+                  <h4>YOU’LL WALK AWAY WITH</h4>
+                  <p>Your AI Teaching Portfolio and a plan to lead</p>
+                </div>
+              </details>
+            </article>
+            <!-- fallback:weeks:end -->
           </div>
         </div>
       </section>
@@ -639,8 +1196,175 @@
         </div>
         <div class="artifact-grid" id="artifactGrid">
           <!-- fallback:artifacts:start -->
-<article class="artifact" data-artifact-week="2" style="--arrival-delay: 0ms;"><div class="artifact-top"><span>WEEK 02</span><span>01</span></div><div class="artifact-symbol" aria-hidden="true"><i></i><i></i><i></i><i></i></div><h3>Prompt templates</h3><p>Reusable toolkit</p><a class="artifact-source" href="#week-2" aria-label="See the Week 2 build for Prompt templates">From your weekly build <span aria-hidden="true"><svg class="arrow-icon" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 15 15 5M5 5h10v10"></path></svg></span></a></article><article class="artifact" data-artifact-week="3" style="--arrival-delay: 80ms;"><div class="artifact-top"><span>WEEK 03</span><span>02</span></div><div class="artifact-symbol" aria-hidden="true"><i></i><i></i><i></i><i></i></div><h3>Lesson plan</h3><p>Learners first</p><a class="artifact-source" href="#week-3" aria-label="See the Week 3 build for Lesson plan">From your weekly build <span aria-hidden="true"><svg class="arrow-icon" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 15 15 5M5 5h10v10"></path></svg></span></a></article><article class="artifact" data-artifact-week="3" style="--arrival-delay: 160ms;"><div class="artifact-top"><span>WEEK 03</span><span>03</span></div><div class="artifact-symbol" aria-hidden="true"><i></i><i></i><i></i><i></i></div><h3>Slide deck</h3><p>Clear &amp; accessible</p><a class="artifact-source" href="#week-3" aria-label="See the Week 3 build for Slide deck">From your weekly build <span aria-hidden="true"><svg class="arrow-icon" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 15 15 5M5 5h10v10"></path></svg></span></a></article><article class="artifact" data-artifact-week="3" style="--arrival-delay: 240ms;"><div class="artifact-top"><span>WEEK 03</span><span>04</span></div><div class="artifact-symbol" aria-hidden="true"><i></i><i></i><i></i><i></i></div><h3>Teaching guide</h3><p>Ready to teach</p><a class="artifact-source" href="#week-3" aria-label="See the Week 3 build for Teaching guide">From your weekly build <span aria-hidden="true"><svg class="arrow-icon" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 15 15 5M5 5h10v10"></path></svg></span></a></article><article class="artifact" data-artifact-week="4" style="--arrival-delay: 0ms;"><div class="artifact-top"><span>WEEK 04</span><span>05</span></div><div class="artifact-symbol" aria-hidden="true"><i></i><i></i><i></i><i></i></div><h3>Differentiated materials</h3><p>More ways to learn</p><a class="artifact-source" href="#week-4" aria-label="See the Week 4 build for Differentiated materials">From your weekly build <span aria-hidden="true"><svg class="arrow-icon" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 15 15 5M5 5h10v10"></path></svg></span></a></article><article class="artifact" data-artifact-week="6" style="--arrival-delay: 80ms;"><div class="artifact-top"><span>WEEK 06</span><span>06</span></div><div class="artifact-symbol" aria-hidden="true"><i></i><i></i><i></i><i></i></div><h3>AI use policy</h3><p>Trust &amp; responsibility</p><a class="artifact-source" href="#week-6" aria-label="See the Week 6 build for AI use policy">From your weekly build <span aria-hidden="true"><svg class="arrow-icon" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 15 15 5M5 5h10v10"></path></svg></span></a></article><article class="artifact" data-artifact-week="7" style="--arrival-delay: 160ms;"><div class="artifact-top"><span>WEEK 07</span><span>07</span></div><div class="artifact-symbol" aria-hidden="true"><i></i><i></i><i></i><i></i></div><h3>Implementation plan</h3><p>A thoughtful next step</p><a class="artifact-source" href="#week-7" aria-label="See the Week 7 build for Implementation plan">From your weekly build <span aria-hidden="true"><svg class="arrow-icon" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 15 15 5M5 5h10v10"></path></svg></span></a></article><article class="artifact" data-artifact-week="7" style="--arrival-delay: 240ms;"><div class="artifact-top"><span>WEEK 07</span><span>08</span></div><div class="artifact-symbol" aria-hidden="true"><i></i><i></i><i></i><i></i></div><h3>Capstone video</h3><p>Your 10-minute story</p><a class="artifact-source" href="#week-7" aria-label="See the Week 7 build for Capstone video">From your weekly build <span aria-hidden="true"><svg class="arrow-icon" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 15 15 5M5 5h10v10"></path></svg></span></a></article>
-<!-- fallback:artifacts:end -->
+          <article
+            class="artifact"
+            data-artifact-week="2"
+            style="--arrival-delay: 0ms"
+          >
+            <div class="artifact-top"><span>WEEK 02</span><span>01</span></div>
+            <div class="artifact-symbol" aria-hidden="true">
+              <i></i><i></i><i></i><i></i>
+            </div>
+            <h3>Prompt templates</h3>
+            <p>Reusable toolkit</p>
+            <a
+              class="artifact-source"
+              href="#week-2"
+              aria-label="See the Week 2 build for Prompt templates"
+              >From your weekly build
+              <span aria-hidden="true"
+                ><svg class="arrow-icon" viewBox="0 0 20 20" aria-hidden="true">
+                  <path d="M5 15 15 5M5 5h10v10"></path></svg></span
+            ></a>
+          </article>
+          <article
+            class="artifact"
+            data-artifact-week="3"
+            style="--arrival-delay: 80ms"
+          >
+            <div class="artifact-top"><span>WEEK 03</span><span>02</span></div>
+            <div class="artifact-symbol" aria-hidden="true">
+              <i></i><i></i><i></i><i></i>
+            </div>
+            <h3>Lesson plan</h3>
+            <p>Learners first</p>
+            <a
+              class="artifact-source"
+              href="#week-3"
+              aria-label="See the Week 3 build for Lesson plan"
+              >From your weekly build
+              <span aria-hidden="true"
+                ><svg class="arrow-icon" viewBox="0 0 20 20" aria-hidden="true">
+                  <path d="M5 15 15 5M5 5h10v10"></path></svg></span
+            ></a>
+          </article>
+          <article
+            class="artifact"
+            data-artifact-week="3"
+            style="--arrival-delay: 160ms"
+          >
+            <div class="artifact-top"><span>WEEK 03</span><span>03</span></div>
+            <div class="artifact-symbol" aria-hidden="true">
+              <i></i><i></i><i></i><i></i>
+            </div>
+            <h3>Slide deck</h3>
+            <p>Clear &amp; accessible</p>
+            <a
+              class="artifact-source"
+              href="#week-3"
+              aria-label="See the Week 3 build for Slide deck"
+              >From your weekly build
+              <span aria-hidden="true"
+                ><svg class="arrow-icon" viewBox="0 0 20 20" aria-hidden="true">
+                  <path d="M5 15 15 5M5 5h10v10"></path></svg></span
+            ></a>
+          </article>
+          <article
+            class="artifact"
+            data-artifact-week="3"
+            style="--arrival-delay: 240ms"
+          >
+            <div class="artifact-top"><span>WEEK 03</span><span>04</span></div>
+            <div class="artifact-symbol" aria-hidden="true">
+              <i></i><i></i><i></i><i></i>
+            </div>
+            <h3>Teaching guide</h3>
+            <p>Ready to teach</p>
+            <a
+              class="artifact-source"
+              href="#week-3"
+              aria-label="See the Week 3 build for Teaching guide"
+              >From your weekly build
+              <span aria-hidden="true"
+                ><svg class="arrow-icon" viewBox="0 0 20 20" aria-hidden="true">
+                  <path d="M5 15 15 5M5 5h10v10"></path></svg></span
+            ></a>
+          </article>
+          <article
+            class="artifact"
+            data-artifact-week="4"
+            style="--arrival-delay: 0ms"
+          >
+            <div class="artifact-top"><span>WEEK 04</span><span>05</span></div>
+            <div class="artifact-symbol" aria-hidden="true">
+              <i></i><i></i><i></i><i></i>
+            </div>
+            <h3>Differentiated materials</h3>
+            <p>More ways to learn</p>
+            <a
+              class="artifact-source"
+              href="#week-4"
+              aria-label="See the Week 4 build for Differentiated materials"
+              >From your weekly build
+              <span aria-hidden="true"
+                ><svg class="arrow-icon" viewBox="0 0 20 20" aria-hidden="true">
+                  <path d="M5 15 15 5M5 5h10v10"></path></svg></span
+            ></a>
+          </article>
+          <article
+            class="artifact"
+            data-artifact-week="6"
+            style="--arrival-delay: 80ms"
+          >
+            <div class="artifact-top"><span>WEEK 06</span><span>06</span></div>
+            <div class="artifact-symbol" aria-hidden="true">
+              <i></i><i></i><i></i><i></i>
+            </div>
+            <h3>AI use policy</h3>
+            <p>Trust &amp; responsibility</p>
+            <a
+              class="artifact-source"
+              href="#week-6"
+              aria-label="See the Week 6 build for AI use policy"
+              >From your weekly build
+              <span aria-hidden="true"
+                ><svg class="arrow-icon" viewBox="0 0 20 20" aria-hidden="true">
+                  <path d="M5 15 15 5M5 5h10v10"></path></svg></span
+            ></a>
+          </article>
+          <article
+            class="artifact"
+            data-artifact-week="7"
+            style="--arrival-delay: 160ms"
+          >
+            <div class="artifact-top"><span>WEEK 07</span><span>07</span></div>
+            <div class="artifact-symbol" aria-hidden="true">
+              <i></i><i></i><i></i><i></i>
+            </div>
+            <h3>Implementation plan</h3>
+            <p>A thoughtful next step</p>
+            <a
+              class="artifact-source"
+              href="#week-7"
+              aria-label="See the Week 7 build for Implementation plan"
+              >From your weekly build
+              <span aria-hidden="true"
+                ><svg class="arrow-icon" viewBox="0 0 20 20" aria-hidden="true">
+                  <path d="M5 15 15 5M5 5h10v10"></path></svg></span
+            ></a>
+          </article>
+          <article
+            class="artifact"
+            data-artifact-week="7"
+            style="--arrival-delay: 240ms"
+          >
+            <div class="artifact-top"><span>WEEK 07</span><span>08</span></div>
+            <div class="artifact-symbol" aria-hidden="true">
+              <i></i><i></i><i></i><i></i>
+            </div>
+            <h3>Capstone video</h3>
+            <p>Your 10-minute story</p>
+            <a
+              class="artifact-source"
+              href="#week-7"
+              aria-label="See the Week 7 build for Capstone video"
+              >From your weekly build
+              <span aria-hidden="true"
+                ><svg class="arrow-icon" viewBox="0 0 20 20" aria-hidden="true">
+                  <path d="M5 15 15 5M5 5h10v10"></path></svg></span
+            ></a>
+          </article>
+          <!-- fallback:artifacts:end -->
         </div>
         <details class="capstone">
           <summary>
@@ -706,8 +1430,48 @@
           </div>
           <div id="assessmentRows" class="assessment-rows">
             <!-- fallback:assessment:start -->
-<button class="assessment-row" data-assessment="0" aria-pressed="false" style="--slice:#00693c"><i aria-hidden="true"></i><span>Weekly builds</span><b>35%</b></button><button class="assessment-row" data-assessment="1" aria-pressed="false" style="--slice:#8ea97c"><i aria-hidden="true"></i><span>Discussion and peer feedback</span><b>15%</b></button><button class="assessment-row" data-assessment="2" aria-pressed="false" style="--slice:#c1d2aa"><i aria-hidden="true"></i><span>Tool evaluation and AI use policy</span><b>15%</b></button><button class="assessment-row" data-assessment="3" aria-pressed="false" style="--slice:#d0c59e"><i aria-hidden="true"></i><span>Weekly concept checks</span><b>10%</b></button><button class="assessment-row" data-assessment="4" aria-pressed="false" style="--slice:#487258"><i aria-hidden="true"></i><span>Capstone plan and video</span><b>25%</b></button>
-<!-- fallback:assessment:end -->
+            <button
+              class="assessment-row"
+              data-assessment="0"
+              aria-pressed="false"
+              style="--slice: #00693c"
+            >
+              <i aria-hidden="true"></i><span>Weekly builds</span
+              ><b>35%</b></button
+            ><button
+              class="assessment-row"
+              data-assessment="1"
+              aria-pressed="false"
+              style="--slice: #8ea97c"
+            >
+              <i aria-hidden="true"></i><span>Discussion and peer feedback</span
+              ><b>15%</b></button
+            ><button
+              class="assessment-row"
+              data-assessment="2"
+              aria-pressed="false"
+              style="--slice: #c1d2aa"
+            >
+              <i aria-hidden="true"></i
+              ><span>Tool evaluation and AI use policy</span><b>15%</b></button
+            ><button
+              class="assessment-row"
+              data-assessment="3"
+              aria-pressed="false"
+              style="--slice: #d0c59e"
+            >
+              <i aria-hidden="true"></i><span>Weekly concept checks</span
+              ><b>10%</b></button
+            ><button
+              class="assessment-row"
+              data-assessment="4"
+              aria-pressed="false"
+              style="--slice: #487258"
+            >
+              <i aria-hidden="true"></i><span>Capstone plan and video</span
+              ><b>25%</b>
+            </button>
+            <!-- fallback:assessment:end -->
           </div>
         </div>
       </section>
@@ -797,5 +1561,37 @@
         >Back to the course <span aria-hidden="true">↑</span></a
       >
     </footer>
+
+    <dialog
+      id="artifactDialog"
+      class="artifact-dialog"
+      aria-labelledby="artifactDialogTitle"
+    >
+      <button
+        class="dialog-close"
+        id="artifactDialogClose"
+        aria-label="Close artifact preview"
+      >
+        ×
+      </button>
+      <div class="artifact-dialog-meta">
+        <span class="eyebrow" id="artifactDialogWeek"></span
+        ><span class="preview-label">ILLUSTRATIVE PREVIEW</span>
+      </div>
+      <h2 id="artifactDialogTitle">Your teaching artifact</h2>
+      <p id="artifactDialogDescription" class="dialog-description">
+        You’ll build your own version during the course.
+      </p>
+      <div id="artifactDialogContent" class="artifact-dialog-content"></div>
+      <div class="artifact-dialog-footer">
+        <p>
+          Sample structure—not completed coursework. Your context and
+          professional judgment shape the final work.
+        </p>
+        <a class="button small" id="artifactDialogLink" href="#week-0"
+          >See the weekly build <span aria-hidden="true">→</span></a
+        >
+      </div>
+    </dialog>
   </body>
 </html>
