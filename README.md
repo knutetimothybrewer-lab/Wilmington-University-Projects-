@@ -100,3 +100,11 @@ All eight portfolio cards open keyboard-accessible native dialogs containing cle
 The prompt lab assembles a selectable prompt with a Copy control. If clipboard access is unavailable, it selects the text for the visitor's normal copy command. No live AI service is connected.
 
 The enhanced smoke test exercises all studio features, keyboard timeline changes, optional tour/global pause, all eight dialogs, slide navigation, support choices, and the sample checklist at 360, 768, and 1440 pixels. Separate checks cover enlarged text, artifact-dialog accessibility, and studio/dialog interactions inside an LMS-style iframe.
+
+## Rearranging headlines
+
+The opening headline is Wilmington University. On entering each section, letters from the preceding heading rearrange into the new heading over about one second. Matching characters travel to their new positions; additional characters appear and unused ones fade away. The effect also runs when returning to a section. Course paragraphs remain readable throughout.
+
+The original heading markup stays intact for assistive technology, text selection, search, and the script-free fallback. Pause motion, reduced motion, and enlarged-text reading mode show static headings. Resizing, hiding the page, or rapidly changing sections cancels the current effect and restores the heading. No fonts or animation libraries are fetched.
+
+Run `node tests/typography.cjs` with the local server running to check the opening, letter rearrangement, cleanup, reverse navigation, pause, and resize at mobile and desktop sizes. `COURSE_TEST_URL` selects the server.

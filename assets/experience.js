@@ -717,7 +717,7 @@
       { threshold: 0.12 },
     );
     $$(
-      ".section-top,.two-column>h2,.question-card,.field-notes,.outcome-list li,.rhythm-list li",
+      ".question-card,.field-notes,.outcome-list li,.rhythm-list li",
     ).forEach((el) => observer.observe(el));
   }
 })();

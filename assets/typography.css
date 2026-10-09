@@ -1,0 +1,31 @@
+/* Real headings remain intact for selection, assistive technology and fallback. */
+.intro-copy #intro-title {
+  font-size: clamp(46px, 5.3vw, 86px);
+  line-height: 1.04;
+}
+.type-flight {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 0;
+  z-index: 8;
+  pointer-events: none;
+}
+.type-glyph {
+  position: absolute;
+  display: block;
+  white-space: pre;
+  line-height: 1;
+  transform-origin: top left;
+}
+.type-transforming {
+  visibility: hidden;
+}
+.static-motion .type-flight {
+  display: none;
+}
+.static-motion .type-transforming {
+  visibility: visible;
+}
+.text-expanded .intro-copy #intro-title {
+  font-size: clamp(46px, 5.3vw, 86px);
+}
