@@ -54,7 +54,7 @@ const Pace={
       else{head='On pace';tip='Scene budget '+m.toFixed(1)+' min';}
       head+=' · '+this.mmss(el)+(S.timer.running?'':' (paused)');
     }
-    e.className=st;e.innerHTML=`<b>${head}</b>${tip} · plan ends ${this.mmss(end)} of ${S.target}:00`;
+    e.className=st;e.title='Plan ends at '+this.mmss(end)+' of '+S.target+':00. Click to start or pause the timer.';e.innerHTML=`<b>${head}</b>${tip.replace('Scene budget ','Scene ')} · ends ${this.mmss(end)}`;
   }
 };
 
@@ -154,7 +154,7 @@ const Nav={
       Avatar.walkTo(sc.station||900);
     }
     // panel
-    panel.className='panel'+(campusScene?' short':'');
+    panel.className='panel'+(campusScene&&sc.type!=='concept'?' short':'');
     panel.setAttribute('aria-label',sc.title);
     const builders={concept:buildConcept,lab:buildLab,quiz:buildQuiz,discuss:buildDiscuss,finale:buildFinale};
     if(sc.type==='hub'){panel.classList.add('hidden');buildHub(C,sc);}
@@ -221,15 +221,20 @@ function buildLab(C,sc){
     try{Nav.handle=sim.mount(main)||null;}catch(e){console.error(e);main.append(h('div',{class:'callout bad'},'This demonstration failed to load: '+e.message));}
     rep.disabled=!(Nav.handle&&Nav.handle.replay);
   }
-  const prompt=h('div',{class:'callout',style:{display:S.mode==='student'?'block':'none'}},L.prompt);
-  const side=h('div',{class:'labside'},
-    h('div',{},h('h3',{},'Purpose'),L.purpose),
-    h('div',{},h('h3',{},'Discussion prompt'),h('button',{class:'btn sm instr',type:'button',onclick:()=>{Nav.onAnswer();}},'Show / hide prompt ',h('kbd',{},'A')),prompt),
-    h('div',{},h('h3',{},'What to try'),h('ol',{},L.steps.map(s=>h('li',{},s)))),
-    h('div',{},h('h3',{},'In the classroom'),L.classroom),
-    h('div',{class:'sub',style:{fontSize:'.85em'}},kind.tip));
-  Nav.onAnswer=()=>{prompt.style.display=prompt.style.display==='none'?'block':'none';};
-  Nav.onBeat=Nav.onAnswer;
+  let tab='try',talk=S.mode==='student';
+  const sideTabs=h('div',{class:'tabs'}),sideBody=h('div',{style:{flex:1,overflow:'auto',minHeight:0}});
+  function paintSide(){
+    const T=[['try','What to try'],['purpose','Purpose'],['class','In class'],['talk','Discuss']];
+    sideTabs.innerHTML='';T.forEach(([k,l])=>sideTabs.appendChild(h('button',{class:'tab'+(k===tab?' on':''),type:'button',onclick:()=>{tab=k;paintSide();}},l)));
+    sideBody.innerHTML='';
+    if(tab==='try')sideBody.append(h('ol',{style:{margin:0,paddingLeft:'1.2em'}},L.steps.map(x=>h('li',{style:{margin:'.3em 0'}},x))));
+    else if(tab==='purpose')sideBody.append(h('p',{style:{margin:0}},L.purpose),h('p',{class:'sub'},kind.tip));
+    else if(tab==='class')sideBody.append(h('p',{style:{margin:0}},L.classroom));
+    else sideBody.append(talk?h('div',{class:'callout'},L.prompt):h('div',{},h('p',{class:'sub'},'The discussion prompt is hidden.'),h('button',{class:'btn sm',type:'button',onclick:()=>{talk=true;paintSide();}},'Show prompt ',h('kbd',{},'A'))));
+  }
+  const side=h('div',{class:'labside'},sideTabs,sideBody);
+  Nav.onAnswer=()=>{if(tab==='talk')talk=!talk;else{tab='talk';talk=true;}paintSide();};
+  Nav.onBeat=Nav.onAnswer;paintSide();
   const head=h('div',{class:'labhead'},h('h2',{},sc.title),h('span',{class:'badge '+kind.cls,title:kind.tip},kind.label),sc.optional?h('span',{class:'badge optl'},'OPTIONAL'):null,h('span',{class:'sp'}),
     h('button',{class:'btn sm',type:'button',onclick:()=>{mount();toast('Demonstration reset');}},'Reset'),rep,deeperBtn(sc));
   mount();
@@ -250,7 +255,7 @@ function buildQuiz(C,sc){
     }
     const q=sc.questions[qi];
     wrap.append(h('div',{class:'row'},h('div',{class:'kicker'},`Question ${qi+1} of ${N}`),h('span',{class:'pill'},q.level),h('span',{class:'pill'},q.kind),h('span',{class:'sp grow'})),
-      h('div',{class:'big',style:{fontSize:'32px',margin:'8px 0 12px'}},q.q));
+      h('div',{class:'big',style:{fontSize:'38px',margin:'8px 0 12px'}},q.q));
     if(q.reflect){
       const ta=h('textarea',{rows:5,placeholder:'Optional: jot your thinking (stored only in this browser; please do not include names or identifying details).','aria-label':'Your reflection'});ta.value=S.reflect[q.id]||'';ta.addEventListener('input',()=>{S.reflect[q.id]=ta.value;saveState();});
       const pts=h('div',{class:'callout good',style:{display:'none'}},h('b',{},'Considerations (not an answer key): '),h('ul',{},q.points.map(p=>h('li',{},p))));
@@ -315,7 +320,7 @@ const HUD={
     $('#chbar b').style.width=clamp(end/tot*100,0,100)+'%';
     const total=CHAPTERS.reduce((a,c)=>a+c.scenes.filter(s=>s.type!=='hub').length,0),vis=Object.keys(S.visited).filter(k=>{const[c,s]=k.split(':');return CHAPTERS[c]&&CHAPTERS[c].scenes[s]&&CHAPTERS[c].scenes[s].type!=='hub';}).length;
     $('#prog').textContent=`Progress: ${vis} of ${total} scenes`;
-    $('#modeBtn').textContent=S.mode==='instructor'?'Instructor mode':'Student mode';
+    $('#modeBtn').textContent=S.mode==='instructor'?'Instructor':'Student';
     $('#pauseBtn').textContent=Anim.paused?'▶ Resume':'⏸ Pause';
     $('#pauseBtn').classList.toggle('on',Anim.paused);
     $('#viewBtn').classList.toggle('on',document.body.classList.contains('immersive'));
@@ -365,7 +370,7 @@ function openGuide(){
     C.scenes.forEach(s=>{if(s.type==='hub')return;wrap.append(h('div',{class:'card',style:{margin:'8px 0',background:'#fffbe9',color:'#1a1200'},html:Notes.html(C,s)}));});
   }
   sec('References and further reading',(C.refs||[]).map(r=>REFS[r]));
-  wrap.append(h('div',{class:'sub',style:{fontSize:'.85em'}},REFS_NOTE));
+  wrap.append(h('div',{class:'sub',style:{fontSize:'.9em'}},REFS_NOTE));
   const top=h('div',{class:'row',style:{marginBottom:'10px'}},ins?h('button',{class:'btn',type:'button',onclick:()=>Notes.popout()},'Open presenter notes in a separate window'):null,h('button',{class:'btn',type:'button',onclick:()=>window.print()},'Print this guide'));
   Modal.open((ins?'Teaching guide: ':'Study guide: ')+C.title,h('div',{},top,wrap),{width:'1500px'});
 }
@@ -400,7 +405,7 @@ function applyPrefs(){
   const b=document.body;
   b.classList.toggle('reduce',!!S.prefs.reduced);b.classList.toggle('low',!!S.prefs.low);b.classList.toggle('contrast',!!S.prefs.contrast);
   b.classList.toggle('instructor',S.mode==='instructor');b.classList.toggle('student',S.mode==='student');
-  stage.style.setProperty('--fs',(22*S.prefs.scale).toFixed(1)+'px');
+  stage.style.setProperty('--fs',(26*S.prefs.scale).toFixed(1)+'px');
   if(FX.cv){FX.resize();if(FX.themeName)FX.set(FX.themeName);}
 }
 function setMode(m){

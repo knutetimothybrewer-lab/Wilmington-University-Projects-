@@ -54,7 +54,7 @@ const sampleIdx=(p,r=Math.random)=>{let u=r(),a=0;for(let i=0;i<p.length;i++){a+
 /* ---------------- Ch1 · Exhibit A: Rule-based machine (real) ---------------- */
 Sims.rules={kind:'real',title:'Exhibit A · The Rule-Based Machine',
 mount(el){
-  const F={att:['Attendance %',0,100],miss:['Missing assignments',0,12],quiz:['Quiz average %',0,100]};
+  const F={att:['Attendance %',0,100],miss:['Missing work',0,12],quiz:['Quiz average %',0,100]};
   const OUTS=['Needs outreach','Monitor','On track'];
   let rules=[{f:'att',op:'<',v:80,out:'Needs outreach'},{f:'miss',op:'>',v:4,out:'Needs outreach'},{f:'quiz',op:'<',v:60,out:'Monitor'}];
   const st={att:92,miss:2,quiz:78};
@@ -65,25 +65,26 @@ mount(el){
   const gear=h('div',{class:'row'},);
   function draw(){
     const r=run(st);
-    res.innerHTML=`<div class="row"><svg width="64" height="64" viewBox="-32 -32 64 64"><g class="spin"><circle r="22" fill="none" stroke="#ffe08a" stroke-width="10" stroke-dasharray="9 6"/><circle r="8" fill="#ffe08a"/></g></svg><div><div class="sub">Machine output for the student you configured</div><div class="big" style="font-size:34px">${esc(r.out)}</div><div class="sub">${r.fallback?'No rule matched: the machine fell through to its default.':'Rule '+(r.hits[0]+1)+' fired first'+(r.hits.length>1?' (also matched: '+r.hits.slice(1).map(i=>i+1).join(', ')+', ignored because first match wins)':'')+'.'}</div></div></div>`;
+    res.innerHTML=`<div class="row"><svg width="44" height="44" viewBox="-32 -32 64 64"><g class="spin"><circle r="22" fill="none" stroke="#ffe08a" stroke-width="10" stroke-dasharray="9 6"/><circle r="8" fill="#ffe08a"/></g></svg><div><div class="sub">Output for this student:</div><div class="big" style="font-size:30px">${esc(r.out)}</div><div class="sub">${r.fallback?'No rule matched: the machine fell through to its default.':'Rule '+(r.hits[0]+1)+' fired first'+(r.hits.length>1?' (also matched: '+r.hits.slice(1).map(i=>i+1).join(', ')+', ignored because first match wins)':'')+'.'}</div></div></div>`;
     ruleBox.innerHTML='';
     rules.forEach((ru,i)=>{
       const fs=h('select',{'aria-label':'Rule '+(i+1)+' field',onchange:e=>{ru.f=e.target.value;draw();}},Object.entries(F).map(([k,v])=>h('option',{value:k,selected:k===ru.f},v[0])));
       const op=h('select',{'aria-label':'operator',onchange:e=>{ru.op=e.target.value;draw();}},['<','>'].map(o=>h('option',{value:o,selected:o===ru.op},o)));
       const num=h('input',{type:'number',value:ru.v,style:{width:'80px'},'aria-label':'threshold',oninput:e=>{ru.v=+e.target.value;draw();}});
       const out=h('select',{'aria-label':'then',onchange:e=>{ru.out=e.target.value;draw();}},OUTS.map(o=>h('option',{value:o,selected:o===ru.out},o)));
-      ruleBox.appendChild(h('div',{class:'row',style:{margin:'6px 0',padding:'4px 6px',borderRadius:'8px',background:r.hits.includes(i)?'#38d99633':'transparent'}},h('b',{},(i+1)+'. IF'),fs,op,num,h('b',{},'THEN'),out,
+      ruleBox.appendChild(h('div',{class:'rulerow',style:{margin:'6px 0',padding:'4px 6px',borderRadius:'8px',background:r.hits.includes(i)?'#38d99633':'transparent'}},h('b',{},(i+1)+'. IF'),fs,op,num,h('b',{},'\u2192'),out,
         UI.btn('↑',()=>{if(i>0){[rules[i-1],rules[i]]=[rules[i],rules[i-1]];draw();}},'sm'),UI.btn('✕',()=>{rules.splice(i,1);draw();},'sm')));
     });
     // sample table
     let conflicts=0,gaps=0;
     const rowsH=SAMPLE.map(([n,a,m,q])=>{const s={att:a,miss:m,quiz:q},x=run(s);if(x.hits.length>1)conflicts++;if(x.fallback)gaps++;
-      return `<tr class="${x.fallback?'bad':x.hits.length>1?'hit':''}"><td>${n}</td><td>${a}</td><td>${m}</td><td>${q}</td><td><b>${x.out}</b></td><td>${x.fallback?'default (no rule)':'rule '+(x.hits[0]+1)+(x.hits.length>1?' +'+(x.hits.length-1)+' more':'')}</td></tr>`;}).join('');
-    tbl.innerHTML=`<table><tr><th>Sample</th><th>Attend%</th><th>Missing</th><th>Quiz%</th><th>Output</th><th>Because</th></tr>${rowsH}</table>`;
+      return `<tr class="${x.fallback?'bad':x.hits.length>1?'hit':''}"><td>${n.replace('Student ','')}</td><td>${a}% · ${m} · ${q}%</td><td><b>${x.out}</b></td><td>${x.fallback?'no rule':'rule '+(x.hits[0]+1)+(x.hits.length>1?' +'+(x.hits.length-1):'')}</td></tr>`;});
+    const head='<tr><th>#</th><th>Att · Miss · Quiz</th><th>Output</th><th>Rule</th></tr>';
+    tbl.innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px"><table>${head}${rowsH.slice(0,4).join('')}</table><table>${head}${rowsH.slice(4).join('')}</table></div>`;
     insight.innerHTML=`Rules are explicit and fully inspectable, but they only cover what their author imagined. <b>${gaps}</b> sample student(s) fell through to the default and <b>${conflicts}</b> matched more than one rule. Try changing 80 to 79.5: a student at 79.5% is treated completely differently from one at 80%.`;
   }
   const sliders=Object.entries(F).map(([k,[l,mn,mx]])=>UI.slider(l,mn,mx,1,st[k],v=>{st[k]=v;draw();}));
-  el.append(h('div',{class:'grid2'},h('div',{class:'col'},h('h3',{},'1 · Describe a student'),...sliders.map(s=>s.el),res),
+  el.append(h('div',{class:'grid2',style:{gridTemplateColumns:'1fr 1.5fr'}},h('div',{class:'col'},h('h3',{},'1 · Describe a student'),...sliders.map(s=>s.el),res),
     h('div',{class:'col'},h('h3',{},'2 · Write the rules (first match wins)'),ruleBox,h('div',{class:'row'},UI.btn('+ Add rule',()=>{rules.push({f:'att',op:'<',v:70,out:'Monitor'});draw();},'pri sm')))),
     h('h3',{},'3 · Test on a class'),tbl,UI.note('',''));
   el.lastChild.replaceWith(insight);insight.className='callout';draw();
@@ -92,7 +93,7 @@ mount(el){
 /* ---------------- Ch1 · Exhibit B: Machine-learning lab (real kNN) ---------------- */
 Sims.knn={kind:'real',title:'Exhibit B · The Machine-Learning Laboratory',
 mount(el){
-  const CW=700,CH=430,cls=[['On track','#38d996'],['Needs support','#ff9a6b']];
+  const CW=700,CH=360,cls=[['On track','#38d996'],['Needs support','#ff9a6b']];
   let data=[],k=3,tool=0,test={x:55,y:55},showReg=true;
   function preset(name){
     const r=rng(name==='noisy'?7:name==='biased'?11:3);const g=(cx,cy,sd,c,n)=>{for(let i=0;i<n;i++){let a=0,b=0;for(let j=0;j<6;j++){a+=r();b+=r();}data.push({x:clamp(cx+(a-3)*sd*1.6,2,98),y:clamp(cy+(b-3)*sd*1.6,2,98),c});}};
@@ -160,10 +161,10 @@ mount(el){
     svg.innerHTML='';edges=[];nodes=[];
     for(let l=1;l<L.length;l++)for(let j=0;j<L[l];j++)for(let i=0;i<L[l-1];i++){const a=pos(l-1,i),b=pos(l,j);const p=h('path',{d:`M${a.x} ${a.y}L${b.x} ${b.y}`,fill:'none','stroke-linecap':'round'});svg.appendChild(p);edges.push({p,l,j,i});}
     for(let l=0;l<L.length;l++)for(let j=0;j<L[l];j++){const p=pos(l,j);const c=h('circle',{cx:p.x,cy:p.y,r:l===3?30:24,stroke:'#fff','stroke-width':3,class:'node',tabindex:0,role:'button','aria-label':`${l===0?names[j]:l===3?'Output':'Hidden layer '+l+' node '+(j+1)}. Activate for details.`,onclick:()=>{sel={l,j};render();},onkeydown:e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();sel={l,j};render();}}});
-      const t=h('text',{x:p.x,y:p.y+5,'text-anchor':'middle',fill:'#fff','font-size':14,'font-weight':700,'pointer-events':'none'});svg.append(c,t);nodes.push({c,t,l,j});}
-    [['Inputs (0 to 1)',xs[0]],['Hidden layer 1',xs[1]],['Hidden layer 2',xs[2]],['Output',xs[3]]].forEach(([s,x])=>svg.appendChild(h('text',{x,y:22,'text-anchor':'middle',fill:'#ffe08a','font-size':16,'font-weight':700},s)));
-    names.forEach((n,j)=>svg.appendChild(h('text',{x:xs[0],y:pos(0,j).y-34,'text-anchor':'middle',fill:'#b9c8ea','font-size':14},n)));
-    svg.appendChild(h('text',{x:xs[3]+40,y:pos(3,0).y+56,'text-anchor':'end',fill:'#ffe08a','font-size':15},'support-need score'));
+      const t=h('text',{x:p.x,y:p.y+5,'text-anchor':'middle',fill:'#fff','font-size':17,'font-weight':700,'pointer-events':'none'});svg.append(c,t);nodes.push({c,t,l,j});}
+    [['Inputs (0 to 1)',xs[0]],['Hidden layer 1',xs[1]],['Hidden layer 2',xs[2]],['Output',xs[3]]].forEach(([s,x])=>svg.appendChild(h('text',{x,y:22,'text-anchor':'middle',fill:'#ffe08a','font-size':18,'font-weight':700},s)));
+    names.forEach((n,j)=>svg.appendChild(h('text',{x:xs[0],y:pos(0,j).y-34,'text-anchor':'middle',fill:'#b9c8ea','font-size':17},n)));
+    svg.appendChild(h('text',{x:xs[3]+40,y:pos(3,0).y+56,'text-anchor':'end',fill:'#ffe08a','font-size':17},'support-need score'));
   }
   function render(){
     const{A,Z}=forward();
@@ -240,8 +241,8 @@ mount(el){
     const N=[[320,40,`Attendance ≥ ${T.att}%?`],[170,140,`Quiz avg ≥ ${T.quiz}%?`],[470,140,`Missing ≥ ${T.miss}?`],[90,270,'On track'],[250,270,'Monitor'],[390,270,'Needs outreach'],[550,270,'Monitor']];
     const E=[[0,1,'yes'],[0,2,'no'],[1,3,'yes'],[1,4,'no'],[2,5,'yes'],[2,6,'no']];
     svg.innerHTML='';
-    E.forEach(([a,b,l])=>{const on=path.includes(a)&&path.includes(b);svg.append(h('line',{x1:N[a][0],y1:N[a][1],x2:N[b][0],y2:N[b][1],stroke:on?'#ffe08a':'#6a7fb0','stroke-width':on?6:2}),h('text',{x:(N[a][0]+N[b][0])/2+(l==='yes'?-18:18),y:(N[a][1]+N[b][1])/2,fill:'#b9c8ea','font-size':14,'text-anchor':'middle'},l));});
-    N.forEach(([x,y,t],i)=>{const leaf=i>2,on=path.includes(i);svg.append(h('rect',{x:x-70,y:y-20,width:140,height:40,rx:leaf?20:8,fill:on?'#00693C':'#16284f',stroke:on?'#ffe08a':'#6a7fb0','stroke-width':on?4:2}),h('text',{x,y:y+5,fill:'#fff','font-size':15,'text-anchor':'middle'},t));});
+    E.forEach(([a,b,l])=>{const on=path.includes(a)&&path.includes(b);svg.append(h('line',{x1:N[a][0],y1:N[a][1],x2:N[b][0],y2:N[b][1],stroke:on?'#ffe08a':'#6a7fb0','stroke-width':on?6:2}),h('text',{x:(N[a][0]+N[b][0])/2+(l==='yes'?-18:18),y:(N[a][1]+N[b][1])/2,fill:'#b9c8ea','font-size':17,'text-anchor':'middle'},l));});
+    N.forEach(([x,y,t],i)=>{const leaf=i>2,on=path.includes(i);svg.append(h('rect',{x:x-70,y:y-20,width:140,height:40,rx:leaf?20:8,fill:on?'#00693C':'#16284f',stroke:on?'#ffe08a':'#6a7fb0','stroke-width':on?4:2}),h('text',{x,y:y+5,fill:'#fff','font-size':17,'text-anchor':'middle'},t));});
     let ok=0;const rowsH=ST.map((s,i)=>{const p=classify(s)[0],good=p===s[4];if(good)ok++;return `<tr class="${i===selS?'hit':''}" data-i="${i}" style="cursor:pointer"><td>${s[0]}</td><td>${s[1]}</td><td>${s[2]}</td><td>${s[3]}</td><td>${s[4]}</td><td>${p}</td><td>${good?'✔':'✘'}</td></tr>`;}).join('');
     tbl.innerHTML=`<table><tr><th>Stu.</th><th>Att%</th><th>Miss</th><th>Quiz</th><th>Counselor said</th><th>Tree says</th><th></th></tr>${rowsH}</table>`;
     $$('tr[data-i]',tbl).forEach(r=>r.addEventListener('click',()=>{selS=+r.dataset.i;draw();}));
@@ -280,7 +281,7 @@ mount(el){
 /* ---------------- Ch2 · Embedding map (sim; optional) ---------------- */
 Sims.embed={kind:'sim',title:'Optional · The Embedding Map',
 mount(el){
-  const P={man:[2,2],woman:[2,4],king:[6,2],queen:[6,4],boy:[1,0.5],girl:[1,2.4],teacher:[-4,3],student:[-1.5,4],classroom:[-2.8,1.8],lesson:[-4.6,4.6],exam:[-1.2,5.8],homework:[-3.4,5.6],france:[-6,-4],paris:[-3.5,-4],italy:[-6,-6],rome:[-3.5,-6],dog:[6,-4],cat:[7.6,-3],puppy:[6.4,-5.6],banana:[2,-7]};
+  const P={man:[2,2],woman:[2,4],king:[6,2],queen:[6,4],boy:[1,0.5],girl:[1,2.4],teacher:[-4,3],student:[-1.5,4],classroom:[-2.8,1.8],lesson:[-4.6,4.6],exam:[-1.2,5.8],homework:[-3.4,5.6],france:[-6,-4],paris:[-3.5,-4],italy:[-6,-6],rome:[-3.5,-6],dog:[6,-4],cat:[7.6,-3],puppy:[6.4,-5.6],banana:[2,-6.2]};
   const names=Object.keys(P);let a=null,b=null;
   const VW=720,VH=470,sx=x=>VW/2+x*38,sy=y=>VH/2-y*34;
   const svg=h('svg',{viewBox:`0 0 ${VW} ${VH}`,width:VW,height:VH,role:'img','aria-label':'2D map of word positions'}),info=h('div',{class:'card'});
@@ -313,7 +314,7 @@ mount(el){
   function draw(){
     const w=weights();svg.innerHTML='';
     w.forEach((v,i)=>{if(i===q)return;const mx=(x(q)+x(i))/2,dy=40+Math.abs(i-q)*20;svg.append(h('path',{d:`M${x(q)} 170Q${mx} ${170-dy*2} ${x(i)} 170`,fill:'none',stroke:'#ffe08a','stroke-width':1+v*26,'stroke-opacity':clamp(.12+v*1.6,.12,.95)}));});
-    toks.forEach((t,i)=>{svg.append(h('g',{class:'node',tabindex:0,role:'button','aria-label':'Use '+t+' as the query word',onclick:()=>{q=i;draw();},onkeydown:e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();q=i;draw();}}},h('rect',{x:x(i)-40,y:176,width:80,height:36,rx:9,fill:i===q?'#00693C':'#16284f',stroke:i===q?'#ffe08a':'#6a7fb0','stroke-width':i===q?4:2}),h('text',{x:x(i),y:200,'text-anchor':'middle',fill:'#fff','font-size':18},t)),h('text',{x:x(i),y:240,'text-anchor':'middle',fill:'#ffe08a','font-size':16,'font-family':'monospace'},i===q?'query':(w[i]*100).toFixed(0)+'%'));});
+    toks.forEach((t,i)=>{svg.append(h('g',{class:'node',tabindex:0,role:'button','aria-label':'Use '+t+' as the query word',onclick:()=>{q=i;draw();},onkeydown:e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();q=i;draw();}}},h('rect',{x:x(i)-40,y:176,width:80,height:36,rx:9,fill:i===q?'#00693C':'#16284f',stroke:i===q?'#ffe08a':'#6a7fb0','stroke-width':i===q?4:2}),h('text',{x:x(i),y:200,'text-anchor':'middle',fill:'#fff','font-size':18},t)),h('text',{x:x(i),y:240,'text-anchor':'middle',fill:'#ffe08a','font-size':18,'font-family':'monospace'},i===q?'query':(w[i]*100).toFixed(0)+'%'));});
     const top=w.map((v,i)=>[v,i]).filter(p=>p[1]!==q).sort((a,b)=>b[0]-a[0]).slice(0,3);
     info.innerHTML=`Query word: <b>${toks[q]}</b>. Strongest attention: ${top.map(([v,i])=>`<b>${toks[i]}</b> (${(v*100).toFixed(0)}%)`).join(', ')}.`;
   }
@@ -361,7 +362,7 @@ Sims.temperature={kind:'sim',title:'Laboratory C · The Temperature Simulator',
 mount(el){
   const toks=['curiosity','feedback','practice','sleep','patience','pizza'],logits=[3.0,2.6,2.4,1.5,1.1,-.5];
   let T=1,counts=toks.map(()=>0),total=0,last=[];
-  const b1=h('div'),b2=h('div'),stat=h('div',{class:'card'}),list=h('div',{class:'card mono',style:{minHeight:'54px',maxHeight:'130px',overflow:'auto'}});
+  const b1=h('div'),b2=h('div'),stat=h('div',{class:'card'}),list=h('div',{class:'card mono',style:{minHeight:'40px',maxHeight:'100px',overflow:'auto'}});
   const bars1=Bars(b1,toks,{fmt:v=>pct(v,1)}),bars2=Bars(b2,toks,{fmt:v=>pct(v,0)});
   function draw(){
     const p=softmax(logits,T),H=-p.reduce((a,v)=>a+(v>0?v*Math.log2(v):0),0);

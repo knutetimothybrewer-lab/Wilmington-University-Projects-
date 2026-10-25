@@ -24,7 +24,7 @@ mount(el){
     {t:'Parasuraman, R., & Manzey, D. H. (2010). Complacency and bias in human use of automation: An attentional integration. Human Factors, 52(3), 381-410. https://doi.org/10.1177/0018720810376055',real:true,
      ev:'<b>Verifiable.</b> A widely cited review of automation complacency and automation bias in the journal Human Factors. Verification route: DOI lookup, then check the journal\'s volume 52 issue 3 table of contents.'}];
   const mark=C.map(()=>null);let revealed=C.map(()=>false);
-  const list=h('div',{class:'grid2'}),score=h('div');
+  const list=h('div',{class:'citegrid'}),score=h('div');
   function draw(){
     list.innerHTML='';
     C.forEach((c,i)=>{
@@ -54,13 +54,13 @@ mount(el){
     {c:'Humans use only about 10 percent of their brains.',a:false,ev:'False. Imaging and lesion studies show activity throughout the brain over a day; there is no dormant 90 percent.'},
     {c:'Water boils at a lower temperature at higher altitude.',a:true,ev:'True. Lower air pressure lowers the boiling point.'}];
   const pick=Q.map(()=>null);let shown=false;
-  const list=h('div'),res=h('div');
+  const list=h('div',{class:'confgrid'}),res=h('div');
   function draw(){
     list.innerHTML='';
     Q.forEach((q,i)=>{
-      const card=h('div',{class:'card',style:{margin:'7px 0'}},h('div',{class:'row'},h('div',{class:'grow'},h('span',{class:'pill'},'AI-style claim '+(i+1)+' · tone: 100% certain'),h('div',{style:{fontSize:'1.02em',marginTop:'4px'}},'“'+q.c+'”')),
+      const card=h('div',{class:'card',style:{margin:'7px 0'}},h('div',{class:'row'},h('div',{class:'grow'},h('span',{class:'pill'},'Claim '+(i+1)+' \u00b7 sounds 100% sure'),h('div',{style:{fontSize:'1.02em',marginTop:'4px'}},'“'+q.c+'”')),
         h('button',{class:'btn sm'+(pick[i]===true?' on':''),type:'button',onclick:()=>{pick[i]=true;draw();}},'I predict TRUE'),h('button',{class:'btn sm'+(pick[i]===false?' on':''),type:'button',onclick:()=>{pick[i]=false;draw();}},'I predict FALSE')));
-      if(shown){const ok=pick[i]===q.a;card.append(h('div',{class:'callout '+(q.a?'good':'bad'),style:{marginTop:'6px',fontSize:'.85em'},html:`<b>${q.a?'TRUE':'FALSE'}</b> ${pick[i]==null?'':ok?'(you predicted correctly)':'(you predicted incorrectly)'}. ${q.ev}`}));}
+      if(shown){const ok=pick[i]===q.a;card.append(h('div',{class:'callout '+(q.a?'good':'bad'),style:{marginTop:'6px',fontSize:'.9em'},html:`<b>${q.a?'TRUE':'FALSE'}</b> ${pick[i]==null?'':ok?'(you predicted correctly)':'(you predicted incorrectly)'}. ${q.ev}`}));}
       list.appendChild(card);
     });
     if(shown){const right=Q.filter((q,i)=>pick[i]===q.a).length,truth=Q.filter(q=>q.a).length;
@@ -146,7 +146,7 @@ mount(el){
     I.forEach((it,i)=>{
       const card=h('div',{class:'card',style:{margin:'7px 0'}},h('div',{class:'row'},h('div',{class:'grow'},h('b',{},(i+1)+'. '+it.q),h('div',{class:'sub'},it.key)),
         h('button',{class:'btn sm'+(pick[i]===false?' on':''),type:'button',onclick:()=>{pick[i]=false;draw();}},'Looks fine'),h('button',{class:'btn sm'+(pick[i]===true?' on':''),type:'button',onclick:()=>{pick[i]=true;draw();}},'Contains an error')));
-      if(shown)card.append(h('div',{class:'callout '+(it.err?'bad':'good'),style:{marginTop:'6px',fontSize:'.85em'},html:`<b>${it.err?'ERROR':'CORRECT'}</b> ${pick[i]==null?'':pick[i]===it.err?'(your judgment matched)':'(your judgment did not match)'}. ${it.why}`}));
+      if(shown)card.append(h('div',{class:'callout '+(it.err?'bad':'good'),style:{marginTop:'6px',fontSize:'.9em'},html:`<b>${it.err?'ERROR':'CORRECT'}</b> ${pick[i]==null?'':pick[i]===it.err?'(your judgment matched)':'(your judgment did not match)'}. ${it.why}`}));
       list.appendChild(card);
     });
     res.innerHTML=shown?`You matched ${I.filter((x,i)=>pick[i]===x.err).length} of ${I.length}. Fluent formatting and an answer key create <b>perceived authority</b>. Errors in generated assessments reach every student who takes them, which is why educator review is a professional responsibility, not a courtesy.`:'';
@@ -200,20 +200,20 @@ mount(el){
     ['Counseling a student in distress',2,'Relationship, care and duty of care cannot be delegated.'],
     ['Writing a student\'s recommendation letter',2,'It speaks for you from your knowledge of the student.']];
   let place=A.map(()=>-1),selI=-1,checked=false;
-  const pool=h('div'),bk=B.map((b,i)=>h('div',{class:'bucket',tabindex:0,role:'button','aria-label':'Place in '+b}));
+  const pool=h('div',{class:'sortpool'}),bk=B.map((b,i)=>h('div',{class:'bucket',tabindex:0,role:'button','aria-label':'Place in '+b}));
   const order=shuffle(A.map((_,i)=>i),rng(5));
   function draw(){
     pool.innerHTML='';bk.forEach((b,i)=>{b.innerHTML='';b.append(h('h4',{},B[i]));});
     order.forEach(i=>{
       const it=A[i];const ok=checked&&place[i]>=0&&place[i]===it[1];const no=checked&&place[i]>=0&&place[i]!==it[1];
-      const btn=h('button',{class:'sortitem'+(selI===i?' sel':'')+(ok?' ok':'')+(no?' no':''),type:'button',draggable:'true',onclick:()=>{selI=selI===i?-1:i;draw();},ondragstart:e=>{e.dataTransfer.setData('text/plain',String(i));selI=i;}},it[0],checked&&place[i]>=0?h('div',{class:'sub',style:{fontSize:'.85em'}},(ok?'✔ ':'→ suggested: '+B[it[1]]+'. ')+it[2]):null);
+      const btn=h('button',{class:'sortitem'+(selI===i?' sel':'')+(ok?' ok':'')+(no?' no':''),type:'button',draggable:'true',onclick:()=>{selI=selI===i?-1:i;draw();},ondragstart:e=>{e.dataTransfer.setData('text/plain',String(i));selI=i;}},it[0],checked&&place[i]>=0?h('div',{class:'sub',style:{fontSize:'.9em'}},(ok?'✔ ':'→ suggested: '+B[it[1]]+'. ')+it[2]):null);
       (place[i]<0?pool:bk[place[i]]).appendChild(btn);
     });
   }
   bk.forEach((b,i)=>{const drop=()=>{if(selI>=0){place[selI]=i;selI=-1;draw();}};b.addEventListener('click',e=>{if(e.target===b||e.target.tagName==='H4')drop();});b.addEventListener('keydown',e=>{if(e.key==='Enter'){drop();}});b.addEventListener('dragover',e=>{e.preventDefault();b.classList.add('over');});b.addEventListener('dragleave',()=>b.classList.remove('over'));b.addEventListener('drop',e=>{e.preventDefault();b.classList.remove('over');const k=+e.dataTransfer.getData('text/plain');place[k]=i;selI=-1;draw();});});
   const result=h('div');
-  el.append(UI.note('<b>How:</b> click an activity, then click a column (or drag it). Defensible answers depend on context, policy and stakes, so use "Check" as a conversation starter, not a verdict.'),
-    h('div',{class:'grid4',style:{alignItems:'start'}},h('div',{},h('h3',{},'Activities'),pool),...bk),
+  el.append(
+    h('div',{class:'grid3',style:{alignItems:'start'}},...bk),h('h3',{style:{margin:'8px 0 4px'}},'Activities (click one, then click a column)'),pool,
     h('div',{class:'row',style:{marginTop:'8px'}},UI.btn('Check placements',()=>{checked=true;draw();const n=A.filter((a,i)=>place[i]===a[1]).length;result.innerHTML=`<b>${n} of ${A.length}</b> placements match the suggested reasoning. Where you disagreed, what context would change the answer?`;},'pri'),UI.btn('Reset',()=>{place.fill(-1);selI=-1;checked=false;result.innerHTML='';draw();})),result);
   draw();
 }};
@@ -295,7 +295,7 @@ Vis.tokenstream=(b,sc,cap)=>{
     h('path',{d:`M${x+42} 156V196`,stroke:'#ffe08a','stroke-width':2,class:'flow',fill:'none'}),h('rect',{x,y:198,width:84,height:40,rx:9,fill:'#16284f',stroke:'#ffe08a','stroke-width':2}),h('text',{x:x+42,y:225,'text-anchor':'middle',fill:'#ffe08a','font-size':18,'font-family':'monospace'},String(ids[i])),
     h('path',{d:`M${x+42} 240V280`,stroke:'#ff5ec4','stroke-width':2,class:'flow',fill:'none'}));
     [0,1,2,3].forEach(k=>svg.append(h('rect',{x:x+10+k*17,y:284+(((i*7+k*5)%5)*6),width:12,height:70-(((i*7+k*5)%5)*6),rx:3,fill:'#ff5ec4',opacity:.85,class:'flick',style:{animationDelay:(i*.2+k*.1)+'s'}})));});
-  svg.append(h('text',{x:280,y:395,'text-anchor':'middle',fill:'#ffe08a','font-size':17},'text → tokens → integer IDs → embedding vectors'),h('text',{x:280,y:420,'text-anchor':'middle',fill:'#b9c8ea','font-size':14},'(IDs and bars are illustrative)'));
+  svg.append(h('text',{x:280,y:395,'text-anchor':'middle',fill:'#ffe08a','font-size':17},'text → tokens → integer IDs → embedding vectors'),h('text',{x:280,y:420,'text-anchor':'middle',fill:'#b9c8ea','font-size':17},'(IDs and bars are illustrative)'));
   b.append(svg);cap('Figure: the model never reads letters. Text becomes tokens, then ID numbers, then vectors of numbers.');
 };
 Vis.transformer=(b,sc,cap)=>{
@@ -310,8 +310,8 @@ Vis.pipeline=(b,sc,cap)=>{
   const svg=h('svg',{viewBox:'0 0 560 450'}),lanes=[];
   const box=(x,y,t,c)=>[h('rect',{x,y,width:230,height:46,rx:10,fill:c,'fill-opacity':.25,stroke:c,'stroke-width':3}),h('text',{x:x+115,y:y+29,'text-anchor':'middle',fill:'#fff','font-size':17},t)];
   const T=h('g',{id:'laneT'}),I=h('g',{id:'laneI'});
-  T.append(h('text',{x:20,y:28,fill:'#ffe08a','font-size':20,'font-weight':700},'TRAINING (once, expensive)'),...box(30,44,'Huge text dataset','#ffe08a'),h('path',{d:'M145 92V114',stroke:'#fff','stroke-width':3,class:'flow'}),...box(30,116,'Predict next token','#ffe08a'),h('path',{d:'M145 164V186',stroke:'#fff','stroke-width':3,class:'flow'}),...box(30,188,'Compare to the real next token','#ffe08a'),h('path',{d:'M260 210H300V140H264',stroke:'#fff','stroke-width':3,class:'flow',fill:'none'}),h('text',{x:310,y:180,fill:'#ffe08a','font-size':16},'adjust weights'));
-  I.append(h('text',{x:20,y:262,fill:'#38e1ff','font-size':20,'font-weight':700},'INFERENCE (each time you chat)'),...box(30,278,'Your prompt → tokens','#38e1ff'),h('path',{d:'M145 326V348',stroke:'#fff','stroke-width':3,class:'flow'}),...box(30,350,'Frozen weights → probabilities','#38e1ff'),h('path',{d:'M260 372H300V300H264',stroke:'#fff','stroke-width':3,class:'flow',fill:'none'}),h('text',{x:310,y:340,fill:'#38e1ff','font-size':16},'pick token, append,'),h('text',{x:310,y:360,fill:'#38e1ff','font-size':16},'repeat'));
+  T.append(h('text',{x:20,y:28,fill:'#ffe08a','font-size':20,'font-weight':700},'TRAINING (once, expensive)'),...box(30,44,'Huge text dataset','#ffe08a'),h('path',{d:'M145 92V114',stroke:'#fff','stroke-width':3,class:'flow'}),...box(30,116,'Predict next token','#ffe08a'),h('path',{d:'M145 164V186',stroke:'#fff','stroke-width':3,class:'flow'}),...box(30,188,'Compare to the real next token','#ffe08a'),h('path',{d:'M260 210H300V140H264',stroke:'#fff','stroke-width':3,class:'flow',fill:'none'}),h('text',{x:310,y:180,fill:'#ffe08a','font-size':18},'adjust weights'));
+  I.append(h('text',{x:20,y:262,fill:'#38e1ff','font-size':20,'font-weight':700},'INFERENCE (each time you chat)'),...box(30,278,'Your prompt → tokens','#38e1ff'),h('path',{d:'M145 326V348',stroke:'#fff','stroke-width':3,class:'flow'}),...box(30,350,'Frozen weights → probabilities','#38e1ff'),h('path',{d:'M260 372H300V300H264',stroke:'#fff','stroke-width':3,class:'flow',fill:'none'}),h('text',{x:310,y:340,fill:'#38e1ff','font-size':18},'pick token, append,'),h('text',{x:310,y:360,fill:'#38e1ff','font-size':18},'repeat'));
   svg.append(T,I);b.append(svg);
   cap('Training changes the weights. Inference uses them (the model does not learn from your chat by updating its weights).');
 };
@@ -319,7 +319,7 @@ Vis.halluc=(b,sc,cap)=>{
   let supported=true;const wrap=h('div',{style:{padding:'8px 12px',display:'flex',flexDirection:'column',gap:'14px',height:'100%',justifyContent:'center'}}),m1=h('div'),m2=h('div');
   const bar=(label,c)=>{const f=h('div',{style:{height:'100%',width:'0%',background:c,borderRadius:'8px'}}),v=h('b'),box=h('div',{},h('div',{class:'row'},h('span',{},label),v),h('div',{style:{height:'26px',background:'#fff1',borderRadius:'8px',overflow:'hidden'}},f));return{box,set(p){Anim.tween(500,t=>{f.style.width=(p*t*100)+'%';v.textContent=Math.round(p*t*100)+'%';});}};};
   const a=bar('How plausible it sounds','#9a7bff'),c=bar('Supported by a checked source','#38d996');
-  const quote=h('div',{class:'card mono',style:{fontSize:'.85em'}},'“As Dr. Elena Voss argued in 2019, “students retain 83% more when taught by adaptive AI.” (p. 142)”  ');
+  const quote=h('div',{class:'card mono',style:{fontSize:'.9em'}},'“As Dr. Elena Voss argued in 2019, “students retain 83% more when taught by adaptive AI.” (p. 142)”  ');
   const btnS=UI.btn('Source supports it',()=>{supported=true;run();},'sm'),btnU=UI.btn('Source does not exist',()=>{supported=false;run();},'sm');
   function run(){a.set(.93);c.set(supported?.9:.04);cap(supported?'When checking finds a matching source, support rises. The wording was just as smooth either way.':'Plausible and unsupported at the same time: fluency did not change when verification failed.');}
   wrap.append(h('div',{class:'sub',style:{fontSize:'.8em'}},'Fictional AI-style output:'),quote,a.box,c.box,h('div',{class:'row'},btnS,btnU));b.append(wrap);run();
@@ -331,12 +331,12 @@ Vis.autobias=(b,sc,cap)=>{
     out.innerHTML=`<table><tr><th>AI errors made</th><td><b>${errs.toFixed(1)}</b></td></tr><tr><th>Errors that reach students</th><td><b style="color:${passed>6?'#ff6b6b':'#38d996'}">${passed.toFixed(1)}</b></td></tr><tr><th>Decisions I double-checked</th><td><b>${checks.toFixed(0)}</b> of ${N}</td></tr></table>`;
     cap(`With ${v.acc}% accuracy and ${v.rely}% unchecked reliance, about ${passed.toFixed(1)} errors per 100 decisions pass through. Trust should track reliability and stakes.`);
   }
-  wrap.append(UI.slider('AI accuracy',50,99,1,v.acc,x=>{v.acc=x;draw();},x=>x+'%').el,UI.slider('Accepted without checking',0,100,5,v.rely,x=>{v.rely=x;draw();},x=>x+'%').el,out,h('div',{class:'sub',style:{fontSize:'.78em'}},'Simplified simulation: when I check a recommendation, I catch 80% of its errors (made-up value). Drag "accepted without checking" to see how automation bias scales with AI error.'));
+  wrap.append(UI.slider('AI accuracy',50,99,1,v.acc,x=>{v.acc=x;draw();},x=>x+'%').el,UI.slider('Accepted without checking',0,100,5,v.rely,x=>{v.rely=x;draw();},x=>x+'%').el,out,h('div',{class:'sub',style:{fontSize:'.9em'}},'Simplified simulation: when I check a recommendation, I catch 80% of its errors (made-up value). Drag "accepted without checking" to see how automation bias scales with AI error.'));
   b.append(wrap);draw();
 };
 Vis.biases=(b,sc,cap)=>{
   const wrap=h('div',{style:{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'12px',padding:'6px',height:'100%'}});
-  const c=(t,d,col)=>h('button',{class:'card',type:'button',style:{borderColor:col,textAlign:'left'},onclick:()=>cap(d)},h('b',{style:{color:col}},t),h('div',{style:{fontSize:'.85em',marginTop:'4px'}},d));
+  const c=(t,d,col)=>h('button',{class:'card',type:'button',style:{borderColor:col,textAlign:'left'},onclick:()=>cap(d)},h('b',{style:{color:col}},t),h('div',{style:{fontSize:'.9em',marginTop:'4px'}},d));
   wrap.append(c('Algorithmic bias','Systematic unfairness that originates in the data, design or deployment of a system (system-side). Example: a scorer trained on narrow data that disadvantages some groups.','#ffb84d'),c('Automation bias','Over-reliance on automated output so that one stops checking or ignores contradicting evidence (human-side). Example: accepting a flagged referral without looking.','#38e1ff'),
     h('div',{class:'callout',style:{gridColumn:'1 / 3',alignSelf:'center'},html:'<b>They compound:</b> a biased output plus a deferential human equals unchecked harm. Fixing one does not remove the need to address the other.'}));
   b.append(wrap);cap('Click a card. Two different problems with different remedies.');
@@ -364,7 +364,7 @@ Vis.rag=(b,sc,cap)=>{
   const wrap=h('div',{style:{padding:'4px 8px',display:'flex',flexDirection:'column',gap:'8px'}});
   const docs=h('div');
   function draw(){
-    docs.innerHTML='';DOCS.forEach((d,i)=>docs.appendChild(h('button',{class:'opt'+(use[i]&&on?' sel':''),style:{fontSize:'.78em',padding:'6px 10px',margin:'3px 0',opacity:on?1:.4},type:'button','aria-pressed':use[i],onclick:()=>{use[i]=!use[i];draw();}},(use[i]?'☑ ':'☐ ')+'['+(i+1)+'] '+d[0])));
+    docs.innerHTML='';DOCS.forEach((d,i)=>docs.appendChild(h('button',{class:'opt'+(use[i]&&on?' sel':''),style:{fontSize:'.9em',padding:'6px 10px',margin:'3px 0',opacity:on?1:.4},type:'button','aria-pressed':use[i],onclick:()=>{use[i]=!use[i];draw();}},(use[i]?'☑ ':'☐ ')+'['+(i+1)+'] '+d[0])));
     let a;
     if(!on)a='“Generally yes; many tools accept pasted text, so you can paste student essays for feedback.” <span class="sub">(ungrounded: no source consulted)</span>';
     else if(use[0])a='“Per [1], student work may not be uploaded to external AI tools without administrator approval. Please request approval first.”';
@@ -373,7 +373,7 @@ Vis.rag=(b,sc,cap)=>{
     out.innerHTML='<div class="sub" style="font-size:.75em">Question: “Can I paste student essays into an AI tool for feedback?”</div>'+a;
     cap(on?'Retrieval-augmented generation fetches documents first and asks the model to answer from them, with citations you can check. It reduces, but does not eliminate, unsupported statements.':'Without retrieval the model answers from patterns in its weights alone: fluent, but with no source to verify.');
   }
-  wrap.append(h('div',{class:'row'},UI.seg([[1,'Retrieval ON'],[0,'Retrieval OFF']],1,v=>{on=v==='1'||v===1;draw();})),docs,out,h('div',{class:'sub',style:{fontSize:'.72em'}},'Scripted demonstration: answers are scripted to illustrate grounding. No model or search is running.'));
+  wrap.append(h('div',{class:'row'},UI.seg([[1,'Retrieval ON'],[0,'Retrieval OFF']],1,v=>{on=v==='1'||v===1;draw();})),docs,out,h('div',{class:'sub',style:{fontSize:'.9em'}},'Scripted demonstration: answers are scripted to illustrate grounding. No model or search is running.'));
   b.append(wrap);draw();
 };
 
@@ -387,7 +387,7 @@ Vis.steps=(b,sc,cap)=>{
       const on=i===cur,seen=i<cur;
       list.appendChild(h('button',{type:'button',onclick:()=>{tok++;cur=i;draw();},style:{display:'flex',gap:'12px',alignItems:'center',textAlign:'left',padding:'8px 12px',borderRadius:'12px',border:'2px solid '+(on?'var(--gold)':'var(--line)'),background:on?'#f2b7052a':'var(--panel2)',opacity:i>cur?.55:1,font:'inherit',color:'inherit',cursor:'pointer'}},
         h('span',{style:{flex:'0 0 34px',height:'34px',borderRadius:'50%',background:seen||on?'var(--wu)':'#fff2',display:'grid',placeItems:'center',fontWeight:700}},seen?'✔':String(i+1)),
-        h('span',{style:{fontSize:'.9em'}},h('b',{},t),on?h('div',{class:'sub',style:{fontSize:'.85em'}},d):null)));
+        h('span',{style:{fontSize:'.9em'}},h('b',{},t),on?h('div',{class:'sub',style:{fontSize:'.9em'}},d):null)));
     });
     cap(st[cur][1]);
   }
@@ -404,7 +404,7 @@ Vis.timeline=(b,sc,cap)=>{
     list.innerHTML='';
     T.forEach(([y,t,d],i)=>{const on=i===cur;
       list.appendChild(h('button',{type:'button',onclick:()=>{cur=i;draw();},style:{display:'flex',gap:'10px',alignItems:'center',textAlign:'left',padding:'5px 10px',borderRadius:'10px',border:'2px solid '+(on?'var(--gold)':'var(--line)'),background:on?'#f2b7052a':'var(--panel2)',font:'inherit',color:'inherit',cursor:'pointer'}},
-        h('span',{style:{flex:'0 0 118px',whiteSpace:'nowrap',fontWeight:700,color:'var(--gold)',fontFamily:'ui-monospace,Consolas,monospace',fontSize:'.85em'}},y),h('span',{style:{fontSize:'.82em'}},t)));});
+        h('span',{style:{flex:'0 0 118px',whiteSpace:'nowrap',fontWeight:700,color:'var(--gold)',fontFamily:'ui-monospace,Consolas,monospace',fontSize:'.9em'}},y),h('span',{style:{fontSize:'.9em'}},t)));});
     cap(T[cur][0]+': '+T[cur][2]);
   }
   wrap.append(list,h('div',{class:'row'},UI.btn('Earlier',()=>{cur=Math.max(0,cur-1);draw();},'sm'),UI.btn('Later ▸',()=>{cur=Math.min(T.length-1,cur+1);draw();},'pri sm')));
@@ -426,8 +426,8 @@ mount(el){
       if(i===0)svg.append(h('rect',{x:px[i]-28,y:118,width:56,height:36,rx:4,fill:'none',stroke:'#fff','stroke-width':3}),h('rect',{x:px[i]-38,y:158,width:76,height:8,rx:3,fill:'#fff'}));
       if(i===1)svg.append(h('ellipse',{cx:px[i],cy:148,rx:34,ry:22,fill:'none',stroke:'#fff','stroke-width':3}),h('text',{x:px[i],y:154,'text-anchor':'middle',fill:'#fff','font-size':18},'web'));
       if(i===2||i===3){const n=i===2?3:12;for(let k=0;k<n;k++){const lit=(k/n)*100<busy+10;const rx=i===2?px[i]-30+k*24:px[i]-36+(k%4)*24,ry=i===2?114:112+Math.floor(k/4)*26;svg.append(h('rect',{x:rx,y:ry,width:i===2?18:20,height:i===2?66:18,rx:3,fill:lit?'#22c58b':'#2a3a50'}));}}
-      if(i===4)svg.append(h('rect',{x:px[i]-36,y:116,width:72,height:46,rx:8,fill:'#ffffff14',stroke:'#fff','stroke-width':2}),h('text',{x:px[i],y:146,'text-anchor':'middle',fill:'#fff','font-size':16},'Reply'));
-      svg.append(h('text',{x:px[i],y:240,'text-anchor':'middle',fill:on?'#ffe08a':'#b9c8ea','font-size':14,'font-weight':on?700:400},(i+1)+'. '+t.split(',')[0].replace('Many chips working together','Many chips')));
+      if(i===4)svg.append(h('rect',{x:px[i]-36,y:116,width:72,height:46,rx:8,fill:'#ffffff14',stroke:'#fff','stroke-width':2}),h('text',{x:px[i],y:146,'text-anchor':'middle',fill:'#fff','font-size':18},'Reply'));
+      svg.append(h('text',{x:px[i],y:240,'text-anchor':'middle',fill:on?'#ffe08a':'#b9c8ea','font-size':17,'font-weight':on?700:400},(i+1)+'. '+t.split(',')[0].replace('Many chips working together','Many chips')));
     });
     svg.append(pk);pk.setAttribute('cx',cur>=0?px[cur]:px[0]);pk.setAttribute('cy',150);
     cap.innerHTML=cur<0?'Press <b>Send a question</b> to follow a message.':'<b>'+STG[cur][0]+'.</b> '+STG[cur][1];
