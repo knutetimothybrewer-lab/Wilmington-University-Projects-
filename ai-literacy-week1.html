@@ -1,0 +1,1463 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>What Is AI? — Week 1 · AI Literacy for Educators</title>
+<style>
+:root{
+  --bg:#0b1020; --ink:#eef1ff; --mute:#9aa6d6; --line:rgba(255,255,255,.15);
+  --a:#6ee7ff; --b:#a78bfa; --c:#ff7ab6; --d:#ffd166; --e:#5eead4; --f:#ff8a5b;
+  --card:rgba(255,255,255,.07); --accent:var(--a);
+}
+body[data-ch="0"]{--accent:#6ee7ff}
+body[data-ch="1"]{--accent:#a78bfa}
+body[data-ch="2"]{--accent:#ff7ab6}
+body[data-ch="3"]{--accent:#ffd166}
+body[data-ch="4"]{--accent:#ff8a5b}
+body[data-ch="5"]{--accent:#5eead4}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",system-ui,-apple-system,Roboto,"Helvetica Neue",sans-serif;overflow:hidden;transition:--accent .4s}
+button{font:inherit;color:inherit}
+#bg{position:fixed;inset:0;z-index:0}
+
+/* ---------- chrome ---------- */
+#top{position:fixed;top:0;left:0;right:0;height:58px;z-index:30;display:flex;align-items:center;gap:14px;padding:0 18px;background:linear-gradient(rgba(11,16,32,.92),rgba(11,16,32,0))}
+.brand{font-weight:800;font-size:13px;letter-spacing:.04em;white-space:nowrap;color:var(--mute)}
+.brand b{color:var(--ink)}
+#chapters{display:flex;gap:7px;flex:1;justify-content:center;overflow:hidden}
+.pill{border:1px solid var(--line);background:rgba(255,255,255,.05);color:var(--mute);border-radius:99px;padding:6px 12px;font-size:13px;cursor:pointer;white-space:nowrap;transition:.35s}
+.pill:hover{color:var(--ink)}
+.pill.active{color:#06101f;background:var(--accent);border-color:transparent;font-weight:700;box-shadow:0 0 22px -2px var(--accent)}
+#clock{font-variant-numeric:tabular-nums;font-size:13px;border:1px solid var(--line);border-radius:10px;padding:5px 10px;background:rgba(255,255,255,.05);cursor:pointer;white-space:nowrap;color:var(--mute)}
+#clock.late{color:#ffb4a2;border-color:#ff8a5b}
+#clock.paused{opacity:.6}
+#stage{position:fixed;top:58px;bottom:64px;left:0;right:0;z-index:5}
+#bar{position:fixed;bottom:0;left:0;right:0;height:64px;z-index:30;display:flex;align-items:center;gap:12px;padding:0 18px;background:linear-gradient(rgba(11,16,32,0),rgba(11,16,32,.95) 40%)}
+.nav{border:1px solid var(--line);background:rgba(255,255,255,.08);border-radius:12px;padding:9px 16px;cursor:pointer;font-weight:700;transition:.25s}
+.nav:hover{background:var(--accent);color:#06101f}
+.nav.sm{padding:9px 11px;font-weight:600}
+#seg{flex:1;display:flex;gap:3px;align-items:center;height:24px}
+#seg i{flex:1;height:6px;border-radius:4px;background:rgba(255,255,255,.14);cursor:pointer;transition:.3s}
+#seg i:hover{height:12px}
+#seg i.done{background:rgba(255,255,255,.4)}
+#seg i.on{background:var(--accent);height:12px;box-shadow:0 0 14px var(--accent)}
+#count{font-size:13px;color:var(--mute);white-space:nowrap;min-width:110px;text-align:right}
+#notes{position:fixed;left:50%;transform:translateX(-50%);bottom:72px;width:min(920px,94vw);z-index:40;background:rgba(10,14,30,.96);border:1px solid var(--accent);border-radius:16px;padding:14px 18px;display:none;box-shadow:0 20px 60px #000a}
+body.shownotes #notes{display:block;animation:rise .4s both}
+#notes h4{margin:0 0 6px;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+#notes div{font-size:16px;line-height:1.5;color:#dfe4ff}
+
+/* ---------- slides ---------- */
+.slide{position:absolute;inset:0;padding:6px 4vw;overflow-y:auto;overflow-x:hidden;display:flex;opacity:0;visibility:hidden;transform:translateX(70px) scale(.985);transition:opacity .55s,transform .55s,visibility 0s .55s}
+.slide.active{opacity:1;visibility:visible;transform:none;transition-delay:0s}
+.slide.past{transform:translateX(-70px) scale(.985)}
+.wrap{width:100%;max-width:1240px;margin:auto;padding:6px 0}
+.center{text-align:center}
+@keyframes rise{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:none}}
+.slide.active .rise{animation:rise .75s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i,0)*85ms + 120ms)}
+.kicker{text-transform:uppercase;letter-spacing:.16em;font-size:clamp(11px,1.1vw,14px);font-weight:800;color:var(--accent);margin-bottom:6px}
+h1,h2,h3{margin:0}
+.mega{font-size:clamp(56px,10vw,150px);line-height:.95;font-weight:900;letter-spacing:-.035em;margin:.08em 0 .12em}
+h2{font-size:clamp(26px,3.7vw,50px);line-height:1.08;font-weight:850;letter-spacing:-.02em;margin-bottom:12px}
+h3{font-size:clamp(17px,1.7vw,24px);margin-bottom:6px}
+.grad{background:linear-gradient(90deg,var(--a),var(--b),var(--c),var(--a));background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shine 7s linear infinite}
+@keyframes shine{to{background-position:300% 0}}
+.lead{font-size:clamp(16px,1.9vw,26px);line-height:1.4;color:#cfd6ff;margin:0 auto 14px;max-width:900px}
+.center .lead{margin-left:auto;margin-right:auto}
+p{line-height:1.5}
+.mute{color:var(--mute)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:16px 18px;backdrop-filter:blur(6px)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:stretch}
+.grid2.wide{grid-template-columns:1.1fr .9fr}
+.grid2.wideL{grid-template-columns:.9fr 1.1fr}
+@media(max-width:900px){.grid2,.grid2.wide,.grid2.wideL{grid-template-columns:1fr}#chapters{display:none}}
+.btn{border:1px solid var(--line);background:rgba(255,255,255,.1);border-radius:12px;padding:8px 14px;cursor:pointer;font-weight:700;transition:.25s;font-size:clamp(13px,1.2vw,16px)}
+.btn:hover{background:var(--accent);color:#06101f;transform:translateY(-1px)}
+.btn.on{background:var(--accent);color:#06101f;border-color:transparent}
+.btn.big{padding:14px 28px;font-size:clamp(16px,1.7vw,22px);background:linear-gradient(90deg,var(--a),var(--b));color:#06101f;border:0;box-shadow:0 10px 40px -10px var(--a)}
+.btn.cat{border-color:#5aa9ff}.btn.dog{border-color:#ffa24d}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.story{display:inline-flex;gap:10px;align-items:center;margin-bottom:10px;padding:8px 16px;border-radius:99px;font-size:clamp(13px,1.3vw,17px);background:linear-gradient(90deg,rgba(255,255,255,.12),rgba(255,255,255,.03));border:1px dashed var(--accent);color:#e6e9ff}
+.story b{color:var(--accent)}
+.tag{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:6px;background:rgba(255,255,255,.12);color:var(--accent);margin-left:8px;vertical-align:middle}
+.cap{color:#d3d9ff;font-size:clamp(13px,1.3vw,17px);margin:8px 0 0}
+.bar{height:14px;border-radius:8px;background:rgba(255,255,255,.1);overflow:hidden}
+.bar>i{display:block;height:100%;border-radius:8px;background:linear-gradient(90deg,var(--a),var(--b));animation:grow 1s .25s both;transition:width .6s cubic-bezier(.2,.8,.2,1)}
+@keyframes grow{from{width:0!important}}
+.notes{display:none}
+
+/* emoji + chips */
+@keyframes popin{from{transform:scale(0) rotate(-30deg);opacity:0}to{transform:none;opacity:1}}
+@keyframes fall{from{transform:translateY(-130px);opacity:0}to{transform:none;opacity:1}}
+@keyframes floaty{50%{transform:translateY(-12px)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{50%{transform:scale(1.12)}}
+@keyframes blink{50%{opacity:.15}}
+.ev{display:inline-block;font-size:clamp(30px,4vw,50px);animation:popin .55s var(--d,0s) both cubic-bezier(.3,1.6,.5,1)}
+.ev.fall{animation-name:fall}
+.ev.spin{animation:spin 3s linear infinite}
+.ev.pulse{animation:pulse 1.2s ease-in-out infinite}
+.chip{display:inline-block;padding:6px 13px;border-radius:99px;background:rgba(255,255,255,.1);border:1px solid var(--line);font-size:clamp(13px,1.3vw,17px);animation:popin .5s var(--d,0s) both;cursor:default}
+.chip.hot{background:var(--accent);color:#06101f;font-weight:700;border-color:transparent}
+.chip.mono{font-family:ui-monospace,Menlo,Consolas,monospace}
+.vrow{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;align-items:center}
+.lbl{font-size:clamp(11px,1.1vw,14px);color:var(--mute);text-align:center}
+.cardmini{display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 12px;border-radius:14px;background:rgba(255,255,255,.08);border:1px solid var(--line);animation:popin .5s var(--d,0s) both}
+
+/* stepper */
+.stepper{display:grid;grid-template-columns:minmax(250px,.95fr) 1.05fr;gap:18px;align-items:stretch}
+@media(max-width:900px){.stepper{grid-template-columns:1fr}}
+.steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:7px;justify-content:center}
+.steps li{display:flex;gap:12px;align-items:flex-start;padding:9px 12px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.04);cursor:pointer;opacity:.55;transition:.35s}
+.steps li:hover{opacity:.85}
+.steps li.done{opacity:.8}
+.steps li.active{opacity:1;background:linear-gradient(90deg,rgba(255,255,255,.15),rgba(255,255,255,.05));border-color:var(--accent);transform:translateX(7px);box-shadow:0 0 26px -8px var(--accent)}
+.steps .num{flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-weight:800;background:rgba(255,255,255,.12);font-size:14px}
+.steps li.active .num{background:var(--accent);color:#06101f}
+.steps li.done .num{background:rgba(255,255,255,.35)}
+.steps b{font-size:clamp(14px,1.4vw,19px)}
+.steps small{display:block;color:#c3cbf5;font-size:clamp(12px,1.2vw,16px);margin-top:3px;line-height:1.4}
+.steps li:not(.active) small{display:none}
+.stepvis{display:flex;flex-direction:column;border-radius:22px;background:radial-gradient(circle at 25% 15%,rgba(255,255,255,.14),rgba(255,255,255,.03));border:1px solid var(--line);padding:14px;min-height:300px}
+.visbox{flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;overflow:hidden;position:relative;min-height:230px}
+.viscap{text-align:center;color:#e0e4ff;font-size:clamp(14px,1.4vw,19px);min-height:2.6em;padding:0 8px}
+.stepctl{display:flex;justify-content:center;gap:8px;margin-top:6px}
+
+/* chat */
+.chat{display:flex;flex-direction:column;gap:9px;max-height:56vh;overflow:auto;padding:4px}
+.bubble{max-width:88%;padding:10px 14px;border-radius:18px;font-size:clamp(14px,1.4vw,18px);line-height:1.4;white-space:pre-wrap;animation:popin .4s both}
+.bubble.user{align-self:flex-end;background:linear-gradient(135deg,#3b82f6,#7c5cff);border-bottom-right-radius:4px}
+.bubble.bot{align-self:flex-start;background:rgba(255,255,255,.12);border-bottom-left-radius:4px}
+.bubble.thought{align-self:center;background:transparent;border:1px dashed var(--accent);color:var(--accent);font-style:italic}
+.dots i{display:inline-block;width:8px;height:8px;margin:0 2px;border-radius:50%;background:#cfd6ff;animation:blink 1s infinite}
+.dots i:nth-child(2){animation-delay:.2s}.dots i:nth-child(3){animation-delay:.4s}
+.stamp{display:inline-block;margin-top:10px;padding:6px 14px;border:3px solid #ff5470;color:#ff5470;font-weight:900;letter-spacing:.1em;border-radius:10px;transform:rotate(-4deg);animation:stampin .5s both}
+@keyframes stampin{from{transform:scale(3) rotate(-14deg);opacity:0}to{transform:scale(1) rotate(-4deg);opacity:1}}
+
+/* title */
+.floaters span{position:absolute;font-size:clamp(28px,4vw,56px);animation:floaty 5s ease-in-out infinite;opacity:.8;z-index:0}
+.roadmap{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:20px 0 24px}
+.road{border:1px solid var(--line);background:rgba(255,255,255,.07);border-radius:16px;padding:10px 14px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:130px;transition:.3s}
+.road:hover{transform:translateY(-4px);background:rgba(255,255,255,.14)}
+.road b{font-size:clamp(20px,2.2vw,30px)}
+.road span{font-size:clamp(12px,1.2vw,16px);font-weight:700}
+.road em{font-style:normal;font-size:12px;color:var(--mute)}
+.hint{margin-top:16px;color:var(--mute);font-size:13px}
+kbd{border:1px solid var(--line);border-bottom-width:2px;border-radius:6px;padding:1px 6px;font-size:12px;background:rgba(255,255,255,.07)}
+
+/* story questions */
+.qlist{display:flex;flex-direction:column;gap:10px}
+.q{display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:16px;border:1px solid var(--line);background:rgba(255,255,255,.06);cursor:pointer;transition:.3s;text-align:left;width:100%}
+.q:hover{transform:translateX(8px);background:rgba(255,255,255,.12)}
+.q .n{flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-weight:900;color:#06101f}
+.q b{display:block;font-size:clamp(15px,1.5vw,20px)}
+.q small{color:var(--mute);font-size:clamp(12px,1.1vw,15px)}
+
+/* what is AI */
+.pipe{display:flex;align-items:center;justify-content:center;gap:10px;margin:8px 0}
+.pbox{flex:1;min-height:132px;border-radius:18px;border:1px solid var(--line);background:rgba(255,255,255,.07);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:8px;text-align:center;font-size:clamp(13px,1.3vw,17px)}
+.pbox .big{font-size:clamp(34px,4.2vw,56px)}
+.pbox.ai{flex:.7;background:radial-gradient(circle,rgba(110,231,255,.3),rgba(167,139,250,.12));border-color:var(--a);animation:pulse 2s ease-in-out infinite}
+.pbox.ai.work .big{animation:spin .8s linear 2}
+.parrow{font-size:28px;color:var(--accent);animation:blink 1.3s infinite}
+.useout{margin-top:10px;min-height:70px;padding:12px;border-radius:14px;background:rgba(0,0,0,.25);font-size:clamp(14px,1.4vw,18px);line-height:1.4}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chips .chip{cursor:pointer}
+.chips .chip:hover{background:rgba(255,255,255,.2)}
+.isnot{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.isnot div{padding:12px 16px;border-radius:16px;font-weight:700;font-size:clamp(14px,1.5vw,20px)}
+.isnot .no{background:rgba(255,84,112,.12);border:1px solid rgba(255,84,112,.4)}
+.isnot .yes{background:rgba(94,234,212,.12);border:1px solid rgba(94,234,212,.4)}
+@media(max-width:700px){.isnot{grid-template-columns:1fr}}
+
+/* kinds */
+.ring{fill-opacity:.12;stroke-width:2.5;cursor:pointer;transition:.4s}
+.ring.on{fill-opacity:.42;stroke-width:5}
+.ringtxt{font-weight:800;font-size:17px;pointer-events:none;fill:#fff;paint-order:stroke;stroke:#0b1020;stroke-width:4px}
+.ringsvg{width:100%;max-height:60vh}
+.ringdraw{stroke-dasharray:1400;stroke-dashoffset:1400}
+.slide.active .ringdraw{animation:draw 2s .3s forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.detail h3{display:flex;align-items:center;gap:10px}
+.detail .big{font-size:42px}
+.detail dl{margin:10px 0 0;display:grid;grid-template-columns:auto 1fr;gap:6px 12px;font-size:clamp(13px,1.35vw,18px)}
+.detail dt{color:var(--accent);font-weight:800}
+.detail dd{margin:0}
+.mini{margin-top:10px;padding:10px 12px;border-radius:12px;background:rgba(0,0,0,.3);font-family:ui-monospace,Menlo,Consolas,monospace;font-size:clamp(12px,1.25vw,16px);min-height:56px;line-height:1.5}
+.anim{animation:rise .5s both}
+
+/* timeline */
+.tl{position:relative;margin:20px 6px 8px;padding-top:6px}
+.tl-line{position:absolute;left:3%;right:3%;top:48px;height:6px;border-radius:4px;background:rgba(255,255,255,.15)}
+.tl-fill{position:absolute;left:3%;top:48px;height:6px;border-radius:4px;background:linear-gradient(90deg,var(--a),var(--b),var(--c));width:0;transition:width .8s cubic-bezier(.2,.8,.2,1);box-shadow:0 0 18px var(--b)}
+.tl-nodes{position:relative;display:flex;justify-content:space-between}
+.tn{background:none;border:0;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;width:13%;padding:0}
+.tn .yr{font-weight:900;font-size:clamp(13px,1.6vw,22px);color:var(--mute);transition:.3s}
+.tn .dot{width:30px;height:30px;border-radius:50%;background:#1a2146;border:3px solid rgba(255,255,255,.35);display:grid;place-items:center;font-size:15px;transition:.4s;z-index:2}
+.tn .nm{font-size:clamp(10px,1.05vw,14px);color:var(--mute);text-align:center;line-height:1.2;transition:.3s}
+.tn:hover .dot{transform:scale(1.2)}
+.tn.seen .dot{background:var(--b);border-color:var(--b)}
+.tn.active .dot{background:var(--accent);border-color:#fff;transform:scale(1.5);box-shadow:0 0 0 8px rgba(255,255,255,.1),0 0 26px var(--accent)}
+.tn.active .yr,.tn.active .nm{color:#fff}
+.tn.winter .dot{border-color:#9ee7ff}
+.tl-detail{display:grid;grid-template-columns:auto 1fr;gap:20px;align-items:center;margin-top:16px;min-height:200px}
+.tl-year{font-size:clamp(50px,8vw,112px);font-weight:900;line-height:1;letter-spacing:-.04em;background:linear-gradient(180deg,#fff,var(--accent));-webkit-background-clip:text;background-clip:text;color:transparent}
+.tl-body h3{font-size:clamp(20px,2.4vw,34px)}
+.tl-body p{font-size:clamp(14px,1.5vw,20px);margin:6px 0;color:#d7dcff}
+.tl-body .teach{padding:8px 12px;border-left:4px solid var(--accent);background:rgba(255,255,255,.06);border-radius:0 12px 12px 0;font-size:clamp(13px,1.35vw,18px)}
+.snow{position:absolute;inset:0;pointer-events:none;overflow:hidden;border-radius:20px}
+.snow span{position:absolute;top:-20px;animation:snowfall linear infinite;opacity:.8}
+@keyframes snowfall{to{transform:translateY(340px) rotate(360deg)}}
+
+/* attention */
+.paper{background:#f7f5ee;color:#222;border-radius:6px;padding:20px 22px;box-shadow:0 20px 50px -10px #000c;transform:rotate(-1.6deg);font-family:Georgia,"Times New Roman",serif;text-align:center}
+.paper .venue{font-size:12px;color:#777;letter-spacing:.08em;text-align:left}
+.paper h4{font-size:clamp(20px,2.4vw,32px);margin:10px 0 6px;font-weight:700}
+.paper .auth{font-size:clamp(11px,1.1vw,14px);color:#444;line-height:1.5}
+.paper .abs{font-size:clamp(11px,1.05vw,14px);text-align:left;margin-top:10px;color:#333;border-top:1px solid #ccc;padding-top:8px;line-height:1.45}
+.att{position:relative;padding-top:150px;height:230px}
+.att svg{position:absolute;left:0;top:0;width:100%;height:100%;overflow:visible}
+.att .words{position:absolute;left:0;right:0;bottom:0;display:flex;justify-content:space-between;gap:4px}
+.att .w{flex:1;text-align:center;padding:8px 2px;border-radius:10px;background:rgba(255,255,255,.1);cursor:pointer;font-weight:700;font-size:clamp(11px,1.35vw,18px);border:2px solid transparent;transition:.25s;position:relative}
+.att .w:hover{background:rgba(255,255,255,.2)}
+.att .w.sel{background:var(--accent);color:#06101f}
+.att .w .pc{position:absolute;top:-20px;left:0;right:0;font-size:11px;color:var(--accent);opacity:0}
+.att .w.hasw .pc{opacity:1}
+
+/* demo: KNN */
+#knn{width:100%;border-radius:18px;background:#0e1430;border:1px solid var(--line);touch-action:none;cursor:crosshair;display:block}
+.readout{display:flex;flex-direction:column;gap:8px}
+.verdict{font-size:clamp(18px,2.2vw,30px);font-weight:900}
+.small{font-size:clamp(12px,1.2vw,15px);color:var(--mute)}
+
+/* NN */
+.nn text{font-size:14px;fill:#dfe4ff}
+.nn .in{cursor:pointer}
+.nn .node{transition:fill .4s,fill-opacity .4s}
+.nn line{transition:stroke .4s,stroke-width .4s,stroke-opacity .4s}
+.nnout{display:grid;gap:6px;margin-top:8px}
+.obar{display:grid;grid-template-columns:70px 1fr 46px;gap:8px;align-items:center;font-size:clamp(13px,1.3vw,17px)}
+
+/* label vs create */
+.lvc .card{min-height:230px}
+.opt{display:grid;grid-template-columns:110px 1fr 42px;gap:8px;align-items:center;margin:7px 0;font-size:clamp(13px,1.3vw,17px)}
+.opt.top .bar>i{background:linear-gradient(90deg,var(--e),var(--a))}
+.gen{min-height:120px;white-space:pre-wrap;line-height:1.5;font-size:clamp(14px,1.45vw,19px);padding:10px 12px;background:rgba(0,0,0,.25);border-radius:12px}
+.cursor::after{content:"▍";animation:blink 1s infinite;color:var(--accent)}
+
+/* tokens */
+textarea,input[type=text]{width:100%;background:rgba(0,0,0,.35);color:var(--ink);border:1px solid var(--line);border-radius:14px;padding:12px;font:inherit;font-size:clamp(15px,1.6vw,21px);resize:vertical}
+textarea:focus{outline:2px solid var(--accent)}
+.toks{display:flex;flex-wrap:wrap;gap:4px 3px;margin-top:10px;min-height:90px;line-height:1.1}
+.tk{display:inline-flex;flex-direction:column;align-items:center;padding:5px 7px;border-radius:7px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:clamp(14px,1.6vw,22px);color:#06101f;font-weight:700;animation:popin .35s both;white-space:pre}
+.tk small{font-size:10px;font-weight:600;opacity:.75;display:none}
+.showids .tk small{display:block}
+.stat{display:flex;gap:14px;flex-wrap:wrap;margin-top:8px}
+.stat div{padding:8px 14px;border-radius:12px;background:rgba(255,255,255,.08);font-size:clamp(13px,1.3vw,17px)}
+.stat b{font-size:clamp(20px,2.2vw,30px);color:var(--accent);display:block}
+
+/* next word */
+.sent{font-size:clamp(22px,3.2vw,44px);font-weight:800;line-height:1.3;padding:14px 18px;border-radius:18px;background:rgba(0,0,0,.28);min-height:100px}
+.sent .w{display:inline-block;animation:popin .4s both;margin-right:.25em}
+.sent .blank{display:inline-block;min-width:2.5em;border-bottom:4px dashed var(--accent);animation:blink 1.2s infinite;color:transparent}
+.cand{display:grid;grid-template-columns:130px 1fr 48px;gap:10px;align-items:center;padding:6px 10px;border-radius:12px;cursor:pointer;border:1px solid transparent;transition:.2s;font-size:clamp(14px,1.5vw,20px)}
+.cand:hover{background:rgba(255,255,255,.1);border-color:var(--accent)}
+.cand b{font-family:ui-monospace,Menlo,Consolas,monospace}
+
+/* dial */
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:12px;border-radius:8px;background:linear-gradient(90deg,#5aa9ff,#a78bfa,#ff7ab6,#ff8a5b);outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:30px;height:30px;border-radius:50%;background:#fff;border:4px solid var(--accent);box-shadow:0 0 18px var(--accent)}
+input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;background:#fff;border:4px solid var(--accent)}
+.outs{display:grid;gap:6px;margin-top:10px}
+.outs div{padding:8px 12px;border-radius:10px;background:rgba(0,0,0,.28);animation:rise .4s both;font-size:clamp(13px,1.35vw,18px)}
+.dialface{font-size:clamp(46px,6vw,80px);text-align:center;transition:.3s}
+
+/* context */
+.ctx{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0}
+.msg{flex:1 1 140px;min-width:120px;padding:8px 10px;border-radius:12px;font-size:clamp(11px,1.15vw,15px);line-height:1.3;border:2px solid transparent;background:rgba(255,255,255,.08);transition:.45s;position:relative}
+.msg i{position:absolute;top:-9px;left:8px;font-style:normal;font-size:10px;font-weight:800;background:#1b2350;border-radius:6px;padding:0 6px;color:var(--mute)}
+.msg.out{opacity:.22;filter:grayscale(1);transform:scale(.96)}
+.msg.in{border-color:var(--accent);box-shadow:0 0 16px -4px var(--accent)}
+.msg.key{background:rgba(255,209,102,.18)}
+
+/* data center */
+.bp{background:#0a1a3a;background-image:linear-gradient(rgba(110,231,255,.12) 1px,transparent 1px),linear-gradient(90deg,rgba(110,231,255,.12) 1px,transparent 1px);background-size:30px 30px;border:2px solid rgba(110,231,255,.5);border-radius:18px;padding:8px;position:relative}
+.bp:before{content:"BLUEPRINT · INSIDE A DATA CENTER";position:absolute;top:8px;right:14px;font-size:11px;letter-spacing:.2em;color:rgba(110,231,255,.7);font-weight:800}
+.dc{width:100%;max-height:56vh;display:block}
+.dc .g{transition:opacity .4s,filter .4s}
+.dc.focus .g{opacity:.18}
+.dc.focus .g.hl{opacity:1;filter:drop-shadow(0 0 8px #ffd166)}
+.dc text{fill:#bfe9ff;font-size:15px;font-weight:700;letter-spacing:.05em}
+.led{animation:blink 1.4s infinite}
+.fan{transform-box:fill-box;transform-origin:center;animation:spin 1.2s linear infinite}
+.flow{stroke-dasharray:10 10;animation:flowdash 1s linear infinite}
+.flow.rev{animation-direction:reverse}
+@keyframes flowdash{to{stroke-dashoffset:-20}}
+.puff{animation:puff 3s ease-out infinite;opacity:0}
+@keyframes puff{0%{transform:translateY(0) scale(.5);opacity:.7}100%{transform:translateY(-46px) scale(1.5);opacity:0}}
+.spark{animation:spark 1.4s linear infinite}
+@keyframes spark{50%{opacity:.2}}
+.net text.n{font-size:26px}
+.msgmap{width:100%;max-height:44vh}
+.msgmap .node{fill:#16204d;stroke:#6ee7ff;stroke-width:2.5}
+.msgmap .node.lit{fill:#ffd166;stroke:#fff}
+.msgmap text.lab{font-size:13px;fill:#bfc8ff;text-anchor:middle;font-weight:700}
+.hops{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;counter-reset:h}
+.hops li{counter-increment:h;display:flex;gap:10px;align-items:flex-start;padding:7px 10px;border-radius:12px;opacity:.4;transition:.3s;font-size:clamp(12px,1.25vw,16px);line-height:1.35}
+.hops li:before{content:counter(h);flex:none;width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,.15);display:grid;place-items:center;font-weight:800;font-size:12px}
+.hops li.on{opacity:1;background:rgba(255,209,102,.14);outline:1px solid var(--accent)}
+.hops li.on:before{background:var(--accent);color:#06101f}
+.sch{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media(max-width:900px){.sch{grid-template-columns:1fr}}
+.sch .card{transition:.3s}
+.sch .card:hover{transform:translateY(-6px)}
+.sch .ic{font-size:clamp(40px,5vw,66px);animation:floaty 3.5s ease-in-out infinite}
+.sch ul{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column;gap:6px}
+.sch li{display:flex;gap:8px;align-items:flex-start;cursor:pointer;font-size:clamp(13px,1.3vw,17px);line-height:1.35;padding:6px 8px;border-radius:10px;background:rgba(255,255,255,.06)}
+.sch li:before{content:"☐";color:var(--accent);font-weight:900}
+.sch li.ck:before{content:"☑"}
+.sch li.ck{opacity:.6;text-decoration:line-through}
+
+/* hallucination */
+.reasons{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+@media(max-width:800px){.reasons{grid-template-columns:1fr}}
+.rs{padding:10px 12px;border-radius:14px;background:rgba(255,255,255,.07);border:1px solid var(--line);font-size:clamp(13px,1.3vw,17px);line-height:1.35}
+.rs b{display:block;color:var(--accent);margin-bottom:2px}
+.gamegrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media(max-width:1000px){.gamegrid{grid-template-columns:1fr 1fr}}
+@media(max-width:640px){.gamegrid{grid-template-columns:1fr}}
+.cit{display:flex;flex-direction:column;gap:8px;justify-content:space-between;padding:12px 14px;border-radius:16px;border:2px solid var(--line);background:rgba(255,255,255,.06);transition:.4s}
+.cit p{margin:0;font-family:Georgia,serif;font-size:clamp(12px,1.2vw,16px);line-height:1.4}
+.cit.right{border-color:#5eead4;background:rgba(94,234,212,.12)}
+.cit.wrong{border-color:#ff5470;background:rgba(255,84,112,.1);animation:shake .4s}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.cit .why{font-size:clamp(11px,1.1vw,14px);color:#d8defb;display:none}
+.cit.done .why{display:block}
+.cit.done .btns{display:none}
+.verd{font-weight:900}
+.score{font-size:clamp(18px,2vw,26px);font-weight:900;color:var(--accent)}
+.search{display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:99px;background:#fff;color:#223;font-size:clamp(12px,1.3vw,17px);min-height:46px}
+.sres{padding:10px 14px;border-radius:12px;margin-top:8px;font-size:clamp(12px,1.25vw,16px);min-height:56px}
+.sres.ok{background:rgba(94,234,212,.15);border:1px solid #5eead4}
+.sres.no{background:rgba(255,84,112,.12);border:1px solid #ff5470}
+.checks{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:12px 0}
+@media(max-width:1000px){.checks{grid-template-columns:1fr 1fr}}
+.ck5{padding:12px;border-radius:16px;background:rgba(255,255,255,.07);border:1px solid var(--line);font-size:clamp(12px,1.25vw,16px);line-height:1.35;transition:.3s}
+.ck5:hover{transform:translateY(-5px);border-color:var(--accent)}
+.ck5 .ic{font-size:30px;display:block;margin-bottom:4px}
+.habits{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+@media(max-width:1100px){.habits{grid-template-columns:1fr 1fr 1fr}}
+@media(max-width:700px){.habits{grid-template-columns:1fr}}
+.hab{padding:14px;border-radius:20px;background:linear-gradient(160deg,rgba(255,255,255,.14),rgba(255,255,255,.04));border:1px solid var(--line);transition:.3s;position:relative;overflow:hidden}
+.hab:hover{transform:translateY(-8px) rotate(-1deg);border-color:var(--accent)}
+.hab .no{position:absolute;right:10px;top:-6px;font-size:72px;font-weight:900;color:rgba(255,255,255,.08)}
+.hab .ic{font-size:clamp(34px,4vw,52px);display:block;animation:floaty 4s ease-in-out infinite}
+.hab b{display:block;font-size:clamp(16px,1.7vw,24px);margin:6px 0 4px;color:var(--accent)}
+.hab p{margin:0;font-size:clamp(12px,1.25vw,16px);color:#d7dcff}
+.hab em{display:block;margin-top:6px;font-style:normal;font-size:clamp(11px,1.1vw,14px);color:var(--mute)}
+
+/* wrap */
+.recap{display:flex;flex-direction:column;gap:8px}
+.rc{display:grid;grid-template-columns:44px 1fr;gap:12px;align-items:center;padding:10px 14px;border-radius:16px;background:rgba(255,255,255,.07);border:1px solid var(--line)}
+.rc .e{font-size:30px}
+.rc b{display:block;font-size:clamp(14px,1.45vw,19px)}
+.rc span{color:#cdd3fb;font-size:clamp(12px,1.25vw,16px)}
+.conf{position:fixed;top:-20px;font-size:26px;z-index:60;pointer-events:none;animation:conf linear forwards}
+@keyframes conf{to{transform:translateY(105vh) rotate(720deg)}}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01s!important;animation-iteration-count:1!important;transition-duration:.01s!important}}
+</style>
+</head>
+<body data-ch="0">
+<canvas id="bg"></canvas>
+
+<header id="top">
+  <div class="brand"><b>AI Literacy for Educators</b> · Week 1</div>
+  <nav id="chapters"></nav>
+  <div id="clock" title="Click to start / pause · double-click to reset">⏱ 00:00 / 30:00</div>
+</header>
+
+<main id="stage">
+
+<!-- ============ 0 · TITLE ============ -->
+<section class="slide" data-id="title" data-ch="0" data-min="1" data-title="Welcome">
+  <div class="floaters" aria-hidden="true">
+    <span style="left:6%;top:18%">🧠</span><span style="left:86%;top:14%;animation-delay:-1s">💬</span>
+    <span style="left:12%;top:72%;animation-delay:-2s">📚</span><span style="left:82%;top:70%;animation-delay:-3s">🤖</span>
+    <span style="left:46%;top:6%;animation-delay:-1.5s">✨</span><span style="left:92%;top:44%;animation-delay:-.5s">🏫</span>
+  </div>
+  <div class="wrap center">
+    <div class="kicker rise">Week 1 · AI Literacy for Educators</div>
+    <h1 class="mega rise">What Is <span class="grad">AI</span>?</h1>
+    <p class="lead rise">A thirty-minute, jargon-free story — told through one teacher, one chatbot, and five questions.</p>
+    <div class="roadmap rise" id="roadmap"></div>
+    <button class="btn big rise" data-act="next">Begin the story ▶</button>
+    <div class="hint rise"><kbd>→</kbd> steps through every animation · <kbd>PgDn</kbd> skips ahead · <kbd>N</kbd> talking points · <kbd>F</kbd> full-screen</div>
+  </div>
+  <div class="notes"><b>Welcome (1 min).</b> Say: "Today we won't build AI — we'll understand it well enough to make good decisions about it in a classroom. We follow one teacher, Ms. Rivera, through five questions." Point at the roadmap: each box is a chapter and its time budget. Everything is clickable; demos are optional if you run short.</div>
+</section>
+
+<!-- ============ 1 · STORY ============ -->
+<section class="slide" data-id="story" data-ch="0" data-min="1.5" data-title="Meet Ms. Rivera">
+  <div class="wrap">
+    <div class="kicker rise">The story</div>
+    <h2 class="rise">Sunday night. <span class="grad">Ms. Rivera</span> tries a chatbot.</h2>
+    <div class="grid2 wide">
+      <div class="card rise"><div class="chat" id="storyChat"></div></div>
+      <div class="qlist" id="storyQs"></div>
+    </div>
+  </div>
+  <div class="notes"><b>Story hook (1.5 min).</b> Ms. Rivera teaches 7th grade. She asks a chatbot for water-cycle activities and gets a good answer in seconds. Then comes the teacher thought: "What IS this thing?" Her five questions become our five chapters. Tell the room: "Notice that she's neither a fan nor a skeptic — just curious. That's the stance for today."</div>
+</section>
+
+<!-- ============ 2 · WHAT IS AI ============ -->
+<section class="slide" data-id="what" data-ch="0" data-min="1" data-title="What is AI?">
+  <div class="wrap">
+    <div class="kicker rise">Question 0 · What is AI?</div>
+    <h2 class="rise">Software that does tasks we usually need <span class="grad">human intelligence</span> for</h2>
+    <div class="grid2 wide">
+      <div class="card rise">
+        <h3>Input ➜ AI ➜ Output</h3>
+        <div class="pipe"><div class="pbox" id="pIn"></div><div class="parrow">➜</div><div class="pbox ai" id="pAi"><span class="big">⚙️</span><small>pattern engine</small></div><div class="parrow">➜</div><div class="pbox" id="pOut"></div></div>
+        <p class="cap" id="pCap"></p>
+      </div>
+      <div class="card rise">
+        <h3>You already use it — tap one</h3>
+        <div class="chips" id="useChips"></div>
+        <div class="useout" id="useOut">👆 Pick any of these and I'll tell you what the AI is doing behind the scenes.</div>
+      </div>
+    </div>
+    <div class="isnot rise"><div class="no">❌ Not a robot brain · not alive · not all-knowing</div><div class="yes">✅ Math + data + computers, finding patterns</div></div>
+  </div>
+  <div class="notes"><b>Definition (1 min).</b> Keep it plain: AI = software doing tasks that normally need human intelligence — recognising, predicting, deciding, writing. Let the pipeline loop twice. Then ask the room which of the chips they used today. Land the right-hand box: it's engineering, not magic.</div>
+</section>
+
+<!-- ============ 3 · FOUR KINDS ============ -->
+<section class="slide" data-id="kinds" data-ch="0" data-min="1.5" data-title="Four kinds of AI">
+  <div class="wrap">
+    <div class="kicker rise">Question 0 · What is AI?</div>
+    <h2 class="rise">Four kinds of AI — each one sits <span class="grad">inside</span> the last</h2>
+    <div class="grid2 wideL">
+      <div class="card rise" style="padding:8px">
+        <svg class="ringsvg" id="rings" viewBox="0 0 460 440" role="img" aria-label="Nested circles: AI contains machine learning, which contains deep learning, which contains generative AI. Rule-based AI sits inside AI but outside machine learning.">
+          <circle class="ring ringdraw" id="ring-a" cx="230" cy="220" r="210" fill="#6ee7ff" stroke="#6ee7ff" style="fill-opacity:.07;stroke-width:2.5;cursor:default"/>
+          <g class="rg" data-k="0"><circle class="ring" cx="112" cy="128" r="48" fill="#ffd166" stroke="#ffd166"/></g>
+          <g class="rg" data-k="1"><circle class="ring" cx="260" cy="270" r="150" fill="#a78bfa" stroke="#a78bfa"/></g>
+          <g class="rg" data-k="2"><circle class="ring" cx="280" cy="305" r="105" fill="#ff7ab6" stroke="#ff7ab6"/></g>
+          <g class="rg" data-k="3"><circle class="ring" cx="290" cy="335" r="62" fill="#5eead4" stroke="#5eead4"/></g>
+          <text class="ringtxt" x="300" y="48" text-anchor="middle">ARTIFICIAL INTELLIGENCE</text>
+          <text class="ringtxt" x="112" y="126" text-anchor="middle">Rule-</text><text class="ringtxt" x="112" y="146" text-anchor="middle">based</text>
+          <text class="ringtxt" x="262" y="158" text-anchor="middle">Machine learning</text>
+          <text class="ringtxt" x="280" y="236" text-anchor="middle">Deep learning</text>
+          <text class="ringtxt" x="290" y="330" text-anchor="middle">Generative</text><text class="ringtxt" x="290" y="350" text-anchor="middle">AI</text>
+        </svg>
+      </div>
+      <div class="card rise detail">
+        <div class="tabs" id="kindTabs"></div>
+        <div id="kindDetail"></div>
+      </div>
+    </div>
+  </div>
+  <div class="notes"><b>Four kinds (1.5 min).</b> Click each ring or tab in order. Rule-based: people write the rules. Machine learning: the machine finds the rules from examples. Deep learning: machine learning with many-layered neural networks. Generative: deep learning that makes new text, images, audio. Today's chatbots live in the innermost circle. Reassure: "Every ring is still AI — newer isn't automatically better, just different."</div>
+</section>
+
+<!-- ============ 4 · TIMELINE ============ -->
+<section class="slide" data-id="timeline" data-ch="0" data-min="2" data-title="History timeline">
+  <div class="wrap">
+    <div class="kicker rise">Question 0 · A short history <span class="tag">Click any date</span></div>
+    <h2 class="rise">Seventy-five years in <span class="grad">seven stops</span></h2>
+    <div class="tl rise">
+      <div class="tl-line"></div><div class="tl-fill" id="tlFill"></div>
+      <div class="tl-nodes" id="tlNodes"></div>
+    </div>
+    <div class="card rise tl-detail" id="tlDetail" style="position:relative;overflow:hidden"></div>
+    <div class="row rise" style="margin-top:10px;justify-content:center"><button class="btn" id="tlPlay">▶ Auto-tour</button><span class="small">…or click any date, or use ← →</span></div>
+  </div>
+  <div class="notes"><b>Timeline (2 min).</b> Walk left to right. 1948–50: Turing asks if machines can learn and think. 1956: the Dartmouth workshop names the field. Then the AI winters: hype outran reality, funding dried up — a lesson for ed-tech hype too. 2012: deep learning wins an image contest thanks to data + chips. 2017: "Attention Is All You Need" — the transformer (next slide). 2022: ChatGPT puts it in every teacher's browser.</div>
+</section>
+
+<!-- ============ 5 · ATTENTION ============ -->
+<section class="slide" data-id="attention" data-ch="0" data-min="1" data-title="Attention Is All You Need">
+  <div class="wrap">
+    <div class="kicker rise">Spotlight · 2017</div>
+    <h2 class="rise">The paper behind the chatbots: <span class="grad">“Attention Is All You Need”</span></h2>
+    <div class="grid2 wideL">
+      <div class="rise">
+        <div class="paper">
+          <div class="venue">arXiv · Advances in Neural Information Processing Systems (NeurIPS), 2017</div>
+          <h4>Attention Is All You Need</h4>
+          <div class="auth">Ashish Vaswani · Noam Shazeer · Niki Parmar · Jakob Uszkoreit<br>Llion Jones · Aidan N. Gomez · Łukasz Kaiser · Illia Polosukhin<br><i>Google Brain · Google Research · University of Toronto</i></div>
+          <div class="abs"><b>Idea:</b> a new network design, the <b>Transformer</b>, that reads all the words at once and learns which ones to pay <i>attention</i> to — instead of reading one word at a time.</div>
+        </div>
+        <p class="cap" style="margin-top:14px">🔤 The <b>T</b> in <b>G</b>enerative <b>P</b>re-trained <b>T</b>ransformer (GPT) is this paper.</p>
+      </div>
+      <div class="card rise">
+        <h3>Try it: which words does the model look at?</h3>
+        <p class="small" style="margin:0 0 4px">Tap a word. Thicker arcs = more attention. (Illustrative weights.)</p>
+        <div class="att" id="att"><svg id="attSvg"></svg><div class="words" id="attWords"></div></div>
+        <p class="cap" id="attCap">👆 Tap <b>“it”</b> to see what it points back to.</p>
+      </div>
+    </div>
+  </div>
+  <div class="notes"><b>Spotlight (1 min).</b> Say: "Before 2017, models read text like a student reading with a finger under each word. The transformer lets the model look at the whole sentence at once and decide which words matter for each other word." Tap "it" — the arc goes to "book". That's attention. This design made it practical to train much bigger models on much more text.</div>
+</section>
+
+<!-- ============ 6 · ML STEPS ============ -->
+<section class="slide" data-id="mlsteps" data-ch="1" data-min="1.5" data-title="How a machine learns">
+  <div class="wrap">
+    <div class="story rise">📖 <span><b>Ms. Rivera wonders:</b> “How did it learn to answer me?”</span></div>
+    <div class="kicker rise">1 · Machine Learning</div>
+    <h2 class="rise">Five steps: how a machine <span class="grad">learns from examples</span></h2>
+    <div class="stepper rise" id="mlStepper"></div>
+  </div>
+  <div class="notes"><b>Five steps (1.5 min).</b> Use the flash-card analogy: collect examples → label them → find patterns → quiz on NEW examples → improve and repeat. The key sentence: "Nobody typed the rules. The machine inferred them from examples." Point out step 4: the fox gets mislabeled — models only know what their examples taught them.</div>
+</section>
+
+<!-- ============ 7 · TEACH DEMO ============ -->
+<section class="slide" data-id="teach" data-ch="1" data-min="1.5" data-title="Demo: teach the machine">
+  <div class="wrap">
+    <div class="kicker rise">1 · Machine Learning <span class="tag">Hands-on</span></div>
+    <h2 class="rise">Teach it: <span class="grad">change the examples, change the answer</span></h2>
+    <div class="grid2 wide">
+      <div class="rise">
+        <canvas id="knn" width="760" height="440"></canvas>
+        <p class="small" style="margin:6px 0 0">Click to add an example. Drag the ❓ to test new animals. Colored background = what the machine would guess there.</p>
+      </div>
+      <div class="card rise readout">
+        <div class="row"><button class="btn cat on" id="pickCat">🐱 Add cats</button><button class="btn dog" id="pickDog">🐶 Add dogs</button></div>
+        <div class="row"><button class="btn" data-preset="balanced">Balanced examples</button><button class="btn" data-preset="biased">Mostly dogs</button><button class="btn" data-preset="swapped">Swapped labels</button><button class="btn" data-preset="clear">Clear</button></div>
+        <div class="verdict" id="knnVerdict">…</div>
+        <div class="bar"><i id="knnBar" style="width:50%"></i></div>
+        <p class="cap" id="knnWhy"></p>
+        <p class="small" id="knnPreset"></p>
+      </div>
+    </div>
+  </div>
+  <div class="notes"><b>Demo (1.5 min).</b> Start with "Balanced": the ❓ is judged a cat. Click "Mostly dogs": same ❓, different answer — the examples changed, not the code. Then "Swapped labels": wrong labels in, wrong answers out. Classroom link: a model is only as fair and accurate as the examples it learned from.</div>
+</section>
+
+<!-- ============ 8 · NEURAL NET ============ -->
+<section class="slide" data-id="nn" data-ch="1" data-min="1" data-title="A tiny neural network">
+  <div class="wrap">
+    <div class="kicker rise">1 · Machine Learning <span class="tag">Hands-on</span></div>
+    <h2 class="rise">A <span class="grad">tiny neural network</span>: signals, layers, knobs</h2>
+    <div class="grid2 wide">
+      <div class="card rise" style="padding:8px"><svg class="nn" id="nn" viewBox="0 0 760 380" style="width:100%;max-height:52vh"></svg></div>
+      <div class="card rise">
+        <p class="cap" style="margin-top:0">Tap the <b>clues</b> on the left to switch them on. Signals flow right; <span style="color:#6ee7ff">cyan = “pushes toward”</span>, <span style="color:#ff7ab6">pink = “pushes against”</span>.</p>
+        <div class="nnout" id="nnOut"></div>
+        <div class="verdict" id="nnVerdict" style="margin-top:8px"></div>
+        <div class="row" style="margin-top:10px"><button class="btn" id="nnScramble">🎲 Scramble the knobs</button><button class="btn on" id="nnTrain">🎓 Train it</button></div>
+        <p class="cap" id="nnCap"></p>
+      </div>
+    </div>
+  </div>
+  <div class="notes"><b>Neural net (1 min).</b> Inputs are clues, the middle layer combines clues, outputs are guesses. Each line has a "knob" (weight). Scramble: the same clues give nonsense. Train: the knobs are nudged until answers match the examples. Real models have the same shape with vastly more knobs — that's all "learning" means.</div>
+</section>
+
+<!-- ============ 9 · LABEL VS CREATE ============ -->
+<section class="slide" data-id="lvc" data-ch="1" data-min="1" data-title="Pick a label vs. create text">
+  <div class="wrap lvc">
+    <div class="kicker rise">1 · Machine Learning <span class="tag">Hands-on</span></div>
+    <h2 class="rise">Two jobs: <span class="grad">pick a label</span> or <span class="grad">create new text</span></h2>
+    <div class="row rise" id="lvcPick" style="margin-bottom:10px"></div>
+    <div class="grid2">
+      <div class="card rise"><h3>🏷️ Classifier <span class="tag">picks from a menu</span></h3><div id="clsOut"></div></div>
+      <div class="card rise"><h3>✍️ Generator <span class="tag">writes something new</span></h3><div class="gen" id="genOut"></div><div class="row" style="margin-top:8px"><button class="btn" id="genAgain">🔁 Generate again</button></div></div>
+    </div>
+    <p class="cap rise" style="text-align:center">Same message in. A classifier answers from a <b>fixed menu</b>; a generator <b>composes new words</b> — and may write something different each time.</p>
+  </div>
+  <div class="notes"><b>Label vs create (1 min).</b> Classic machine learning mostly picks labels (spam/not spam, grade bands). Generative AI produces new content, one token at a time — and therefore can differ on every run. Press "Generate again" and point out the wording change. This sets up chapter 2.</div>
+</section>
+
+<!-- ============ 10 · LLM ============ -->
+<section class="slide" data-id="llm" data-ch="2" data-min="1.5" data-title="What is an LLM?">
+  <div class="wrap">
+    <div class="story rise">📖 <span><b>Ms. Rivera wonders:</b> “How does it write whole paragraphs?”</span></div>
+    <div class="kicker rise">2 · LLMs &amp; Tokens</div>
+    <h2 class="rise">A <span class="grad">large language model</span> is a very good next-word predictor</h2>
+    <div class="card rise" style="margin-bottom:12px"><b>LLM</b> = a neural network trained on a huge amount of text to predict what comes next. <b>Large</b> = enormous numbers of adjustable knobs (called <i>parameters</i>) and a huge training library. Think: <i>autocomplete, but trained on a library and able to keep going.</i></div>
+    <div class="stepper rise" id="llmStepper"></div>
+  </div>
+  <div class="notes"><b>LLM definition + five steps (1.5 min).</b> Read the definition once. Then step through: prompt → tokens → numbers → score every possible next token → pick one, add it, repeat. Stress "predict" not "look up": it is not searching a database of facts.</div>
+</section>
+
+<!-- ============ 11 · TOKENS ============ -->
+<section class="slide" data-id="tokens" data-ch="2" data-min="1" data-title="Tokens">
+  <div class="wrap">
+    <div class="kicker rise">2 · LLMs &amp; Tokens <span class="tag">Hands-on</span></div>
+    <h2 class="rise">Tokens: the <span class="grad">word-pieces</span> models actually read</h2>
+    <div class="grid2 wide">
+      <div class="card rise">
+        <textarea id="tokIn" rows="3" aria-label="Type text to split into tokens">Photosynthesis is how plants make food. Unbelievable, right?</textarea>
+        <div class="row" style="margin-top:8px"><button class="btn" data-ex="Teachers deserve extraordinary support.">Try: long words</button><button class="btn" data-ex="The cat sat on the mat.">Try: short words</button><button class="btn" data-ex="Mitochondria!!! 2025 😀">Try: odd stuff</button><label class="small"><input type="checkbox" id="tokIds"> show token numbers</label></div>
+        <div class="toks" id="toks"></div>
+      </div>
+      <div class="card rise">
+        <h3>What to notice</h3>
+        <div class="stat"><div><b id="tkN">0</b>tokens</div><div><b id="wdN">0</b>words</div><div><b id="chN">0</b>characters</div></div>
+        <ul class="cap" style="padding-left:18px;line-height:1.55">
+          <li>Common short words = <b>one</b> token.</li>
+          <li>Rare or long words get <b>chopped</b> into pieces.</li>
+          <li>Spaces and punctuation count too.</li>
+          <li>The model never sees letters — only <b>token numbers</b>.</li>
+        </ul>
+        <p class="small">Simplified splitter for teaching. Real tokenizers cut text differently.</p>
+      </div>
+    </div>
+  </div>
+  <div class="notes"><b>Tokens (1 min).</b> Type a long word and show it breaking up. Why it matters: models count and limit text in tokens, not words; it also explains odd failures such as miscounting the letters in a word. Tick "show token numbers" so the room sees that the model works with numbers.</div>
+</section>
+
+<!-- ============ 12 · NEXT WORD ============ -->
+<section class="slide" data-id="next" data-ch="2" data-min="1" data-title="Choosing the next word">
+  <div class="wrap">
+    <div class="kicker rise">2 · LLMs &amp; Tokens <span class="tag">Hands-on</span></div>
+    <h2 class="rise">Choosing the <span class="grad">next word</span>, one step at a time</h2>
+    <div class="sent rise" id="sent"></div>
+    <div class="card rise" style="margin-top:12px">
+      <p class="small" style="margin:0 0 6px">The model scores every possible next token. <b>Click one</b> to choose it — or let the model roll the dice.</p>
+      <div id="cands"></div>
+      <div class="row" style="margin-top:8px"><button class="btn on" id="nxAuto">🎲 Let the model pick</button><button class="btn" id="nxReset">↺ Start over</button></div>
+    </div>
+  </div>
+  <div class="notes"><b>Next word (1 min).</b> Click "door", then "and"… Build a sentence together with the room. Key insight: at every step there is a list of plausible options with probabilities; one is chosen and the process repeats. That's all a chatbot reply is — hundreds of these picks in a row.</div>
+</section>
+
+<!-- ============ 13 · CREATIVITY DIAL ============ -->
+<section class="slide" data-id="dial" data-ch="2" data-min="1" data-title="The creativity dial">
+  <div class="wrap">
+    <div class="kicker rise">2 · LLMs &amp; Tokens <span class="tag">Hands-on</span></div>
+    <h2 class="rise">The <span class="grad">creativity dial</span> (a.k.a. “temperature”)</h2>
+    <div class="grid2">
+      <div class="card rise">
+        <p class="cap" style="margin-top:0">Prompt: <b>“My favorite thing about school is ___”</b></p>
+        <div class="row" style="justify-content:space-between"><span class="small">🎯 Focused &amp; predictable</span><span class="small">🎨 Wild &amp; surprising</span></div>
+        <input type="range" id="dial" min="5" max="200" value="100" aria-label="Creativity dial">
+        <div class="dialface" id="dialFace">🙂</div>
+        <div id="dialBars"></div>
+      </div>
+      <div class="card rise">
+        <div class="row"><button class="btn on" id="dialGo">🎲 Ask 6 times</button><span class="small">Same prompt, same dial, six tries</span></div>
+        <div class="outs" id="dialOuts"></div>
+        <p class="cap" id="dialCap"></p>
+      </div>
+    </div>
+  </div>
+  <div class="notes"><b>Creativity dial (1 min).</b> Slide to the far left and ask six times: nearly identical. Far right: surprising, sometimes silly. Teacher tie-in: low for consistent rubric feedback or factual summaries; higher for brainstorming and creative writing. Many tools set this for you behind the scenes.</div>
+</section>
+
+<!-- ============ 14 · CONTEXT ============ -->
+<section class="slide" data-id="context" data-ch="2" data-min="1" data-title="How much text it can see">
+  <div class="wrap">
+    <div class="kicker rise">2 · LLMs &amp; Tokens <span class="tag">Hands-on</span></div>
+    <h2 class="rise">How much text can it <span class="grad">see at once</span>? (the “context window”)</h2>
+    <div class="card rise">
+      <div class="row" style="justify-content:space-between"><b>Window size:</b><span class="small" id="ctxN"></span></div>
+      <input type="range" id="ctxR" min="2" max="10" value="4" aria-label="Context window size">
+      <div class="ctx" id="ctxMsgs"></div>
+      <div class="bubble bot" id="ctxAns" style="max-width:100%"></div>
+    </div>
+    <p class="cap rise" style="text-align:center">Models only “see” what fits inside the window. Old messages that fall outside are <b>not remembered</b> — so restate key facts in long chats.</p>
+  </div>
+  <div class="notes"><b>Context window (1 min).</b> Start small: the model has "forgotten" the student's name and can't help. Drag the window wider: the answer improves. Real windows are much larger than this toy, but they are finite. Practical tip for teachers: in a long chat, paste key details again.</div>
+</section>
+
+<!-- ============ 15 · WHERE DO THEY LIVE ============ -->
+<section class="slide" data-id="dcwhere" data-ch="3" data-min="1" data-title="Where chatbots live">
+  <div class="wrap">
+    <div class="story rise">📖 <span><b>Ms. Rivera wonders:</b> “Where is it, actually? It's not on my laptop.”</span></div>
+    <div class="kicker rise">3 · Data Centers</div>
+    <h2 class="rise">Chatbots live in <span class="grad">giant buildings full of computers</span></h2>
+    <div class="grid2 wide">
+      <div class="bp rise"><svg class="dc" id="dcSvg" viewBox="0 0 900 470" role="img" aria-label="Cutaway of a data center showing power, network, servers and cooling"></svg></div>
+      <div class="card rise">
+        <div class="tabs" id="dcTabs"></div>
+        <div id="dcInfo"></div>
+      </div>
+    </div>
+  </div>
+  <div class="notes"><b>Where they live (1 min).</b> This is a new kind of building to most people. Step through the four systems: servers with special chips do the thinking; power feeds them; cooling removes their heat; the network connects them to you. "The cloud" is just somebody else's building."</div>
+</section>
+
+<!-- ============ 16 · FOLLOW A MESSAGE ============ -->
+<section class="slide" data-id="follow" data-ch="3" data-min="1" data-title="Follow a message">
+  <div class="wrap">
+    <div class="kicker rise">3 · Data Centers <span class="tag">Hands-on</span></div>
+    <h2 class="rise">Follow a message: <span class="grad">laptop ➜ data center ➜ back</span></h2>
+    <div class="grid2 wide">
+      <div class="card rise" style="padding:8px">
+        <svg class="msgmap" id="map" viewBox="0 0 800 300"></svg>
+        <div class="row" style="padding:0 8px 6px;justify-content:space-between"><button class="btn big" id="sendBtn" style="padding:10px 22px;font-size:17px">✉️ Send Ms. Rivera's message</button><span class="small" id="mapStat">Ready.</span></div>
+        <div class="chat" id="mapChat" style="max-height:110px"></div>
+      </div>
+      <div class="card rise"><ol class="hops" id="hops"></ol></div>
+    </div>
+  </div>
+  <div class="notes"><b>Follow a message (1 min).</b> Press the button and narrate the hops. The important beat is the server step: your words become tokens, the model predicts the reply token by token, and the answer streams back. Mention: your text travels to, and is processed on, someone else's machines — which leads straight into privacy.</div>
+</section>
+
+<!-- ============ 17 · TRAINING ============ -->
+<section class="slide" data-id="train" data-ch="3" data-min="1.5" data-title="How a model is trained">
+  <div class="wrap">
+    <div class="kicker rise">3 · Data Centers</div>
+    <h2 class="rise">How a model is trained: <span class="grad">seven steps</span></h2>
+    <div class="stepper rise" id="trainStepper"></div>
+  </div>
+  <div class="notes"><b>Training (1.5 min).</b> Seven steps, from gathering text to release. The punchline is step six: the guess-compare-nudge loop is repeated an enormous number of times, which is exactly why training needs fleets of specialised chips running in data centers. Step one and step seven are where questions about consent, bias, and safety enter.</div>
+</section>
+
+<!-- ============ 18 · SCHOOL QUESTIONS ============ -->
+<section class="slide" data-id="school" data-ch="3" data-min="1.5" data-title="Questions for schools">
+  <div class="wrap">
+    <div class="kicker rise">3 · Data Centers · Questions for your school</div>
+    <h2 class="rise">Three <span class="grad">school questions</span> hiding in that building</h2>
+    <div class="sch">
+      <div class="card rise"><div class="ic">🔒</div><h3>Privacy</h3><p class="cap" style="margin-top:0">Whatever you type travels to those machines. Where does it go, and who can see it?</p>
+        <ul><li>Is student information ever typed in? Should it be?</li><li>Is what we type stored, and for how long?</li><li>Is it used to train future models?</li><li>Does the vendor meet our student-data laws and policies?</li></ul></div>
+      <div class="card rise"><div class="ic">⚡</div><h3>Electricity</h3><p class="cap" style="margin-top:0">Training and answering both draw real power. Every message uses some.</p>
+        <ul><li>Which tasks genuinely need AI and which don't?</li><li>Where does the building get its power?</li><li>Does the provider publish its energy use?</li><li>How do we teach students this hidden cost?</li></ul></div>
+      <div class="card rise"><div class="ic">💧</div><h3>Cooling</h3><p class="cap" style="margin-top:0">Computers turn electricity into heat. Removing it takes air, water, or both.</p>
+        <ul><li>What cooling method does the provider use?</li><li>Is the building in a place short on water?</li><li>Is the heat reused or just released?</li><li>Does the provider report its water use?</li></ul></div>
+    </div>
+    <p class="cap rise" style="text-align:center">☑ Tap a question to tick it off as your school discusses it. We're raising questions, not quoting numbers — answers differ by provider and place.</p>
+  </div>
+  <div class="notes"><b>School questions (1.5 min).</b> These are questions, not verdicts — no numbers quoted on purpose; they differ by provider and location. Ask the room: "Which of these would your principal ask first?" Tick a few. These make a good agenda item for a staff meeting or tech committee.</div>
+</section>
+
+<!-- ============ 19 · WHY HALLUCINATIONS ============ -->
+<section class="slide" data-id="why" data-ch="4" data-min="1" data-title="Why chatbots make things up">
+  <div class="wrap">
+    <div class="story rise">📖 <span><b>Ms. Rivera asks:</b> “Can you give me a research study to cite?”</span></div>
+    <div class="kicker rise">4 · Hallucinations</div>
+    <h2 class="rise">Why chatbots <span class="grad">make things up</span></h2>
+    <div class="grid2">
+      <div class="card rise"><div class="chat" id="halChat" style="min-height:230px"></div><div id="halStamp"></div><p class="small">The study above was invented for this lesson. It does not exist.</p></div>
+      <div class="rise">
+        <div class="reasons">
+          <div class="rs"><b>1 · Plausible ≠ true</b>It predicts likely-sounding words. It doesn't look facts up.</div>
+          <div class="rs"><b>2 · Gaps &amp; errors</b>Its training text had holes and mistakes — it can't tell which.</div>
+          <div class="rs"><b>3 · Built to be helpful</b>It would rather answer than admit it doesn't know.</div>
+          <div class="rs"><b>4 · Confident tone</b>Fluent writing sounds right even when it's wrong.</div>
+        </div>
+        <p class="lead" style="font-size:clamp(14px,1.6vw,21px);margin-top:12px"><b>Hallucination</b> = a fluent, confident answer that is false or invented.</p>
+      </div>
+    </div>
+  </div>
+  <div class="notes"><b>Why it happens (1 min).</b> Let the chat play. The made-up study sounds perfect: authors, journal, finding. Then the stamp. Four reasons — all follow from "it predicts plausible words". Reassure: newer tools hallucinate less, especially when connected to search, but none are immune.</div>
+</section>
+
+<!-- ============ 20 · REAL OR FAKE ============ -->
+<section class="slide" data-id="game" data-ch="4" data-min="1.5" data-title="Real or fake citations?">
+  <div class="wrap">
+    <div class="kicker rise">4 · Hallucinations <span class="tag">Hands-on</span></div>
+    <h2 class="rise">Spot the <span class="grad">fake citation</span> <span class="score" id="score"></span></h2>
+    <div class="gamegrid rise" id="game"></div>
+    <p class="cap rise" style="text-align:center">Three are real, three were invented for this lesson. A perfect-looking format proves nothing.</p>
+  </div>
+  <div class="notes"><b>Real or fake (1.5 min).</b> Let the room vote by show of hands before you click. The real ones: Turing (1950), Black &amp; Wiliam (1998) — a classic teacher read on formative assessment — and Vaswani et al. (2017) from our timeline. The fakes have a "too good" claim or a journal you can't find. The lesson: format is not evidence.</div>
+</section>
+
+<!-- ============ 21 · HOW TO CHECK ============ -->
+<section class="slide" data-id="check" data-ch="4" data-min="1" data-title="How to check">
+  <div class="wrap">
+    <div class="kicker rise">4 · Hallucinations</div>
+    <h2 class="rise">How to <span class="grad">check</span> in five moves</h2>
+    <div class="grid2">
+      <div class="card rise"><h3>🔎 Watch a check happen</h3>
+        <div class="search" id="s1"></div><div class="sres" id="r1"></div>
+        <div class="search" id="s2" style="margin-top:12px"></div><div class="sres" id="r2"></div>
+      </div>
+      <div class="rise"><div class="checks" style="grid-template-columns:1fr 1fr">
+        <div class="ck5"><span class="ic">1️⃣</span><b>Search the exact title</b> in a library or Google Scholar.</div>
+        <div class="ck5"><span class="ic">2️⃣</span><b>Does the journal exist?</b> Look it up.</div>
+        <div class="ck5"><span class="ic">3️⃣</span><b>Open the link or DOI.</b> Does it land on that paper?</div>
+        <div class="ck5"><span class="ic">4️⃣</span><b>Read the source.</b> Does it really say what the bot claims?</div>
+        <div class="ck5" style="grid-column:1/-1"><span class="ic">5️⃣</span><b>Ask a second source</b> — a colleague, librarian, or another reliable site.</div></div>
+        <p class="cap">🚩 Red flags: perfect-sounding statistics · no link · authors you can't find · “every student, every subject”.</p></div>
+    </div>
+  </div>
+  <div class="notes"><b>How to check (1 min).</b> Watch the two searches: the real title finds a result, the invented one finds nothing. Five moves; the fourth is the one people skip — a real paper may still not say what the chatbot claims. Your school librarian is your best ally here.</div>
+</section>
+
+<!-- ============ 22 · HABITS ============ -->
+<section class="slide" data-id="habits" data-ch="4" data-min="1" data-title="Five habits">
+  <div class="wrap">
+    <div class="kicker rise">4 · Hallucinations</div>
+    <h2 class="rise">Five habits for <span class="grad">using AI wisely</span></h2>
+    <div class="habits">
+      <div class="hab rise"><span class="no">1</span><span class="ic">✅</span><b>Check it</b><p>Treat every claim, quote and citation as a draft until you verify it.</p><em>In class: “Find the source” warm-up.</em></div>
+      <div class="hab rise"><span class="no">2</span><span class="ic">🎯</span><b>Be specific</b><p>Give grade level, goal and format. Clear prompts get better drafts.</p><em>In class: rewrite a vague prompt.</em></div>
+      <div class="hab rise"><span class="no">3</span><span class="ic">🔒</span><b>Protect privacy</b><p>No student names, grades, or health details in a chatbot.</p><em>In class: spot the private info.</em></div>
+      <div class="hab rise"><span class="no">4</span><span class="ic">🧑‍🏫</span><b>You're the teacher</b><p>AI drafts; you decide. Your judgement and relationships can't be outsourced.</p><em>In class: edit the AI's draft.</em></div>
+      <div class="hab rise"><span class="no">5</span><span class="ic">🗣️</span><b>Be open</b><p>Say when and how AI was used — and model that for students.</p><em>In class: add an “AI used” note.</em></div>
+    </div>
+  </div>
+  <div class="notes"><b>Five habits (1 min).</b> Check it · Be specific · Protect privacy · You're the teacher · Be open. Ask each person to pick the one they'll try first this week. Habit 1 connects to the previous slide; habit 3 connects to the data center chapter.</div>
+</section>
+
+<!-- ============ 23 · WRAP ============ -->
+<section class="slide" data-id="wrap" data-ch="5" data-min="2" data-title="Recap">
+  <div class="wrap">
+    <div class="story rise">📖 <span><b>Monday morning.</b> Ms. Rivera closes her laptop with answers — and better questions.</span></div>
+    <div class="kicker rise">Wrap-up</div>
+    <h2 class="rise">Her five questions, <span class="grad">answered</span></h2>
+    <div class="grid2 wide">
+      <div class="recap">
+        <div class="rc rise"><span class="e">🧭</span><div><b>What is AI?</b><span>Software that finds patterns to do human-like tasks — a family, from rule-based to generative.</span></div></div>
+        <div class="rc rise"><span class="e">🧪</span><div><b>How does it learn?</b><span>From labeled examples; change the examples and you change the answer.</span></div></div>
+        <div class="rc rise"><span class="e">🔤</span><div><b>How does it write?</b><span>Token by token, predicting what's likely next — with a dial for creativity.</span></div></div>
+        <div class="rc rise"><span class="e">🏢</span><div><b>Where does it live?</b><span>In data centers — which raises privacy, electricity and cooling questions.</span></div></div>
+        <div class="rc rise"><span class="e">🕵️</span><div><b>Can I trust it?</b><span>Use it as a draft partner. Verify, protect privacy, stay the teacher.</span></div></div>
+      </div>
+      <div class="card rise"><h3>🎒 Try this week</h3>
+        <p class="cap" style="margin-top:6px">Ask a chatbot something you <b>already know well</b> — your subject, your school, your own name. Check every line. Bring one surprise to next class.</p>
+        <hr style="border:0;border-top:1px solid var(--line);margin:14px 0">
+        <h3>💬 Discuss</h3><p class="cap" style="margin-top:6px">Which of today's ideas would change how you'd explain AI to a colleague or a parent?</p>
+        <div style="text-align:center;margin-top:16px"><button class="btn big" id="confBtn">🎉 Thank you!</button></div></div>
+    </div>
+  </div>
+  <div class="notes"><b>Wrap-up (2 min).</b> Read the five answers quickly, then give the homework: test a chatbot on something you know well. Leave a minute for the discussion prompt. Fire the confetti to end on a high note.</div>
+</section>
+
+</main>
+
+<aside id="notes" aria-live="polite"><h4 id="notesH">Talking points</h4><div id="notesB"></div></aside>
+
+<footer id="bar">
+  <button class="nav" data-act="prev" aria-label="Previous">◀</button>
+  <div id="seg" aria-label="Progress"></div>
+  <div id="count"></div>
+  <button class="nav" data-act="next" aria-label="Next">Next ▶</button>
+  <button class="nav sm" id="btnNotes" title="Talking points (N)">📝</button>
+  <button class="nav sm" id="btnFs" title="Full-screen (F)">⛶</button>
+</footer>
+
+<script>
+'use strict';
+/* ===================================================== helpers */
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const rand=(a,b)=>a+Math.random()*(b-a);
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+function mulberry(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const runs=new WeakMap();
+async function typeInto(el,text,speed=16,id,owner=el){
+  for(let i=0;i<text.length;i++){
+    if(id&&runs.get(owner)!==id) return false;
+    el.textContent=text.slice(0,i+1); await sleep(speed);
+  }
+  return true;
+}
+async function chatPlay(el,script){
+  const id={}; runs.set(el,id); el.innerHTML='';
+  for(const m of script){
+    if(runs.get(el)!==id) return;
+    const b=document.createElement('div'); b.className='bubble '+m.who; el.appendChild(b);
+    if(m.who==='bot'){
+      b.innerHTML='<span class="dots"><i></i><i></i><i></i></span>'; await sleep(650);
+      if(runs.get(el)!==id) return; b.textContent='';
+      const ok=await typeInto(b,m.text,m.speed||14,id,el); if(!ok) return;
+    } else { b.textContent=m.text; }
+    el.scrollTop=el.scrollHeight; await sleep(m.wait??450);
+  }
+  return runs.get(el)===id;
+}
+function cancel(el){runs.set(el,{});}
+
+/* ===================================================== animated background */
+(function(){
+  const c=$('#bg'),x=c.getContext('2d'); let W,H,N=[],hue=190,target=190;
+  function size(){W=c.width=innerWidth;H=c.height=innerHeight;N=Array.from({length:Math.round(W*H/24000)},()=>({x:Math.random()*W,y:Math.random()*H,vx:rand(-.3,.3),vy:rand(-.3,.3),r:1+Math.random()*2}));}
+  addEventListener('resize',size);size();
+  window.setHue=h=>{target=h};
+  function tick(){
+    hue+=(target-hue)*.03; x.clearRect(0,0,W,H);
+    const g=x.createRadialGradient(W*.75,H*.15,0,W*.75,H*.15,Math.max(W,H)*.85);
+    g.addColorStop(0,`hsla(${hue+30},70%,24%,.6)`);g.addColorStop(1,'rgba(11,16,32,0)');x.fillStyle=g;x.fillRect(0,0,W,H);
+    for(const p of N){p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>W)p.vx*=-1;if(p.y<0||p.y>H)p.vy*=-1;}
+    for(let i=0;i<N.length;i++){const a=N[i];x.fillStyle=`hsla(${hue},90%,70%,.7)`;x.beginPath();x.arc(a.x,a.y,a.r,0,7);x.fill();
+      for(let j=i+1;j<N.length;j++){const b=N[j],d=Math.hypot(a.x-b.x,a.y-b.y);if(d<140){x.strokeStyle=`hsla(${hue},90%,70%,${.2*(1-d/140)})`;x.beginPath();x.moveTo(a.x,a.y);x.lineTo(b.x,b.y);x.stroke();}}}
+    if(!reduce) requestAnimationFrame(tick);
+  }
+  tick();
+})();
+
+/* ===================================================== stepper component */
+function stepper(sel,steps){
+  const root=$(sel);
+  root.classList.add('stepper');
+  root.innerHTML=`<ol class="steps">${steps.map((s,i)=>`<li data-i="${i}"><span class="num">${i+1}</span><div><b>${s.icon||''} ${s.title}</b><small>${s.text}</small></div></li>`).join('')}</ol>
+  <div class="stepvis"><div class="visbox"></div><div class="viscap"></div><div class="stepctl"><button class="btn" data-s="prev">◀</button><button class="btn" data-s="play">▶ Auto-play</button><button class="btn" data-s="next">▶</button></div></div>`;
+  const lis=$$('li',root),box=$('.visbox',root),cap=$('.viscap',root),play=$('[data-s=play]',root);
+  const o={n:steps.length,i:0,timer:null,
+    set(i){o.i=clamp(i,0,o.n-1);lis.forEach((l,k)=>{l.classList.toggle('active',k===o.i);l.classList.toggle('done',k<o.i)});box.innerHTML=steps[o.i].vis;cap.innerHTML=steps[o.i].cap||'';},
+    stop(){clearInterval(o.timer);o.timer=null;play.textContent='▶ Auto-play'},
+    auto(){o.stop();play.textContent='⏸ Pause';o.timer=setInterval(()=>{if(o.i>=o.n-1){o.stop();return}o.set(o.i+1)},3800)}};
+  lis.forEach(l=>l.onclick=()=>{o.stop();o.set(+l.dataset.i)});
+  $('[data-s=prev]',root).onclick=()=>{o.stop();o.set(o.i-1)};
+  $('[data-s=next]',root).onclick=()=>{o.stop();o.set(o.i+1)};
+  play.onclick=()=>o.timer?o.stop():(o.i>=o.n-1&&o.set(0),o.auto());
+  o.set(0);return o;
+}
+const E=(arr,cls='',step=.15)=>arr.map((e,i)=>`<span class="ev ${cls}" style="--d:${(i*step).toFixed(2)}s">${e}</span>`).join('');
+
+/* ===================================================== router */
+const slides=$$('.slide'),subs={},hooks={};
+const CH=['What is AI?','1 · Machine Learning','2 · LLMs & Tokens','3 · Data Centers','4 · Hallucinations','Wrap-up'];
+const HUE=[190,262,335,42,14,165];
+let cur=-1;
+const mins=slides.map(s=>+s.dataset.min);
+const planAt=mins.map((_,i)=>mins.slice(0,i).reduce((a,b)=>a+b,0));
+const TOTAL=mins.reduce((a,b)=>a+b,0);
+slides.forEach(s=>$$('.rise',s).forEach((e,i)=>e.style.setProperty('--i',i)));
+// chapters nav
+const chNav=$('#chapters');
+CH.forEach((n,i)=>{const b=document.createElement('button');b.className='pill';b.textContent=n;b.onclick=()=>go(slides.findIndex(s=>+s.dataset.ch===i));chNav.appendChild(b);});
+// roadmap
+(function(){const r=$('#roadmap');CH.slice(0,5).forEach((n,i)=>{const m=slides.reduce((a,s,k)=>a+(+s.dataset.ch===i||(i===4&&+s.dataset.ch===5)?(i===4&&+s.dataset.ch===5?0:mins[k]):0),0);
+  const emoji=['🧭','🧪','🔤','🏢','🕵️'][i];const b=document.createElement('button');b.className='road';b.innerHTML=`<b>${emoji}</b><span>${n.replace(/^\d · /,'')}</span><em>${m} min</em>`;b.onclick=()=>go(slides.findIndex(s=>+s.dataset.ch===i));r.appendChild(b);});})();
+// progress segments
+const seg=$('#seg');slides.forEach((s,i)=>{const e=document.createElement('i');e.title=`${i+1}. ${s.dataset.title}`;e.onclick=()=>go(i);seg.appendChild(e);});
+function go(n,dir){
+  n=clamp(n,0,slides.length-1); if(n===cur) return;
+  dir=dir??(n>cur?1:-1);
+  const prev=cur>=0?slides[cur]:null;
+  if(prev&&hooks[prev.dataset.id]?.leave) hooks[prev.dataset.id].leave();
+  cur=n;
+  slides.forEach((s,i)=>{s.classList.toggle('active',i===n);s.classList.toggle('past',i<n);if(i!==n)s.scrollTop=0;});
+  const s=slides[n],ch=+s.dataset.ch;
+  document.body.dataset.ch=ch; window.setHue(HUE[ch]);
+  $$('.pill').forEach((p,i)=>p.classList.toggle('active',i===ch));
+  $$('#seg i').forEach((e,i)=>{e.classList.toggle('on',i===n);e.classList.toggle('done',i<n)});
+  $('#count').textContent=`${n+1} / ${slides.length} · ≈${mins[n]} min`;
+  $('#notesH').textContent=`Talking points · ${s.dataset.title} · ≈${mins[n]} min`;
+  $('#notesB').innerHTML=$('.notes',s).innerHTML;
+  const sub=subs[s.dataset.id]; if(sub) sub.reset(dir>0?0:sub.n-1);
+  if(hooks[s.dataset.id]?.enter) hooks[s.dataset.id].enter(dir);
+  if(n>0) clock.start();
+  history.replaceState(null,'','#'+(n+1));
+  clock.render();
+}
+function next(skip){const sub=subs[slides[cur].dataset.id];if(!skip&&sub&&sub.i<sub.n-1){sub.go(sub.i+1);return}go(cur+1,1)}
+function prevS(skip){const sub=subs[slides[cur].dataset.id];if(!skip&&sub&&sub.i>0){sub.go(sub.i-1);return}go(cur-1,-1)}
+document.addEventListener('click',e=>{const bt=e.target.closest('button');if(bt&&!bt.closest('#notes'))setTimeout(()=>bt.blur(),0);const a=e.target.closest('[data-act]');if(!a)return;a.dataset.act==='next'?next():prevS();a.blur();});
+addEventListener('keydown',e=>{
+  if(e.target.matches('input,textarea,select,[contenteditable]')&&!['ArrowRight','ArrowLeft'].includes(e.key)) return;
+  if(e.target.matches('textarea,input[type=text]')) return;
+  if(e.target.matches('input[type=range]')&&['ArrowRight','ArrowLeft','ArrowUp','ArrowDown'].includes(e.key)) return;
+  switch(e.key){
+    case 'ArrowRight':case ' ':e.preventDefault();next();break;
+    case 'ArrowLeft':e.preventDefault();prevS();break;
+    case 'PageDown':e.preventDefault();go(cur+1,1);break;
+    case 'PageUp':e.preventDefault();go(cur-1,-1);break;
+    case 'Home':go(0);break; case 'End':go(slides.length-1);break;
+    case 'n':case 'N':document.body.classList.toggle('shownotes');break;
+    case 'f':case 'F':toggleFs();break;
+    case 'Escape':document.body.classList.remove('shownotes');break;
+  }
+});
+$('#btnNotes').onclick=e=>{document.body.classList.toggle('shownotes');e.target.blur()};
+function toggleFs(){document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen?.()}
+$('#btnFs').onclick=e=>{toggleFs();e.target.blur()};
+document.addEventListener('change',e=>{if(e.target.type==='range')e.target.blur()});
+
+/* ===================================================== clock */
+const clock=(function(){
+  let elapsed=0,last=0,running=false,el=$('#clock');
+  const f=s=>`${String(Math.floor(s/60)).padStart(2,'0')}:${String(Math.floor(s%60)).padStart(2,'0')}`;
+  const o={start(){if(!running&&!o.manual){running=true;last=Date.now()}},
+    render(){const plan=cur>=0?planAt[cur]*60:0;el.textContent=`⏱ ${f(elapsed/1000)} / ${f(TOTAL*60)} · plan ${f(plan)}`;
+      el.classList.toggle('late',running&&elapsed/1000>plan+(mins[cur]||1)*60+30);el.classList.toggle('paused',!running&&elapsed>0);}};
+  setInterval(()=>{if(running){const n=Date.now();elapsed+=n-last;last=n}o.render()},500);
+  el.onclick=()=>{if(running){running=false;o.manual=true}else{running=true;o.manual=false;last=Date.now()}o.render()};
+  el.ondblclick=()=>{elapsed=0;running=false;o.manual=false;o.render()};
+  return o;
+})();
+
+/* ===================================================== SLIDE: story */
+(function(){
+  const chat=$('#storyChat'),qs=$('#storyQs');
+  const Q=[
+    ['#6ee7ff','0','What even is AI?','Chapter 0 · definitions &amp; history',0],
+    ['#a78bfa','1','How did it learn?','Chapter 1 · machine learning',1],
+    ['#ff7ab6','2','How does it write sentences?','Chapter 2 · LLMs &amp; tokens',2],
+    ['#ffd166','3','Where does it actually live?','Chapter 3 · data centers',3],
+    ['#ff8a5b','4','Can I trust what it says?','Chapter 4 · hallucinations',4]];
+  qs.innerHTML=Q.map((q,i)=>`<button class="q rise" style="--i:${i+2}" data-g="${q[4]}"><span class="n" style="background:${q[0]}">${q[1]}</span><span><b>${q[2]}</b><small>${q[3]}</small></span></button>`).join('');
+  $$('.q',qs).forEach(b=>b.onclick=()=>go(slides.findIndex(s=>+s.dataset.ch===+b.dataset.g)));
+  hooks.story={enter(){chatPlay(chat,[
+    {who:'user',text:'Hi! Can you give me 3 hands-on activities about the water cycle for 7th graders?'},
+    {who:'bot',text:'Of course! 💧\n1. Water cycle in a bag — seal water in a zip bag, tape it to a sunny window, watch evaporation and condensation.\n2. Cloud in a jar — use ice and hairspray to make a cloud.\n3. Role-play — students become water droplets travelling through the cycle.',speed:9,wait:900},
+    {who:'thought',text:'Wow, that was instant. But… what IS this thing? 🤔',wait:200}])},leave(){cancel(chat)}};
+})();
+
+/* ===================================================== SLIDE: what is AI */
+(function(){
+  const ex=[
+    ['📸','a photo','🐶','“dog”','Recognizing images'],
+    ['🎙️','“Set a timer for ten minutes”','⏲️','Timer set','Understanding speech'],
+    ['✉️','“You WON a free prize!!!”','🗑️','Spam folder','Sorting &amp; deciding'],
+    ['❓','“Explain fractions simply”','✍️','A written explanation','Writing text']];
+  let k=0,t;
+  function show(){const e=ex[k%ex.length];k++;
+    $('#pIn').innerHTML=`<span class="big">${e[0]}</span><span>${e[1]}</span>`;
+    $('#pOut').innerHTML='<span class="big" style="opacity:.2">…</span>';
+    const ai=$('#pAi');ai.classList.remove('work');void ai.offsetWidth;ai.classList.add('work');
+    setTimeout(()=>{$('#pOut').innerHTML=`<span class="big">${e[2]}</span><span>${e[3]}</span>`;$('#pCap').innerHTML=`Task: <b>${e[4]}</b>`;},900);}
+  hooks.what={enter(){k=0;show();t=setInterval(show,3600)},leave(){clearInterval(t)}};
+  const U={'🚫 Spam filter':'Learned from millions of emails what junk looks like, then sorts new mail for you.',
+    '🗺️ Map traffic':'Predicts how long a route will take by spotting patterns in past and live traffic.',
+    '✏️ Autocorrect':'Predicts the word you meant from what people usually type.',
+    '📺 Video suggestions':'Guesses what you might enjoy from patterns in what similar viewers watched.',
+    '🔊 Voice assistants':'Turns sound waves into words, then words into actions.',
+    '🔓 Face unlock':'Compares patterns in your face to a stored pattern, not a stored photo.',
+    '📝 Grammar checkers':'Flags text that doesn’t match patterns of well-formed writing.'};
+  const c=$('#useChips');c.innerHTML=Object.keys(U).map((n,i)=>`<span class="chip" style="--d:${i*.07}s" data-k="${n}">${n}</span>`).join('');
+  $$('.chip',c).forEach(ch=>ch.onclick=()=>{$$('.chip',c).forEach(x=>x.classList.remove('hot'));ch.classList.add('hot');const o=$('#useOut');o.innerHTML=`<b>${ch.dataset.k}</b><br>${U[ch.dataset.k]}`;o.classList.remove('anim');void o.offsetWidth;o.classList.add('anim')});
+})();
+
+/* ===================================================== SLIDE: four kinds */
+(function(){
+  const K=[
+    {n:'Rule-based',ic:'📏',col:'#ffd166',one:'People write every rule. The computer follows them exactly.',think:'A recipe: do step 1, then step 2.',ex:'A grade book that flags any score under a set cutoff; a phone menu (“press 1 for…”).',mini:'<span style="color:#ffd166">IF</span> quiz_score &lt; 60<br><span style="color:#ffd166">THEN</span> assign review_set'},
+    {n:'Machine learning',ic:'🧪',col:'#a78bfa',one:'Nobody writes the rules. The machine finds patterns in lots of examples.',think:'A student learning to spot birds by looking at many photos.',ex:'Spam filters, fraud alerts, “you may also like…”.',mini:'✉️ many labeled emails<br>➜ pattern found ➜ “spam?”'},
+    {n:'Deep learning',ic:'🕸️',col:'#ff7ab6',one:'Machine learning that uses neural networks with many layers — great for images, sound and language.',think:'A team of specialists, each layer noticing something a bit more abstract.',ex:'Face unlock, speech-to-text, medical image analysis.',mini:'edges ➜ shapes ➜ parts ➜ “a face”'},
+    {n:'Generative AI',ic:'✨',col:'#5eead4',one:'Deep learning that creates new text, images, audio or code.',think:'An improv partner who has read a huge library.',ex:'ChatGPT-style chatbots, image generators, music tools.',mini:'“Write a poem about rain…”<br>➜ <span class="cursor">Soft drops tap the glass</span>'}];
+  const tabs=$('#kindTabs'),det=$('#kindDetail');
+  tabs.innerHTML=K.map((k,i)=>`<button class="btn" data-i="${i}">${k.ic} ${k.n}</button>`).join('');
+  const o={n:4,i:0,go(i){o.i=i;$$('.btn',tabs).forEach((b,k)=>b.classList.toggle('on',k===i));$$('.ring').forEach(r=>r.classList.remove('on'));const rg=$(`.rg[data-k="${i}"] .ring`);rg&&rg.classList.add('on');
+      const k=K[i];det.innerHTML=`<div class="anim"><h3><span class="big">${k.ic}</span> ${k.n}</h3><p style="margin:6px 0;font-size:clamp(14px,1.5vw,20px)">${k.one}</p>
+      <dl><dt>Think of it as</dt><dd>${k.think}</dd><dt>Example</dt><dd>${k.ex}</dd></dl><div class="mini">${k.mini}</div></div>`;},
+    reset(i){o.go(i)}};
+  $$('.btn',tabs).forEach(b=>b.onclick=()=>o.go(+b.dataset.i));
+  $$('.rg').forEach(g=>g.onclick=()=>o.go(+g.dataset.k));
+  subs.kinds=o;
+})();
+
+/* ===================================================== SLIDE: timeline */
+(function(){
+  const T=[
+    {y:'1948',nm:'Turing’s “Intelligent Machinery”',ic:'📝',h:'A machine that could learn',p:'Alan Turing writes a report imagining machines that learn from experience instead of being fully programmed — an early seed of machine learning.',t:'Like teaching a student how to learn, not just handing over an answer key.'},
+    {y:'1950',nm:'The Turing Test',ic:'🎭',h:'“Can machines think?”',p:'Turing publishes “Computing Machinery and Intelligence” and proposes the Imitation Game (now the Turing Test): if you can’t tell a machine’s typed answers from a person’s, how much does the difference matter?',t:'Today’s chatbots make this question feel suddenly real in classrooms.'},
+    {y:'1956',nm:'“AI” is named',ic:'🏷️',h:'The Dartmouth workshop',p:'At a summer workshop at Dartmouth College, John McCarthy — who coined the phrase “artificial intelligence” — joins Marvin Minsky, Claude Shannon and Nathaniel Rochester. AI becomes a field of its own, with big optimism.',t:'Naming a field gives it money, students and — soon — over-promises.'},
+    {y:'1970s–90s',nm:'The AI winters',ic:'❄️',h:'When the hype froze',p:'Promises outran results: computers were too slow, data too scarce, hand-written rules too brittle. Funding and trust dried up — first in the 1970s, again from the late 1980s into the 1990s. Quiet research on neural networks kept going.',t:'Every ed-tech hype cycle has a winter. Wise adoption survives it.',winter:true},
+    {y:'2012',nm:'Deep learning takes off',ic:'🚀',h:'A neural net wins the image contest',p:'AlexNet, a deep neural network trained on graphics chips (GPUs), wins the ImageNet image-recognition contest by a wide margin. Three ingredients finally line up: lots of data, powerful chips, better methods.',t:'The same recipe — data + chips + methods — powers today’s chatbots.'},
+    {y:'2017',nm:'The transformer',ic:'⚡',h:'“Attention Is All You Need”',p:'Researchers at Google publish the paper that introduces the transformer: a design that looks at all the words in a passage at once and learns which ones matter to each other. It trains faster and scales up. The T in GPT stands for Transformer.',t:'This one paper is the engine under almost every modern chatbot.'},
+    {y:'2022',nm:'ChatGPT arrives',ic:'💬',h:'AI in every browser',p:'OpenAI releases ChatGPT on November 30, 2022. For the first time, anyone can chat with a large language model on a plain web page. Within weeks, schools worldwide are asking what it means for teaching and learning.',t:'This is why we’re here: the question moved from labs into classrooms.'}];
+  const nodes=$('#tlNodes'),det=$('#tlDetail');
+  nodes.innerHTML=T.map((t,i)=>`<button class="tn ${t.winter?'winter':''}" data-i="${i}"><span class="yr">${t.y}</span><span class="dot">${t.ic}</span><span class="nm">${t.nm}</span></button>`).join('');
+  let timer=null;const playBtn=$('#tlPlay');
+  const o={n:T.length,i:0,go(i){o.i=i;$$('.tn',nodes).forEach((b,k)=>{b.classList.toggle('active',k===i);b.classList.toggle('seen',k<i)});
+    $('#tlFill').style.width=(i/(T.length-1))*94+'%';
+    const t=T[i];let snow='';if(t.winter)for(let k=0;k<16;k++)snow+=`<span style="left:${rand(0,100)}%;animation-duration:${rand(3,6)}s;animation-delay:${rand(0,4)}s;font-size:${rand(12,24)}px">❄</span>`;
+    det.innerHTML=`${t.winter?`<div class="snow">${snow}</div>`:''}<div class="tl-year anim">${t.y}</div><div class="tl-body anim"><h3>${t.ic} ${t.h}</h3><p>${t.p}</p><div class="teach">🍎 <b>For educators:</b> ${t.t}</div></div>`;},
+    reset(i){o.stop();o.go(i)},
+    stop(){clearInterval(timer);timer=null;playBtn.textContent='▶ Auto-tour'}};
+  $$('.tn',nodes).forEach(b=>b.onclick=()=>{o.stop();o.go(+b.dataset.i)});
+  playBtn.onclick=()=>{if(timer){o.stop();return}o.go(0);playBtn.textContent='⏸ Pause';timer=setInterval(()=>{if(o.i>=T.length-1){o.stop();return}o.go(o.i+1)},4500)};
+  subs.timeline=o;hooks.timeline={leave(){o.stop()}};
+})();
+
+/* ===================================================== SLIDE: attention */
+(function(){
+  const W=['The','student','read','the','book','because','it','was','interesting'];
+  const A=[[0,.6,.05,0,.1,0,0,0,.05],[.2,0,.55,.02,.1,.03,.03,.02,.05],[.02,.45,0,.05,.4,.03,.02,.01,.02],[.03,.05,.1,0,.7,.03,.03,.02,.04],[.03,.07,.3,.25,0,.03,.05,.02,.25],[.02,.1,.25,.02,.1,0,.2,.1,.21],[.02,.08,.07,.03,.55,.1,0,.05,.1],[.01,.03,.03,.01,.1,.1,.4,0,.32],[.01,.03,.05,.02,.4,.08,.2,.21,0]];
+  const words=$('#attWords'),svg=$('#attSvg'),att=$('#att');
+  words.innerHTML=W.map((w,i)=>`<div class="w" data-i="${i}"><span class="pc"></span>${w}</div>`).join('');
+  const els=$$('.w',words);let sel=-1;
+  function draw(){
+    svg.innerHTML='';els.forEach(e=>{e.classList.remove('sel','hasw');$('.pc',e).textContent=''});
+    if(sel<0) return;
+    svg.setAttribute('viewBox',`0 0 ${att.offsetWidth} ${att.offsetHeight}`);
+    const base=att.offsetHeight-words.offsetHeight-6,c=i=>els[i].offsetLeft+els[i].offsetWidth/2;
+    els[sel].classList.add('sel');
+    A[sel].forEach((w,j)=>{if(j===sel||w<.04)return;
+      const x1=c(sel),x2=c(j),h=Math.min(120,28+Math.abs(x1-x2)*.45);
+      const p=document.createElementNS('http://www.w3.org/2000/svg','path');
+      p.setAttribute('d',`M${x1},${base} Q${(x1+x2)/2},${base-h*2} ${x2},${base}`);
+      p.setAttribute('fill','none');p.setAttribute('stroke','#6ee7ff');p.setAttribute('stroke-linecap','round');
+      p.setAttribute('stroke-width',1+w*13);p.setAttribute('stroke-opacity',.25+w*1.1);
+      svg.appendChild(p);const L=p.getTotalLength?p.getTotalLength():300;p.style.strokeDasharray=L;p.style.strokeDashoffset=L;
+      p.getBoundingClientRect();p.style.transition='stroke-dashoffset .7s ease';p.style.strokeDashoffset=0;
+      els[j].classList.add('hasw');$('.pc',els[j]).textContent=Math.round(w*100)+'%';});
+    const top=A[sel].map((w,j)=>[w,j]).filter(a=>a[1]!==sel).sort((a,b)=>b[0]-a[0])[0];
+    $('#attCap').innerHTML=`To understand <b>“${W[sel]}”</b> the model pays most attention to <b>“${W[top[1]]}”</b>.`;
+  }
+  els.forEach((e,i)=>e.onclick=()=>{sel=i;draw()});
+  hooks.attention={enter(){sel=-1;draw();$('#attCap').innerHTML='👆 Tap <b>“it”</b> to see what it points back to.';setTimeout(()=>{sel=6;draw()},1800)},leave(){}};
+  addEventListener('resize',()=>{if(sel>=0)draw()});
+})();
+
+/* ===================================================== SLIDE: ML steps */
+const mlS=stepper('#mlStepper',[
+  {icon:'📦',title:'Collect examples',text:'Gather lots of examples of the thing to learn — like a stack of flash cards.',cap:'Many examples. The more varied, the better.',
+   vis:`<div class="vrow">${E(['🐱','🐶','🐱','🐶','🐶','🐱','🐱','🐶'],'fall',.12)}</div>`},
+  {icon:'🏷️',title:'Label them',text:'Humans (or existing data) mark each example with the right answer.',cap:'Each example gets the right answer attached.',
+   vis:`<div class="vrow">${[['🐱','cat'],['🐶','dog'],['🐱','cat'],['🐶','dog'],['🐱','cat'],['🐶','dog']].map((a,i)=>`<div class="cardmini" style="--d:${i*.12}s"><span style="font-size:40px">${a[0]}</span><span class="chip ${a[1]=='cat'?'hot':''}" style="--d:${.4+i*.12}s">${a[1]}</span></div>`).join('')}</div>`},
+  {icon:'⚙️',title:'Find patterns (train)',text:'The computer adjusts itself until it can match examples to answers.',cap:'No one types the rules. It discovers them.',
+   vis:`<div class="ev spin" style="font-size:70px">⚙️</div><div class="vrow"><span class="chip mono" style="--d:.3s">pointy ears ➜ cat</span><span class="chip mono" style="--d:.8s">floppy ears ➜ dog</span><span class="chip mono" style="--d:1.3s">whiskers ➜ cat</span></div><div class="bar" style="width:70%"><i style="width:100%;animation-duration:3s"></i></div>`},
+  {icon:'🧪',title:'Test on new examples',text:'Show it examples it has never seen and check if it gets them right.',cap:'Like a quiz with questions that weren’t in the flash cards. Note the fox!',
+   vis:`<div class="vrow"><div class="cardmini" style="--d:.1s"><span style="font-size:44px">🐈</span><span class="chip hot">cat ✔</span></div><div class="cardmini" style="--d:.5s"><span style="font-size:44px">🐕</span><span class="chip hot">dog ✔</span></div><div class="cardmini" style="--d:.9s"><span style="font-size:44px">🦊</span><span class="chip" style="background:#ff5470;color:#fff">dog ✘</span></div></div>`},
+  {icon:'🔁',title:'Improve &amp; use',text:'Fix mistakes with better or more examples, then put it to work.',cap:'Add foxes to the examples → it stops mislabeling foxes.',
+   vis:`<div class="vrow"><span class="ev">🦊</span><span class="ev pulse" style="--d:.3s">➜</span><span class="ev spin" style="--d:.5s;font-size:46px">🔁</span><span class="ev pulse" style="--d:.7s">➜</span><span class="ev">✅</span></div><div style="width:70%"><div class="lbl">Accuracy</div><div class="bar"><i style="width:92%"></i></div></div>`}]);
+subs.mlsteps={n:mlS.n,get i(){return mlS.i},go:i=>{mlS.stop();mlS.set(i)},reset:i=>{mlS.stop();mlS.set(i)}};
+hooks.mlsteps={leave(){mlS.stop()}};
+
+/* ===================================================== SLIDE: teach demo (k-nearest) */
+(function(){
+  const cv=$('#knn'),ctx=cv.getContext('2d'),W=cv.width,H=cv.height;
+  let pts=[],my={x:.62,y:.4},mode=0,drag=false,preset='';
+  const COL=['90,169,255','255,162,77'],EM=['🐱','🐶'];
+  function blob(rng,n,cx,cy,s,c){for(let i=0;i<n;i++)pts.push({x:clamp(cx+(rng()+rng()+rng()-1.5)*s,.03,.97),y:clamp(cy+(rng()+rng()+rng()-1.5)*s,.04,.96),c})}
+  const PRE={
+    balanced(){const r=mulberry(7);blob(r,10,.75,.28,.28,0);blob(r,10,.3,.7,.3,1);my={x:.62,y:.4};return 'Balanced: cats cluster with pointy ears + short snouts, dogs with floppy ears + long snouts. The ❓ lands among the cats.'},
+    biased(){const r=mulberry(11);blob(r,22,.5,.5,.9,1);blob(r,2,.9,.12,.08,0);my={x:.62,y:.4};return 'Same ❓, but the examples are almost all dogs. Now the machine says “dog” — it never saw enough cats. Data decides.'},
+    swapped(){const r=mulberry(7);blob(r,10,.75,.28,.28,1);blob(r,10,.3,.7,.3,0);my={x:.62,y:.4};return 'Same animals, but someone mislabeled them. The ❓ now gets the wrong answer — with total confidence.'},
+    clear(){pts=[];my={x:.5,y:.5};return 'Empty! With no examples the machine has nothing to learn from. Click to add some.'}};
+  function predict(x,y){
+    if(!pts.length) return null;
+    const k=Math.min(5,pts.length);
+    const d=pts.map(p=>({p,d:Math.hypot(p.x-x,p.y-y)})).sort((a,b)=>a.d-b.d).slice(0,k);
+    const dogs=d.filter(a=>a.p.c===1).length;return{dogs,cats:k-dogs,k,n:d.map(a=>a.p)};}
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    const S=10;
+    if(pts.length){for(let gx=0;gx<W;gx+=S)for(let gy=0;gy<H;gy+=S){const r=predict((gx+S/2)/W,1-(gy+S/2)/H),f=r.dogs/r.k;ctx.fillStyle=`rgba(${f>.5?COL[1]:COL[0]},${.1+Math.abs(f-.5)*.34})`;ctx.fillRect(gx,gy,S,S);}}
+    ctx.fillStyle='#9aa6d6';ctx.font='13px sans-serif';ctx.fillText('ear pointiness ➜',W-130,H-8);ctx.save();ctx.translate(14,130);ctx.rotate(-Math.PI/2);ctx.fillText('snout length ➜',0,0);ctx.restore();
+    ctx.font='24px serif';ctx.textAlign='center';ctx.textBaseline='middle';
+    const r=predict(my.x,my.y),Y=v=>(1-v)*H;
+    if(r){ctx.strokeStyle='rgba(255,255,255,.5)';ctx.setLineDash([5,5]);r.n.forEach(p=>{ctx.beginPath();ctx.moveTo(my.x*W,Y(my.y));ctx.lineTo(p.x*W,Y(p.y));ctx.stroke()});ctx.setLineDash([])}
+    pts.forEach(p=>{ctx.fillText(EM[p.c],p.x*W,Y(p.y))});
+    ctx.beginPath();ctx.arc(my.x*W,Y(my.y),26,0,7);ctx.fillStyle='rgba(255,255,255,.18)';ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=3;ctx.stroke();ctx.lineWidth=1;
+    ctx.font='28px serif';ctx.fillStyle='#fff';ctx.fillText('❓',my.x*W,Y(my.y)+1);ctx.textAlign='start';ctx.textBaseline='alphabetic';
+    const v=$('#knnVerdict'),bar=$('#knnBar'),why=$('#knnWhy');
+    if(!r){v.textContent='🤷 Nothing to go on';bar.style.width='0%';why.textContent='Add some labeled examples first.';}
+    else{const dog=r.dogs>r.cats,c=Math.max(r.dogs,r.cats);v.innerHTML=`${dog?'🐶 Dog':'🐱 Cat'} <span class="small">(${Math.round(c/r.k*100)}% of the ${r.k} nearest examples)</span>`;
+      bar.style.width=Math.round(c/r.k*100)+'%';why.innerHTML=`${r.cats} nearby example${r.cats===1?' is a':'s are'} 🐱 and ${r.dogs} ${r.dogs===1?'is a':'are'} 🐶 — majority wins.`;}
+    $('#knnPreset').textContent=preset;
+  }
+  function pos(e){const b=cv.getBoundingClientRect();return{x:clamp((e.clientX-b.left)/b.width,0,1),y:1-clamp((e.clientY-b.top)/b.height,0,1)}}
+  cv.addEventListener('pointerdown',e=>{const p=pos(e);const bb=cv.getBoundingClientRect();if(Math.hypot((p.x-my.x)*bb.width,(p.y-my.y)*bb.height)<34){drag=true;cv.setPointerCapture(e.pointerId)}else{pts.push({x:p.x,y:p.y,c:mode});preset='';}draw()});
+  cv.addEventListener('pointermove',e=>{if(drag){my=pos(e);draw()}});
+  cv.addEventListener('pointerup',()=>drag=false);
+  $('#pickCat').onclick=()=>{mode=0;$('#pickCat').classList.add('on');$('#pickDog').classList.remove('on')};
+  $('#pickDog').onclick=()=>{mode=1;$('#pickDog').classList.add('on');$('#pickCat').classList.remove('on')};
+  $$('[data-preset]').forEach(b=>b.onclick=()=>{pts=[];preset=PRE[b.dataset.preset]();draw()});
+  hooks.teach={enter(){pts=[];preset=PRE.balanced();draw()}};
+})();
+
+/* ===================================================== SLIDE: tiny neural net */
+(function(){
+  const svg=$('#nn'),NS='http://www.w3.org/2000/svg';
+  const IN=[['🐾 Whiskers',70],['👂 Pointy ears',150],['🗣️ Barks',230],['〰️ Wags tail',310]];
+  const HY=[60,140,220,300],OY=[120,260];
+  const X1=200,X2=420,X3=620;
+  const GOOD={w1:[[3,1.5,-2,0],[0,-2,3,1],[0,1,0,2],[1,1,1,1]],b1:[-2,-1.5,-1.5,-2],w2:[[4,-4,-1,.5],[-4,4,1,.5]],b2:[-1,-1.5]};
+  let Wt=JSON.parse(JSON.stringify(GOOD)),x=[0,0,0,0],trained=true,raf;
+  const sg=v=>1/(1+Math.exp(-v));
+  const mk=(t,a,p)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);(p||svg).appendChild(e);return e};
+  const L1=[],L2=[],HN=[],HT=[],ON=[],IN_E=[];
+  svg.innerHTML='';
+  for(let i=0;i<4;i++){L1[i]=[];for(let j=0;j<4;j++)L1[i][j]=mk('line',{x1:X1,y1:IIY(i),x2:X2,y2:HY[j],'stroke-linecap':'round'});}
+  for(let j=0;j<4;j++){L2[j]=[];for(let k=0;k<2;k++)L2[j][k]=mk('line',{x1:X2,y1:HY[j],x2:X3,y2:OY[k],'stroke-linecap':'round'});}
+  function IIY(i){return IN[i][1]}
+  function IY(i){return IN[i][1]}
+  IN.forEach((n,i)=>{const g=mk('g',{class:'in'});const c=mk('circle',{cx:X1,cy:IY(i),r:20,stroke:'#fff','stroke-width':2,class:'node'},g);mk('text',{x:X1-30,y:IY(i)+5,'text-anchor':'end'},g).textContent=n[0];IN_E[i]=c;g.onclick=()=>{x[i]=1-x[i];pulse();update()}});
+  for(let j=0;j<4;j++){HN[j]=mk('circle',{cx:X2,cy:HY[j],r:22,stroke:'#fff','stroke-width':2,class:'node'});HT[j]=mk('text',{x:X2,y:HY[j]+5,'text-anchor':'middle',style:'font-size:12px;font-weight:800;fill:#fff'})}
+  [['🐱 Cat'],['🐶 Dog']].forEach((n,k)=>{ON[k]=mk('circle',{cx:X3,cy:OY[k],r:26,stroke:'#fff','stroke-width':2,class:'node'});mk('text',{x:X3+36,y:OY[k]+5}).textContent=n[0]});
+  mk('text',{x:X1,y:365,'text-anchor':'middle',style:'font-size:12px;fill:#9aa6d6'}).textContent='clues in';
+  mk('text',{x:X2,y:365,'text-anchor':'middle',style:'font-size:12px;fill:#9aa6d6'}).textContent='hidden layer (combines clues)';
+  mk('text',{x:X3,y:365,'text-anchor':'middle',style:'font-size:12px;fill:#9aa6d6'}).textContent='guess';
+  function forward(){const h=Wt.w1.map((row,j)=>sg(row.reduce((s,w,i)=>s+w*x[i],0)+Wt.b1[j]));const o=Wt.w2.map((row,k)=>sg(row.reduce((s,w,j)=>s+w*h[j],0)+Wt.b2[k]));return{h,o}}
+  const sty=(l,w)=>{l.setAttribute('stroke',w>=0?'#6ee7ff':'#ff7ab6');l.setAttribute('stroke-width',(.5+Math.min(Math.abs(w),4)*1.3).toFixed(2));l.setAttribute('stroke-opacity',(.12+Math.min(Math.abs(w),4)/4*.8).toFixed(2))};
+  function update(){
+    const {h,o}=forward();
+    Wt.w1.forEach((r,j)=>r.forEach((w,i)=>sty(L1[i][j],w*(1)))); Wt.w2.forEach((r,k)=>r.forEach((w,j)=>sty(L2[j][k],w)));
+    IN_E.forEach((c,i)=>{c.setAttribute('fill',x[i]?'#ffd166':'#16204d')});
+    HN.forEach((c,j)=>{c.setAttribute('fill','#a78bfa');c.setAttribute('fill-opacity',(.15+h[j]*.85).toFixed(2));HT[j].textContent=h[j].toFixed(2)});
+    ON.forEach((c,k)=>{c.setAttribute('fill',k?'#ffa24d':'#5aa9ff');c.setAttribute('fill-opacity',(.15+o[k]*.85).toFixed(2))});
+    $('#nnOut').innerHTML=['🐱 Cat','🐶 Dog'].map((n,k)=>`<div class="obar"><span>${n}</span><div class="bar"><i style="width:${Math.round(o[k]*100)}%;animation:none"></i></div><span>${Math.round(o[k]*100)}%</span></div>`).join('');
+    const best=o[0]>o[1]?0:1,m=Math.max(...o);
+    $('#nnVerdict').innerHTML=m<.5?'🤔 Not sure':`${best?'🐶 Dog':'🐱 Cat'}!`;
+    $('#nnCap').innerHTML=trained?'Trained: the knobs (line strengths) were tuned on examples. Try whiskers + pointy ears, or barks + wags tail.':'Scrambled: random knobs. Same clues, nonsense answers. Hit <b>Train it</b> to tune them.';
+  }
+  function pulse(){
+    if(reduce) return;
+    for(let i=0;i<4;i++){if(!x[i])continue;for(let j=0;j<4;j++){dot(X1,IY(i),X2,HY[j],0);for(let k=0;k<2;k++)dot(X2,HY[j],X3,OY[k],550)}}
+  }
+  function dot(x1,y1,x2,y2,delay){const c=mk('circle',{cx:x1,cy:y1,r:4,fill:'#ffd166'});c.animate([{transform:'translate(0,0)',opacity:0},{opacity:1,offset:.15},{transform:`translate(${x2-x1}px,${y2-y1}px)`,opacity:0}],{duration:650,delay,fill:'both'}).onfinish=()=>c.remove()}
+  function tween(from,to,ms){cancelAnimationFrame(raf);const t0=performance.now();(function f(t){const k=clamp((t-t0)/ms,0,1),e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;
+    Wt.w1=from.w1.map((r,j)=>r.map((w,i)=>w+(to.w1[j][i]-w)*e));Wt.w2=from.w2.map((r,k)=>r.map((w,j)=>w+(to.w2[k][j]-w)*e));Wt.b1=from.b1.map((b,j)=>b+(to.b1[j]-b)*e);Wt.b2=from.b2.map((b,k)=>b+(to.b2[k]-b)*e);update();if(k<1)raf=requestAnimationFrame(f)})(t0)}
+  $('#nnScramble').onclick=()=>{trained=false;const R=()=>rand(-3,3);tween(JSON.parse(JSON.stringify(Wt)),{w1:Wt.w1.map(r=>r.map(R)),b1:Wt.b1.map(R),w2:Wt.w2.map(r=>r.map(R)),b2:Wt.b2.map(R)},700)};
+  $('#nnTrain').onclick=()=>{trained=true;tween(JSON.parse(JSON.stringify(Wt)),GOOD,2200)};
+  hooks.nn={enter(){cancelAnimationFrame(raf);Wt=JSON.parse(JSON.stringify(GOOD));trained=true;x=[1,1,0,0];update();setTimeout(pulse,1200)},leave(){cancelAnimationFrame(raf)}};
+})();
+
+/* ===================================================== SLIDE: label vs create */
+(function(){
+  const S=[
+    {msg:'“The field trip was the best day of the school year!”',lab:[93,3,2,2],gen:['What a wonderful thing to hear! I loved seeing everyone so curious at the museum. Want to write a short postcard about your favorite exhibit?','Thank you for telling me! That day was special for me too. Let’s turn your favorite moment into a mini-story for our class blog.','I’m so glad you enjoyed it! Maybe you can teach us one cool thing you learned when we’re back in class.']},
+    {msg:'“I don’t get fractions and I’m too embarrassed to ask.”',lab:[1,9,86,4],gen:['Thank you for trusting me with that — lots of people find fractions tricky. Let’s try a pizza picture together after class. No question is silly here.','Asking takes courage, and you just did it. Come see me at lunch and we’ll go through one example slowly, step by step.','You’re not alone in this! Let’s break fractions into small pieces. Would drawing them or using blocks help more?']},
+    {msg:'“When is the science project due?”',lab:[1,95,3,1],gen:['Good question! The due date is on our class calendar — I’ll also write it on the board so everyone has it.','Thanks for checking! Please look at the project page in our course site for the exact date, and tell me if you need help planning.','Great to ask early! Check the project handout for the due date, and let’s map out your steps this week.']}];
+  const L=['Praise','Question','Needs help','Complaint'];
+  let si=0,gi=0;const pick=$('#lvcPick');
+  pick.innerHTML=S.map((s,i)=>`<button class="btn" data-i="${i}" style="max-width:100%;text-align:left">${s.msg}</button>`).join('');
+  async function run(){
+    $$('.btn',pick).forEach((b,i)=>b.classList.toggle('on',i===si));
+    const s=S[si],top=s.lab.indexOf(Math.max(...s.lab));
+    $('#clsOut').innerHTML=L.map((l,i)=>`<div class="opt ${i===top?'top':''}"><span>${i===top?'✅ ':''}${l}</span><div class="bar"><i style="width:${s.lab[i]}%"></i></div><span>${s.lab[i]}%</span></div>`).join('')+'<p class="small">It can only choose from this list.</p>';
+    const g=$('#genOut'),id={};runs.set(g,id);g.classList.add('cursor');g.textContent='';
+    const ok=await typeInto(g,s.gen[gi%3],14,id);if(ok)g.classList.remove('cursor');
+  }
+  $$('.btn',pick).forEach(b=>b.onclick=()=>{si=+b.dataset.i;gi=0;run()});
+  $('#genAgain').onclick=()=>{gi++;run()};
+  hooks.lvc={enter(){si=0;gi=0;run()},leave(){cancel($('#genOut'))}};
+})();
+
+/* ===================================================== SLIDE: LLM steps */
+const llmS=stepper('#llmStepper',[
+  {icon:'⌨️',title:'You type a prompt',text:'Your words, plus any hidden instructions from the app, form the starting text.',cap:'Everything starts as plain text.',
+   vis:`<div class="sent" style="font-size:clamp(16px,2vw,26px);width:100%">Explain photosynthesis to a 5th grader<span class="cursor"></span></div>`},
+  {icon:'✂️',title:'Split into tokens',text:'The text is chopped into small pieces called tokens.',cap:'Tokens are words or pieces of words.',
+   vis:`<div class="vrow">${['Explain','·photo','synthesis','·to','·a','·5th','·grader'].map((t,i)=>`<span class="chip mono ${i%2?'hot':''}" style="--d:${i*.15}s">${t}</span>`).join('')}</div>`},
+  {icon:'🔢',title:'Turn tokens into numbers',text:'Each token becomes a list of numbers the network can calculate with.',cap:'The model never sees letters — only numbers.',
+   vis:`<div class="vrow">${[['Explain',8021],['photo',3456],['synthesis',9912],['to',284],['a',64]].map((t,i)=>`<div class="cardmini" style="--d:${i*.15}s"><span class="chip mono">${t[0]}</span><b style="font-family:monospace;color:var(--accent)">${t[1]}</b></div>`).join('')}</div><div class="lbl">(illustrative numbers)</div>`},
+  {icon:'📊',title:'Score every possible next token',text:'The network gives every token in its vocabulary a probability of coming next.',cap:'Some options are likely; most are very unlikely.',
+   vis:`<div style="width:90%;display:grid;gap:8px">${[['Plants',41],['Photosynthesis',22],['It',15],['Imagine',9],['Banana',1]].map(a=>`<div class="obar"><span style="font-family:monospace">${a[0]}</span><div class="bar"><i style="width:${a[1]*2}%"></i></div><span>${a[1]}%</span></div>`).join('')}</div>`},
+  {icon:'🔄',title:'Pick one, add it, repeat',text:'One token is chosen and added to the text. Then the whole process runs again.',cap:'A whole reply is hundreds of these picks in a row.',
+   vis:`<div class="vrow"><span class="chip hot" style="--d:0s">Plants</span><span class="chip hot" style="--d:.5s">make</span><span class="chip hot" style="--d:1s">food</span><span class="chip hot" style="--d:1.5s">using</span><span class="chip hot" style="--d:2s">sunlight</span><span class="ev spin" style="--d:2.4s;font-size:36px">🔁</span></div>`}]);
+subs.llm={n:llmS.n,get i(){return llmS.i},go:i=>{llmS.stop();llmS.set(i)},reset:i=>{llmS.stop();llmS.set(i)}};
+hooks.llm={leave(){llmS.stop()}};
+
+/* ===================================================== SLIDE: tokens demo */
+(function(){
+  const PRE=['photo','inter','trans','under','over','anti','dis','pre','re','un','sub','extra'],SUF=['sis','able','ible','ation','ition','ibility','ability','ments','ment','ness','ing','ions','ion','less','ful','ous','ive','ize','ise','ally','ly','ed','er','es','al','s'];
+  function split(w){
+    if(w.length<=5) return [w];
+    let a=[],rest=w;
+    const low=()=>rest.toLowerCase();
+    for(const p of PRE.sort((x,y)=>y.length-x.length)){if(low().startsWith(p)&&rest.length-p.length>=3){a.push(rest.slice(0,p.length));rest=rest.slice(p.length);break}}
+    const tail=[];
+    for(const s of SUF.sort((x,y)=>y.length-x.length)){if(low().endsWith(s)&&rest.length-s.length>=3){tail.unshift(rest.slice(rest.length-s.length));rest=rest.slice(0,rest.length-s.length);break}}
+    while(rest.length>6){a.push(rest.slice(0,5));rest=rest.slice(5)}
+    if(rest)a.push(rest);return a.concat(tail);
+  }
+  function tokenize(t){const out=[];const re=/(\s?[A-Za-z']+)|(\s?\d+)|(\s?[^\sA-Za-z\d])|(\s+)/gu;let m;
+    while((m=re.exec(t))){const s=m[0];if(m[1]){const sp=/^\s/.test(s)?' ':'',w=s.trim();split(w).forEach((p,i)=>out.push((i===0?sp:'')+p))}else out.push(s);}
+    return out}
+  const hash=s=>{let h=7;for(const c of s)h=(h*31+c.charCodeAt(0))%50000;return h};
+  const cols=['#6ee7ff','#a78bfa','#ff7ab6','#ffd166','#5eead4','#ff8a5b'];
+  const inp=$('#tokIn'),box=$('#toks');
+  function render(){const t=tokenize(inp.value);
+    box.innerHTML=t.map((s,i)=>`<span class="tk" style="background:${cols[i%cols.length]};animation-delay:${Math.min(i,40)*.025}s">${s.replace(/ /g,'·')}<small>${hash(s)}</small></span>`).join('');
+    $('#tkN').textContent=t.length;$('#wdN').textContent=(inp.value.trim().match(/\S+/g)||[]).length;$('#chN').textContent=inp.value.length;}
+  inp.addEventListener('input',render);
+  $$('[data-ex]').forEach(b=>b.onclick=()=>{inp.value=b.dataset.ex;render()});
+  $('#tokIds').onchange=e=>box.classList.toggle('showids',e.target.checked);
+  hooks.tokens={enter(){render()}};
+})();
+
+/* ===================================================== SLIDE: next word */
+(function(){
+  const N={START:{door:32,book:24,lesson:16,window:12,laptop:9,envelope:7},door:{and:34,'.':30,to:20,slowly:16},book:{and:30,'.':30,to:22,carefully:18},lesson:{with:36,by:26,'.':22,and:16},window:{and:36,'.':30,to:20,wide:14},laptop:{and:38,'.':32,to:18,slowly:12},envelope:{and:36,'.':34,slowly:16,carefully:14},
+    and:{smiled:30,said:26,greeted:24,began:20},to:{reveal:30,greet:28,begin:22,find:20},with:{a:40,the:34,her:26},by:{reading:38,asking:34,handing:28},slowly:{and:40,'.':38,to:22},carefully:{and:40,'.':36,to:24},wide:{and:40,'.':40,to:20},
+    a:{smile:40,question:32,story:28},the:{class:44,students:36,room:20},her:{students:50,class:30,notes:20},smiled:{at:50,'.':30,and:20},said:{hello:40,welcome:36,'good morning':24},greeted:{the:55,her:45},began:{the:40,to:36,'.':24},reading:{aloud:50,the:30,'.':20},asking:{a:45,the:35,her:20},handing:{out:60,the:40},out:{the:50,a:30,'.':20},
+    at:{the:50,her:30,'.':20},reveal:{the:50,a:30,'.':20},greet:{the:55,her:45},begin:{the:40,'.':30,with:30},find:{the:40,a:35,'.':25}};
+  const DEF={'.':60,and:40};
+  let words=[];const sent=$('#sent'),cands=$('#cands');
+  const last=()=>words.length?words[words.length-1]:'START';
+  function render(){
+    const done=words[words.length-1]==='.';
+    sent.innerHTML='The teacher opened the '.split(' ').filter(Boolean).map(w=>`<span class="w">${w}</span>`).join('')+words.map(w=>`<span class="w" style="margin-right:${w==='.'?0:'.25em'}">${w}</span>`).join('').replace(/ \./g,'.')+(done?'':'<span class="blank">___</span>');
+    if(done){cands.innerHTML='<div class="cap">✅ A full stop — the model could pick “.” and end here, or keep going in a longer reply. Tap <b>Start over</b> to try different choices.</div>';return}
+    const d=N[last()]||DEF,tot=Object.values(d).reduce((a,b)=>a+b,0);
+    cands.innerHTML=Object.entries(d).sort((a,b)=>b[1]-a[1]).map(([w,p])=>`<div class="cand" data-w="${w}"><b>${w==='.'?'. (end)':w}</b><div class="bar"><i style="width:${p/tot*100}%"></i></div><span>${Math.round(p/tot*100)}%</span></div>`).join('');
+    $$('.cand',cands).forEach(c=>c.onclick=()=>{words.push(c.dataset.w);render()});
+  }
+  $('#nxAuto').onclick=()=>{if(words[words.length-1]==='.')return;const d=N[last()]||DEF,tot=Object.values(d).reduce((a,b)=>a+b,0);let r=Math.random()*tot,pick;for(const [w,p] of Object.entries(d)){r-=p;if(r<=0){pick=w;break}}words.push(pick||'.');render()};
+  $('#nxReset').onclick=()=>{words=[];render()};
+  hooks.next={enter(){words=[];render()}};
+})();
+
+/* ===================================================== SLIDE: creativity dial */
+(function(){
+  const O=[['friends',30],['learning',22],['lunch',14],['recess',12],['art',8],['math',6],['pizza',3],['purple volcanoes',3],['jazz hands',2]];
+  const logit=O.map(o=>Math.log(o[1]));
+  const dial=$('#dial');
+  function probs(){const T=dial.value/100,z=logit.map(l=>Math.exp(l/T)),s=z.reduce((a,b)=>a+b,0);return z.map(v=>v/s)}
+  function bars(){const p=probs(),T=dial.value/100;
+    $('#dialBars').innerHTML=O.map((o,i)=>`<div class="obar" style="grid-template-columns:130px 1fr 42px"><span style="font-size:clamp(11px,1.2vw,15px)">${o[0]}</span><div class="bar"><i style="width:${(p[i]*100).toFixed(1)}%;animation:none"></i></div><span style="font-size:12px">${Math.round(p[i]*100)}%</span></div>`).join('');
+    $('#dialFace').textContent=T<.35?'🎯':T<.8?'🙂':T<1.3?'🎨':'🤪';
+    $('#dialCap').innerHTML=T<.35?'<b>Focused:</b> almost always the single most likely word. Great for facts, consistency, rubric feedback.':T<1.3?'<b>Balanced:</b> mostly sensible, with some variety.':'<b>Wild:</b> rare words get picked. Fun for brainstorming — risky for facts.';}
+  function sample(p){let r=Math.random();for(let i=0;i<p.length;i++){r-=p[i];if(r<=0)return i}return 0}
+  function go(){const p=probs();$('#dialOuts').innerHTML=Array.from({length:6},(_,i)=>`<div style="animation-delay:${i*.1}s">${i+1}. “My favorite thing about school is <b>${O[sample(p)][0]}</b>.”</div>`).join('')}
+  dial.oninput=()=>{bars()};dial.onchange=go;$('#dialGo').onclick=go;
+  hooks.dial={enter(){dial.value=100;bars();go()}};
+})();
+
+/* ===================================================== SLIDE: context window */
+(function(){
+  const M=['👩‍🏫 “My student Maya loves astronomy but struggles with fractions.”','🤖 “Got it — happy to help.”','👩‍🏫 “We have a week-long unit starting Monday.”','🤖 “Great. What subject?”','👩‍🏫 “Mixed math and science.”','🤖 “Nice combo!”','👩‍🏫 “The class is quite energetic.”','🤖 “I’ll keep activities hands-on.”','👩‍🏫 “Each lesson is short.”','👩‍🏫 “So — what project would you suggest for her?”'];
+  const r=$('#ctxR'),box=$('#ctxMsgs');
+  box.innerHTML=M.map((m,i)=>`<div class="msg ${i===0?'key':''}"><i>#${i+1}</i>${m}</div>`).join('');
+  function upd(){const n=+r.value,els=$$('.msg',box);
+    els.forEach((e,i)=>{const inn=i>=M.length-n;e.classList.toggle('in',inn);e.classList.toggle('out',!inn)});
+    $('#ctxN').textContent=`The model can see the last ${n} of ${M.length} messages`;
+    const a=$('#ctxAns');
+    a.innerHTML=n>=M.length?'🤖 <b>For Maya:</b> since she loves astronomy, try “Fractions of the Solar System” — students compare planet sizes and orbit times as fractions!':'🤖 Happy to help! <b>Who is “her”?</b> I don’t see which student you mean. Could you tell me more? <span class="small">(Her name fell outside the window.)</span>';}
+  r.oninput=upd;hooks.context={enter(){r.value=4;upd()}};
+})();
+
+/* ===================================================== SLIDE: data center scene */
+(function(){
+  const svg=$('#dcSvg'),NS='http://www.w3.org/2000/svg';
+  let h='';
+  h+=`<defs><linearGradient id="rk" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#1b3a73"/><stop offset="1" stop-color="#0f2250"/></linearGradient></defs>`;
+  h+=`<line x1="0" y1="432" x2="900" y2="432" stroke="#6ee7ff" stroke-width="2"/>`;
+  h+=`<g class="g" data-k="network"><path class="flow" d="M30 400 L130 400" stroke="#6ee7ff" stroke-width="4" fill="none"/><path d="M60 432 L60 330" stroke="#6ee7ff" stroke-width="2"/><path d="M60 330 L40 360 M60 330 L80 360 M44 350 L76 350" stroke="#6ee7ff" fill="none" stroke-width="2"/><circle cx="60" cy="322" r="6" fill="#6ee7ff"/><path d="M42 306 A26 26 0 0 1 78 306" stroke="#6ee7ff" fill="none" class="led"/><path d="M34 296 A38 38 0 0 1 86 296" stroke="#6ee7ff" fill="none" class="led" style="animation-delay:.3s"/><text x="14" y="455">NETWORK IN / OUT</text></g>`;
+  h+=`<rect x="130" y="140" width="640" height="292" fill="rgba(110,231,255,.06)" stroke="#6ee7ff" stroke-width="3"/><rect x="118" y="124" width="664" height="18" fill="rgba(110,231,255,.2)" stroke="#6ee7ff" stroke-width="2"/>`;
+  h+=`<g class="g" data-k="cooling">${[260,450,640].map((x,i)=>`<g><rect x="${x-24}" y="104" width="48" height="20" fill="none" stroke="#9ee7ff"/><g class="fan" style="animation-duration:${1+i*.2}s"><ellipse cx="${x}" cy="114" rx="20" ry="4" fill="#9ee7ff"/><ellipse cx="${x}" cy="114" rx="4" ry="9" fill="#9ee7ff"/></g>${[0,1,2].map(k=>`<circle class="puff" cx="${x+rand(-12,12)}" cy="98" r="7" fill="#fff" style="animation-delay:${k*1+i*.4}s"/>`).join('')}</g>`).join('')}
+    <path class="flow" d="M690 395 L690 410 L330 410" stroke="#4aa8ff" stroke-width="5" fill="none"/><path class="flow rev" d="M330 190 L690 190 L690 210" stroke="#ff6a5c" stroke-width="5" fill="none"/>
+    <rect x="660" y="210" width="90" height="185" rx="8" fill="rgba(74,168,255,.2)" stroke="#4aa8ff" stroke-width="2"/><text x="665" y="305">COOLING</text><text x="665" y="322">PLANT</text><text x="258" y="456" style="fill:#ffd9d4">cold ➜ racks ➜ warm ➜ outside</text></g>`;
+  h+=`<g class="g" data-k="power"><path d="M0 250 L40 250" stroke="#ffd166" stroke-width="3"/><path d="M30 432 L30 200 M10 220 L70 220 M14 244 L66 244" stroke="#ffd166" stroke-width="3" fill="none"/><path class="flow" d="M70 220 L130 220 L130 260 L180 260" stroke="#ffd166" stroke-width="3" fill="none"/>
+    <rect x="145" y="262" width="95" height="130" rx="8" fill="rgba(255,209,102,.18)" stroke="#ffd166" stroke-width="2"/><text x="150" y="285">POWER</text><text x="150" y="302">ROOM</text><text x="168" y="355" style="font-size:42px;fill:#ffd166" class="spark">⚡</text>
+    <path class="flow" d="M240 335 L300 335" stroke="#ffd166" stroke-width="3" fill="none"/></g>`;
+  h+=`<g class="g" data-k="servers" id="racks"><text x="320" y="202">SERVER HALL — racks of chips (GPUs)</text></g>`;
+  h+=`<text x="722" y="454" text-anchor="end" style="font-size:11px;fill:#7fb7d9">SECURITY FENCE · ALWAYS STAFFED</text>`;
+  svg.innerHTML=h;
+  const racks=$('#racks');
+  for(let i=0;i<9;i++){const x=300+i*38,g=document.createElementNS(NS,'g');
+    let s=`<rect x="${x}" y="218" width="30" height="180" rx="3" fill="url(#rk)" stroke="#6ee7ff"/>`;
+    for(let k=0;k<8;k++)s+=`<rect x="${x+4}" y="${224+k*21}" width="22" height="16" rx="2" fill="#0a1a3a" stroke="#2a4f8f"/><circle class="led" cx="${x+9}" cy="${232+k*21}" r="2.5" fill="${(i+k)%3?'#5eead4':'#ffd166'}" style="animation-delay:${rand(0,1.4).toFixed(2)}s;animation-duration:${rand(.7,1.8).toFixed(2)}s"/>`;
+    g.innerHTML=s;racks.appendChild(g);}
+  const I={
+    servers:['🖥️ Servers &amp; chips','Rows of racks hold specialized chips (GPUs). This is where the model actually “thinks”: it does the math that predicts each next token.','Think: a huge school gymnasium, but filled with calculators.'],
+    power:['⚡ Power','Everything runs on electricity, delivered through its own power room — with backup supplies so it never goes dark.','Question: where does that electricity come from?'],
+    cooling:['❄️ Cooling','Chips turn electricity into heat. Fans, chilled air and water loops carry it away — much as a school’s HVAC does, but far more intense.','Question: what cooling method, and how much water?'],
+    network:['📡 Network','Thick cables carry your messages in and the answers out, at the speed of light, to many users at once.','Your question is one of countless others arriving right now.']};
+  const tabs=$('#dcTabs'),info=$('#dcInfo');const keys=Object.keys(I);
+  tabs.innerHTML=keys.map(k=>`<button class="btn" data-k="${k}">${I[k][0].split(' ')[0]} ${I[k][0].split(' ').slice(1).join(' ').replace('&amp;','&')}</button>`).join('');
+  const o={n:keys.length,i:0,go(i){o.i=i;const k=keys[i];$$('.btn',tabs).forEach((b,j)=>b.classList.toggle('on',j===i));svg.classList.add('focus');$$('.g',svg).forEach(g=>g.classList.toggle('hl',g.dataset.k===k));
+      info.innerHTML=`<div class="anim"><h3>${I[k][0]}</h3><p style="font-size:clamp(14px,1.5vw,20px)">${I[k][1]}</p><div class="teach tl-body" style="padding:8px 12px;border-left:4px solid var(--accent);background:rgba(255,255,255,.06);border-radius:0 12px 12px 0">${I[k][2]}</div></div>`;},
+    reset(i){o.go(i)}};
+  $$('.btn',tabs).forEach((b,i)=>b.onclick=()=>o.go(i));subs.dcwhere=o;
+})();
+
+/* ===================================================== SLIDE: follow a message */
+(function(){
+  const svg=$('#map'),NS='http://www.w3.org/2000/svg';
+  const N=[['💻','Your laptop'],['📶','Wi-Fi router'],['🏠','Provider'],['🌊','Cables'],['🚪','Data-center door'],['🖥️','Servers &amp; chips']];
+  const X=[60,185,310,435,585,715],Y=110,RY=205;
+  let h=`<rect x="545" y="30" width="245" height="240" rx="18" fill="rgba(255,209,102,.08)" stroke="#ffd166" stroke-dasharray="6 6"/><text x="667" y="52" class="lab" style="fill:#ffd166">DATA CENTER</text>`;
+  h+=`<line x1="60" y1="${Y}" x2="715" y2="${Y}" stroke="rgba(110,231,255,.35)" stroke-width="3" stroke-dasharray="8 8"/><line x1="715" y1="${RY}" x2="60" y2="${RY}" stroke="rgba(94,234,212,.4)" stroke-width="3" stroke-dasharray="8 8"/>`;
+  N.forEach((n,i)=>{h+=`<line x1="${X[i]}" y1="${Y}" x2="${X[i]}" y2="${RY}" stroke="rgba(255,255,255,.1)"/><circle class="node" id="mn${i}" cx="${X[i]}" cy="${Y}" r="32"/><text x="${X[i]}" y="${Y+9}" text-anchor="middle" style="font-size:28px">${n[0]}</text><text class="lab" x="${X[i]}" y="${Y+54}">${n[1].replace('&amp;','&')}</text>`});
+  h+=`<text x="360" y="${RY+28}" class="lab" style="fill:#5eead4">⬅ the answer streams back, piece by piece</text><text x="360" y="${Y-44}" class="lab" style="fill:#6ee7ff">➡ your question travels out</text>`;
+  h+=`<g id="pkt" transform="translate(${X[0]},${Y})" style="display:none"><circle r="15" fill="#ffd166"/><text id="pktE" y="6" text-anchor="middle" style="font-size:16px">✉️</text></g>`;
+  svg.innerHTML=h;
+  const H=['You press Enter. Your message is packaged and encrypted on your laptop.','Your Wi-Fi router hands it to your internet provider.','Your provider routes it onward through a chain of other networks.','Long-distance cables (under streets and oceans) carry it as pulses of light.','At the data center’s door: security checks, and a traffic director picks a free machine.','Special chips turn your message into tokens and predict the reply, one token at a time.','The reply streams back the same way — your screen shows it as it’s made.'];
+  const ol=$('#hops');ol.innerHTML=H.map(t=>`<li>${t}</li>`).join('');
+  const lis=$$('li',ol),pkt=$('#pkt'),pe=$('#pktE');let rid={};
+  const fly=(a,b,ms,id)=>new Promise(res=>{const t0=performance.now();(function f(t){if(rid!==id)return res();const k=clamp((t-t0)/ms,0,1),e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;pkt.setAttribute('transform',`translate(${a[0]+(b[0]-a[0])*e},${a[1]+(b[1]-a[1])*e})`);k<1?requestAnimationFrame(f):res()})(t0)});
+  function reset(){rid={};lis.forEach(l=>l.classList.remove('on'));N.forEach((_,i)=>$('#mn'+i).classList.remove('lit'));pkt.style.display='none';$('#mapStat').textContent='Ready.';cancel($('#mapChat'));$('#mapChat').innerHTML='';$('#sendBtn').disabled=false}
+  async function send(){
+    reset();const id=rid={};const btn=$('#sendBtn');btn.disabled=true;
+    const chat=$('#mapChat');const ub=document.createElement('div');ub.className='bubble user';ub.textContent='Give me 3 water-cycle activities for 7th grade.';chat.appendChild(ub);
+    pkt.style.display='';pe.textContent='✉️';pkt.firstElementChild.setAttribute('fill','#ffd166');
+    for(let i=0;i<N.length;i++){
+      if(rid!==id)return;
+      lis[i].classList.add('on');$('#mn'+i).classList.add('lit');$('#mapStat').textContent=N[i][1].replace('&amp;','&');
+      if(i<N.length-1){await fly([X[i],Y],[X[i+1],Y],i===2?900:650,id)}
+    }
+    if(rid!==id)return;
+    pe.textContent='🧠';$('#mapStat').textContent='Model is predicting tokens…';await sleep(1400);
+    if(rid!==id)return;
+    pkt.firstElementChild.setAttribute('fill','#5eead4');pe.textContent='💬';lis[6].classList.add('on');
+    for(let i=N.length-1;i>0;i--){if(rid!==id)return;$('#mn'+i).classList.remove('lit');await fly([X[i],RY],[X[i-1],RY],i===3?800:550,id)}
+    if(rid!==id)return;
+    $('#mn0').classList.add('lit');pkt.style.display='none';$('#mapStat').textContent='Reply arrived!';
+    const bb=document.createElement('div');bb.className='bubble bot';chat.appendChild(bb);
+    await typeInto(bb,'Sure! 1) Water cycle in a bag  2) Cloud in a jar  3) Droplet role-play…',16,null);
+    btn.disabled=false;
+  }
+  // first fly leg starts at Y, return on RY: set start properly
+  $('#sendBtn').onclick=send;
+  hooks.follow={enter(){reset();pkt.setAttribute('transform',`translate(${X[0]},${Y})`)},leave(){reset()}};
+})();
+
+/* ===================================================== SLIDE: training */
+const trS=stepper('#trainStepper',[
+  {icon:'📚',title:'Gather text',text:'Collect an enormous library: books, articles, websites, code.',cap:'Where this text comes from raises questions about consent and copyright.',
+   vis:`<div class="vrow">${E(['📚','🌐','📰','💻','📜','🗞️'],'fall',.15)}</div><div class="ev" style="--d:1.2s;font-size:50px">⬇️</div><div class="chip hot" style="--d:1.4s">A giant pile of text</div>`},
+  {icon:'🧹',title:'Clean &amp; filter',text:'Remove duplicates, junk and some harmful content.',cap:'Imperfect filters mean some bias and errors stay in.',
+   vis:`<div class="vrow">${E(['📄','📄','🗑️','📄','🗑️','📄'],'',.1)}</div><div class="ev" style="--d:.8s;font-size:50px">🧽</div><div class="chip hot" style="--d:1s">Cleaner text</div>`},
+  {icon:'✂️',title:'Split into tokens',text:'Everything becomes a long stream of tokens, then numbers.',cap:'The same tokens you saw in the splitter.',
+   vis:`<div class="vrow">${['The','·cat','·sat','·on','·the','·mat','.'].map((t,i)=>`<span class="chip mono hot" style="--d:${i*.12}s">${t}</span>`).join('')}</div>`},
+  {icon:'🎯',title:'Guess the next token',text:'Hide the next token and ask the model to guess it.',cap:'Like fill-in-the-blank, billions of times over.',
+   vis:`<div class="sent" style="font-size:clamp(18px,2.4vw,32px)">The cat sat on the <span class="blank">mat</span></div><div class="chip" style="--d:.6s">Model guesses: <b>roof</b> 🤔</div>`},
+  {icon:'🎛️',title:'Check &amp; nudge the knobs',text:'Compare to the real answer. Nudge the knobs slightly so the right answer is a bit likelier next time.',cap:'Wrong guess ➜ tiny adjustment. This is the “learning”.',
+   vis:`<div class="vrow"><div class="cardmini"><b>Guess</b>roof ❌</div><span class="ev pulse">➜</span><div class="cardmini"><b>Answer</b>mat ✅</div></div><div class="vrow">${E(['🎛️','🎛️','🎛️','🎛️'],'pulse',.2)}</div>`},
+  {icon:'🏭',title:'Repeat — a staggering number of times',text:'The guess-check-nudge loop runs over and over, across fleets of chips, for a very long time.',cap:'This is why training happens inside data centers.',
+   vis:`<div style="display:grid;grid-template-columns:repeat(12,1fr);gap:5px;width:90%">${Array.from({length:48},(_,i)=>`<i class="led" style="height:12px;border-radius:3px;background:${i%5?'#5eead4':'#ffd166'};animation-delay:${rand(0,1.4).toFixed(2)}s"></i>`).join('')}</div><div class="ev spin" style="font-size:40px">🔁</div>`},
+  {icon:'🧑‍⚖️',title:'Fine-tune, test, release',text:'People rate answers, safety teams test the model, and then it’s released.',cap:'Human feedback shapes the tone and the guardrails.',
+   vis:`<div class="vrow">${E(['👍','👎','🛡️','🧪','🚀'],'',.2)}</div><div class="chip hot" style="--d:1.2s">Now it’s a chatbot</div>`}]);
+subs.train={n:trS.n,get i(){return trS.i},go:i=>{trS.stop();trS.set(i)},reset:i=>{trS.stop();trS.set(i)}};
+hooks.train={leave(){trS.stop()}};
+
+/* ===================================================== SLIDE: school questions */
+$$('.sch li').forEach(li=>li.onclick=()=>li.classList.toggle('ck'));
+
+/* ===================================================== SLIDE: why hallucinations */
+(function(){
+  const chat=$('#halChat');
+  hooks.why={async enter(){$('#halStamp').innerHTML='';
+    const ok=await chatPlay(chat,[
+      {who:'user',text:'Can you give me a research study showing AI tutors help reading scores?'},
+      {who:'bot',text:'Certainly! A well-known study is “Neural Pedagogy and the Adaptive Classroom” by Hartwell & Okonkwo (2019), in the Journal of Cognitive Machine Teaching. They found AI tutors raised reading scores in nearly every classroom studied.',speed:10,wait:800}]);
+    if(ok) $('#halStamp').innerHTML='<span class="stamp">🚨 INVENTED — NO SUCH STUDY</span>';},
+    leave(){cancel(chat)}};
+})();
+
+/* ===================================================== SLIDE: citation game */
+(function(){
+  const C=[
+    {t:'Turing, A. M. (1950). Computing machinery and intelligence. <i>Mind</i>, 59(236), 433–460.',real:1,why:'Real. The famous “Can machines think?” paper from our timeline.'},
+    {t:'Okafor, R., &amp; Lindqvist, H. (2020). Algorithmic tutors and student motivation: Evidence from 200 classrooms. <i>Quarterly Review of Machine Pedagogy</i>, 12(4), 301–329.',real:0,why:'Invented. No such journal; a suspiciously tidy “200 classrooms.” Search finds nothing.'},
+    {t:'Black, P., &amp; Wiliam, D. (1998). Inside the black box: Raising standards through classroom assessment. <i>Phi Delta Kappan</i>, 80(2), 139–148.',real:1,why:'Real. A classic on formative assessment — verifiable in library databases.'},
+    {t:'Delacroix, M., &amp; Singh, P. (2021). ChatGPT improves test scores by 41% in every subject. <i>Annals of Thinking Machines in Education</i>, 9(1), 1–17.',real:0,why:'Invented. “Every subject” + a precise percent is a red flag; the journal doesn’t exist.'},
+    {t:'Vaswani, A., et al. (2017). Attention is all you need. <i>Advances in Neural Information Processing Systems</i>, 30.',real:1,why:'Real. The transformer paper from the timeline.'},
+    {t:'Reyes, M. (2018). <i>The Quiet Algorithm: Teaching in the Age of Thinking Machines</i>. Brightwater Academic Press.',real:0,why:'Invented. No such book or publisher — a plausible title is not proof.'}];
+  const g=$('#game');let sc=0,ans=0;
+  function build(){sc=0;ans=0;$('#score').textContent='';
+    g.innerHTML=C.map((c,i)=>`<div class="cit" data-i="${i}"><p>${c.t}</p><div class="btns row"><button class="btn" data-v="1">✔ Real</button><button class="btn" data-v="0">✖ Fake</button></div><div class="why"><span class="verd"></span> <span class="w"></span></div></div>`).join('');
+    $$('.cit',g).forEach(el=>$$('.btn',el).forEach(b=>b.onclick=()=>{const c=C[+el.dataset.i],ok=(+b.dataset.v)===c.real;el.classList.add('done',ok?'right':'wrong');
+      $('.verd',el).textContent=ok?'✅ Correct.':'❌ Not quite.';$('.w',el).textContent=c.why;ans++;if(ok)sc++;$('#score').textContent=`· ${sc}/${ans} correct`;}));}
+  hooks.game={enter(){build()}};
+})();
+
+/* ===================================================== SLIDE: how to check */
+(function(){
+  let id={};
+  async function search(sel,res,text,ok){
+    const s=$(sel),r=$(res);s.innerHTML='🔍 <span></span>';r.className='sres';r.innerHTML='';
+    const t=$('span',s);const done=await typeInto(t,text,22,(runs.set(t,id),id));if(!done)return;
+    await sleep(500);if(runs.get(t)!==id)return;
+    r.className='sres '+(ok?'ok':'no');r.innerHTML=ok?'✅ <b>Found:</b> “Attention is all you need” — NeurIPS 2017. Authors, journal and DOI all match.':'🚫 <b>No results.</b> No paper, no journal, no authors by those names. Treat as invented.';
+  }
+  hooks.check={async enter(){id={};await search('#s1','#r1','Attention is all you need Vaswani 2017',true);if(runs.get($('#s1 span'))===id)await search('#s2','#r2','Neural Pedagogy and the Adaptive Classroom Hartwell',false)},leave(){id={}}};
+})();
+
+/* ===================================================== SLIDE: wrap */
+function confetti(){const em=['🎉','✨','📚','🍎','💡','🌟'];for(let i=0;i<40;i++){const e=document.createElement('span');e.className='conf';e.textContent=em[i%em.length];e.style.left=Math.random()*100+'vw';e.style.animationDuration=rand(2.5,5)+'s';e.style.animationDelay=rand(0,1.2)+'s';document.body.appendChild(e);setTimeout(()=>e.remove(),7000)}}
+$('#confBtn').onclick=confetti;
+hooks.wrap={enter(){setTimeout(confetti,1800)}};
+
+/* ===================================================== boot */
+const start=(parseInt(location.hash.slice(1))||1)-1;
+go(clamp(start,0,slides.length-1),1);
+</script>
+</body>
+</html>
