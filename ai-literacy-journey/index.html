@@ -310,6 +310,10 @@ body.low .panel{animation:none}
 <div id="live" class="srOnly" aria-live="polite"></div>
 <script>
 'use strict';
+const EDITION={lite:false,key:'wilmu-ail-journey-v2',targets:[60,75,90],def:75,max:90,
+  title:'Journey Through the Intelligence Machine',sub:'AI Literacy for Educators'};
+
+'use strict';
 /* =====================================================================
    CORE ENGINE: utilities, central state, animation loop, cinematic runner,
    avatar, particle layer. No lecture content lives here (see content.js).
@@ -342,9 +346,9 @@ function shuffle(a,r=Math.random){a=[...a];for(let i=a.length-1;i>0;i--){const j
 function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
 
 /* ---------------- central application state ---------------- */
-const STORE_KEY='wilmu-ail-journey-v2';
+const STORE_KEY=EDITION.key;
 const S={
-  mode:'instructor',ch:0,sc:0,target:75,
+  mode:'instructor',ch:0,sc:0,target:EDITION.def,
   visited:{},      // "ch:sc" -> true
   quiz:{},         // questionId -> {pick, ok}
   checks:{},       // concept check results
@@ -705,11 +709,14 @@ const Env={
      script = scripted conceptual demonstration (no model is running)
    NO sim here is a real large language model. Probabilities are labelled illustrative.
    ===================================================================== */
-const KINDS={
+const KINDS0={
   real:{cls:'real',label:'REAL COMPUTATION (toy scale)',tip:'The actual algorithm runs on the data shown. It is tiny, so it demonstrates the idea, not the capability of production systems.'},
   sim:{cls:'sim',label:'SIMPLIFIED SIMULATION',tip:'Real arithmetic on illustrative numbers. The numbers are NOT outputs of a real language model.'},
   script:{cls:'script',label:'SCRIPTED DEMONSTRATION',tip:'A conceptual walk-through. No model is running; outcomes are scripted to illustrate the idea.'}
 };
+const KINDS=KINDS0;
+if(EDITION.lite){KINDS.real.label='REAL, JUST SMALL';KINDS.sim.label='SIMPLIFIED MODEL';KINDS.script.label='GUIDED EXAMPLE';
+  KINDS.real.tip='This really runs, but on a tiny scale so you can see how it works.';KINDS.sim.tip='Real arithmetic on made-up numbers. These are NOT outputs from a real chatbot.';KINDS.script.tip='A guided example. No AI is running; the results are written in advance to show the idea.';}
 const Sims={};
 const UI={
   slider(label,min,max,step,val,onInput,f=v=>v){
@@ -815,7 +822,7 @@ mount(el){
     let ok=0;data.forEach((p,i)=>{if(data.length>1&&knn(p,i).pred===p.c)ok++;});
     out.innerHTML=data.length?`<div class="sub">Prediction for the white diamond (a new student)</div><div class="big" style="font-size:32px;color:${cls[r.pred][1]}">${cls[r.pred][0]}</div>
       <div>Neighbors voting: <b>${r.votes[0]}</b> on track · <b>${r.votes[1]}</b> needs support → vote share ${pct(r.conf)}</div>
-      <div class="sub">Training examples: ${data.length} (${data.filter(p=>!p.c).length} / ${data.filter(p=>p.c).length}). Leave-one-out accuracy on this data: <b>${data.length>1?pct(ok/data.length):'n/a'}</b></div>`:'Add some training examples.';
+      <div class="sub">Training examples: ${data.length} (${data.filter(p=>!p.c).length} / ${data.filter(p=>p.c).length}). ${EDITION.lite?'':'Leave-one-out accuracy on this data: <b>'+(data.length>1?pct(ok/data.length):'n/a')+'</b>'}</div>`:'Add some training examples.';
   }
   function pos(e){const b=cv.getBoundingClientRect();return{x:clamp((e.clientX-b.left)/b.width*100,0,100),y:clamp(100-(e.clientY-b.top)/b.height*100,0,100)};}
   cv.addEventListener('pointerdown',e=>{
@@ -826,9 +833,10 @@ mount(el){
   });
   const seg=UI.seg([[0,'+ On track'],[1,'+ Needs support'],[2,'Erase'],[3,'Move test point']],0,v=>{tool=+v;});
   const ks=UI.slider('k (neighbors that vote)',1,9,2,k,v=>{k=v;draw();});
+  if(EDITION.lite)ks.el.style.display='none';
   const reg=h('input',{type:'checkbox',checked:true,id:'regchk',onchange:e=>{showReg=e.target.checked;draw();}});
   el.append(h('div',{class:'row'},seg,UI.btn('Clean data',()=>{preset('clean');draw();},'sm'),UI.btn('Mislabeled examples',()=>{preset('noisy');draw();},'sm'),UI.btn('Unrepresentative sample',()=>{preset('biased');draw();},'sm'),UI.btn('Clear',()=>{data=[];draw();},'sm')),
-    h('div',{class:'row'},h('div',{style:{flex:'0 0 auto'}},cv),h('div',{class:'grow col'},ks.el,h('label',{class:'row'},reg,'Show learned decision regions'),out,UI.note('Nothing here was programmed with a rule like "below 60 means support." The boundary emerges from the examples you place. Change the examples and the same algorithm behaves differently.','good'))));
+    h('div',{class:'row'},h('div',{style:{flex:'0 0 auto'}},cv),h('div',{class:'grow col'},ks.el,h('label',{class:'row'},reg,(EDITION.lite?'Show the colored areas the computer learned':'Show learned decision regions')),out,UI.note('Nothing here was programmed with a rule like "below 60 means support." The boundary emerges from the examples you place. Change the examples and the same algorithm behaves differently.','good'))));
   draw();
 }};
 
@@ -966,7 +974,7 @@ mount(el){
   ta.addEventListener('input',draw);
   const ex=[['Teachers use ChatGPT unexpectedly!','Rare word'],['Photosynthesis is how plants make food.','Science sentence'],['Antidisestablishmentarianism','Very long word'],['Born 2008-09-15; pi is 3.14159','Numbers'],['La enseñanza es importante','Non-English'],['Strawberry','Counting letters?']];
   el.append(h('div',{class:'row'},ex.map(([t,l])=>UI.btn(l,()=>{ta.value=t;draw();},'sm'))),ta,h('div',{class:'row'},UI.seg([['t','Show tokens'],['i','Show token IDs']],'t',v=>{showIds=v==='i';draw();}),stats),view,
-    UI.note('<b>Approximate demo:</b> this uses a small built-in vocabulary and a greedy longest-match rule inspired by subword tokenizers. Real tokenizers (for example byte-pair encoding) learn tens of thousands of pieces from data. The numeric IDs shown here are illustrative hashes, not any real model\'s IDs.','warn'),
+    UI.note(EDITION.lite?'<b>Approximate demo:</b> real chatbots also split text into pieces, but from a much bigger list learned from data. The numbers shown here are made up.':'<b>Approximate demo:</b> this uses a small built-in vocabulary and a greedy longest-match rule inspired by subword tokenizers. Real tokenizers (for example byte-pair encoding) learn tens of thousands of pieces from data. The numeric IDs shown here are illustrative hashes, not any real model\'s IDs.','warn'),
     UI.note('Notice: the model never sees "letters" or "words" directly, only token IDs. That is one reason letter-counting and spelling can trip models up, and why text in languages poorly covered by a tokenizer\'s training data tends to need more tokens.','good'));
   draw();
 }};
@@ -1042,9 +1050,10 @@ mount(el){
   }
   function choose(i){chosen.push({t:curDist[i][0],p:curDist[i][1]});render();}
   el.append(UI.note('Context so far. In a real model the distribution covers ~100,000 possible tokens; here we show only a few <b>illustrative</b> candidates. <b>Click a bar to choose the next token.</b>'),sent,
-    h('h3',{},'P(next token | everything so far)  ·  illustrative values'),barsBox,prob,
+    h('h3',{},EDITION.lite?'How likely is each next word? (made-up numbers)':'P(next token | everything so far)  ·  illustrative values'),barsBox,prob,
     h('div',{class:'row'},UI.btn('Sample from distribution',()=>{if(curDist)choose(sampleIdx(curDist.map(d=>d[1])));},'pri'),UI.btn('Greedy: most likely',()=>{if(curDist)choose(0);}),UI.btn('Undo',()=>{chosen.pop();render();}),UI.btn('Restart',()=>{chosen=[];render();})),
     UI.note('Notice: the most likely word is not always the "right" word, and each choice changes every later distribution. Because the numbers are invented for teaching, no part of this screen says what any real model would output.','warn'));
+  if(EDITION.lite)prob.style.display='none';
   render();
   return{replay(){chosen=[];render();let n=0;const step=()=>{if(!curDist||n++>5)return;choose(sampleIdx(curDist.map(d=>d[1])));setTimeout(step,S.prefs.reduced?0:700);};setTimeout(step,500);}};
 }};
@@ -1063,11 +1072,12 @@ mount(el){
     list.innerHTML=last.length?last.map(i=>`<span class="chip" style="background:hsl(${i*55} 75% 72%)">${toks[i]}</span>`).join(''):'<span class="sub">Generated completions appear here.</span>';
   }
   function gen(n){const p=softmax(logits,T);last=[];for(let i=0;i<n;i++){const k=sampleIdx(p);counts[k]++;total++;last.push(k);}draw();}
-  const sl=UI.slider('Temperature T',0,2,.05,T,v=>{T=v;counts=toks.map(()=>0);total=0;last=[];draw();},v=>v===0?'greedy':v.toFixed(2));
+  const sl=UI.slider(EDITION.lite?'Creativity dial':'Temperature T',0,2,.05,T,v=>{T=v;counts=toks.map(()=>0);total=0;last=[];draw();},v=>v===0?'greedy':v.toFixed(2));
   el.append(h('div',{class:'mono card',html:'Prompt: <b>"The most important thing for a learner is ___"</b> <span class="sub">(logits are illustrative)</span>'}),sl.el,
     h('div',{class:'grid2'},h('div',{},h('h3',{},'Probability after softmax(z / T)'),b1),h('div',{},h('h3',{},'Observed choices (sampled)'),b2)),stat,
     h('div',{class:'row'},UI.btn('Generate 1',()=>gen(1),'pri'),UI.btn('Generate 10',()=>gen(10),'pri'),UI.btn('Generate 200',()=>gen(200)),UI.btn('Reset tally',()=>{counts=toks.map(()=>0);total=0;last=[];draw();})),list,
     UI.note('Low T sharpens the distribution toward the top token (T→0 is greedy decoding: always the same answer). High T flattens it, so unlikely tokens like <i>pizza</i> appear more often. Temperature changes <b>how we sample</b>, not what the model "knows".','good'));
+  if(EDITION.lite)stat.style.display='none';
   draw();
   return{replay(){counts=toks.map(()=>0);total=0;gen(10);}};
 }};
@@ -1482,6 +1492,25 @@ Vis.rag=(b,sc,cap)=>{
   b.append(wrap);draw();
 };
 
+/* Generic step-by-step mechanism figure: concept.steps = [[title, plain-language description], ...] */
+Vis.steps=(b,sc,cap)=>{
+  const st=sc.concept.steps;let cur=0,tok=0;
+  const wrap=h('div',{style:{display:'flex',flexDirection:'column',gap:'6px',padding:'4px 8px',height:'100%',overflow:'auto'}}),list=h('div',{style:{display:'flex',flexDirection:'column',gap:'4px'}});
+  function draw(){
+    list.innerHTML='';
+    st.forEach(([t,d],i)=>{
+      const on=i===cur,seen=i<cur;
+      list.appendChild(h('button',{type:'button',onclick:()=>{tok++;cur=i;draw();},style:{display:'flex',gap:'12px',alignItems:'center',textAlign:'left',padding:'8px 12px',borderRadius:'12px',border:'2px solid '+(on?'var(--gold)':'var(--line)'),background:on?'#f2b7052a':'var(--panel2)',opacity:i>cur?.55:1,font:'inherit',color:'inherit',cursor:'pointer'}},
+        h('span',{style:{flex:'0 0 34px',height:'34px',borderRadius:'50%',background:seen||on?'var(--wu)':'#fff2',display:'grid',placeItems:'center',fontWeight:700}},seen?'✔':String(i+1)),
+        h('span',{style:{fontSize:'.9em'}},h('b',{},t),on?h('div',{class:'sub',style:{fontSize:'.85em'}},d):null)));
+    });
+    cap(st[cur][1]);
+  }
+  const play=()=>{const my=++tok;cur=0;draw();const step=()=>{if(my!==tok||!b.isConnected)return;if(cur<st.length-1){cur++;draw();setTimeout(step,S.prefs.reduced?400:1700);}};setTimeout(step,S.prefs.reduced?400:1700);};
+  wrap.append(list,h('div',{class:'row'},UI.btn('Next step ▸',()=>{tok++;if(cur<st.length-1)cur++;draw();},'pri sm'),UI.btn('▶ Play all',play,'sm'),UI.btn('Start over',()=>{tok++;cur=0;draw();},'sm')));
+  b.append(wrap);draw();
+};
+
 'use strict';
 /* =====================================================================
    LECTURE CONTENT (data only). Edit here to change what is taught.
@@ -1526,6 +1555,9 @@ const REFS={
 const REFS_NOTE='Citations were written from the instructor’s knowledge of the literature. Practice what the lecture teaches: confirm each entry (DOI, volume, pages) in a library database before reusing it in publications or assignments.';
 
 const CHAPTERS=[];
+
+'use strict';
+
 
 /* ---------------------------- CHAPTER 0 · OPENING ---------------------------- */
 CHAPTERS.push({
@@ -1987,7 +2019,7 @@ const Cinematics={
     const done=await Cine.run(async c=>{
       View.showCampus(false);Campus.setCam(0);View.avatarCampus(-120);Avatar.face(1);Campus.highlight(0);
       Cap.set('');showTitle('');$('#fade').classList.add('on');
-      showTitle('<div class="kicker" style="font-size:24px">Wilmington University</div><div class="tt">Journey Through the Intelligence Machine</div><div class="ts">AI Literacy for Educators</div>');
+      showTitle(`<div class="kicker" style="font-size:24px">Wilmington University</div><div class="tt">${EDITION.title}</div><div class="ts">${EDITION.sub}</div>`);
       await fadeC(c,false,1400);await c.wait(2200);
       showTitle('');Cap.set(sc.cap[0]);await c.wait(1600);
       Cap.set(sc.cap[1]);
@@ -2077,7 +2109,7 @@ function MCQ(q,key,store,instant){
 
 /* ---------- pacing ---------- */
 const Pace={
-  plan(){const o=[];CHAPTERS.forEach((C,ci)=>C.scenes.forEach((s,si)=>{if(s.minutes>0&&(!s.optional||S.target===90))o.push({ci,si,m:s.minutes});}));return o;},
+  plan(){const o=[];CHAPTERS.forEach((C,ci)=>C.scenes.forEach((s,si)=>{if(s.minutes>0&&(!s.optional||S.target===EDITION.max))o.push({ci,si,m:s.minutes});}));return o;},
   factor(){const t=this.plan().reduce((a,b)=>a+b.m,0);return S.target/t;},
   endOf(ci,si){const f=this.factor();let acc=0;for(const e of this.plan()){acc+=e.m*f;if(e.ci===ci&&e.si===si)return acc;if(e.ci>ci||(e.ci===ci&&e.si>si))return acc-e.m*f;}return acc;},
   chapterMinutes(ci){const f=this.factor();return this.plan().filter(e=>e.ci===ci).reduce((a,b)=>a+b.m*f,0);},
@@ -2091,7 +2123,7 @@ const Pace={
   mmss(m){const s=Math.floor(m*60);return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');},
   draw(){
     const e=$('#pace');if(!e)return;const sc=CHAPTERS[S.ch].scenes[S.sc],f=this.factor(),m=sc.minutes*f;
-    const end=this.endOf(S.ch,S.sc),start=end-(sc.minutes>0&&(!sc.optional||S.target===90)?m:0),el=this.elapsedMin();
+    const end=this.endOf(S.ch,S.sc),start=end-(sc.minutes>0&&(!sc.optional||S.target===EDITION.max)?m:0),el=this.elapsedMin();
     let st='on',head,tip;
     if(!S.timer.running&&S.timer.elapsed===0){head='Timer: click to start';tip='Scene budget '+(sc.minutes?m.toFixed(1):'0')+' min';st='';}
     else{
@@ -2107,7 +2139,7 @@ const Pace={
 /* ---------- navigation ---------- */
 const Nav={
   navId:0,inited:false,beat:0,onAnswer:null,onBeat:null,handle:null,envCh:-1,
-  skipOpt(){return S.mode==='instructor'&&S.target<90;},
+  skipOpt(){return S.mode==='instructor'&&S.target<EDITION.max;},
   seq(){const o=[];CHAPTERS.forEach((C,ci)=>C.scenes.forEach((s,si)=>{if(s.optional&&this.skipOpt())return;o.push([ci,si]);}));return o;},
   find(id){for(let c=0;c<CHAPTERS.length;c++){const i=CHAPTERS[c].scenes.findIndex(s=>s.id===id);if(i>=0)return[c,i];}return null;},
   isDone(ch){return CHAPTERS[ch].scenes.every((s,i)=>s.optional||S.visited[ch+':'+i]);},
@@ -2234,7 +2266,7 @@ function deeperBtn(sc){return sc.deeper?h('button',{class:'btn gold',type:'butto
 
 function buildConcept(C,sc){
   const c=sc.concept;
-  const ORDER=[['def','Define'],['explain','Explain'],['analogy','Analogy'],['mechanism','How it works'],['classroom','In the classroom'],['misconception','Misconception'],['discuss','Discuss'],['check','Check']].filter(t=>c[t[0]]);
+  const ORDER=[['def','Define'],['explain','Explain'],['analogy','Analogy'],['mechanism','How it works'],['classroom','In the classroom'],['misconception','Misconception'],['discuss','Discuss'],['check','Check']].filter(t=>c[t[0]]).map(([k,l])=>[k,(c.labels&&c.labels[k])||l]);
   let cur=Math.min(Nav.beat||0,ORDER.length-1);const seen=new Set([0]);
   const body=h('div',{class:'tabbody',role:'tabpanel'}),tabs=h('div',{class:'tabs',role:'tablist','aria-label':'Concept layers'});
   const fig=h('div',{class:'fig'}),figBody=h('div',{class:'figbody'}),capEl=h('div',{class:'cap',role:'status'});
@@ -2338,7 +2370,7 @@ function buildFinale(C,sc){
       const ta=h('textarea',{rows:2,'aria-label':'Your final reflection',placeholder:'Optional private note (stored only in this browser).'});ta.value=S.reflect.final||'';ta.addEventListener('input',()=>{S.reflect.final=ta.value;saveState();});
       wrap.append(h('div',{class:'kicker'},'Final reflection'),h('div',{class:'big',style:{color:'var(--gold)',fontSize:'36px'}},FINAL_QUESTION),h('div',{class:'stu'},ta));
     }
-    if(step>=2)wrap.append(h('div',{class:'synth'},SYNTH.map(([t,d],i)=>h('div',{class:'card'},h('b',{style:{color:'var(--gold)'}},(i+1)+'. '+t),h('div',{},d),h('button',{class:'btn sm',type:'button',onclick:()=>Nav.travelTo(i+1)},'Revisit ▸')))));
+    if(step>=2)wrap.append(h('div',{class:'synth'},(EDITION.synth||SYNTH).map(([t,d],i)=>h('div',{class:'card'},h('b',{style:{color:'var(--gold)'}},(i+1)+'. '+t),h('div',{},d),h('button',{class:'btn sm',type:'button',onclick:()=>Nav.travelTo(i+1)},'Revisit ▸')))));
     const row=h('div',{class:'row',style:{justifyContent:'center'}});
     if(step<2)row.append(h('button',{class:'btn gold',type:'button',onclick:()=>{step++;draw();}},step===0?'Reveal final reflection question ':'Reveal synthesis of the five chapters ',h('kbd',{},'Space')));
     row.append(h('button',{class:'btn',type:'button',onclick:openMap},'Open campus map (revisit any demonstration)'),h('button',{class:'btn pri',type:'button',onclick:()=>Cinematics.credits()},'Play closing sequence'));
@@ -2392,7 +2424,7 @@ function openMap(){
   });
   wrap.append(map,idx);
   const f=Pace.factor();
-  const plan=h('table',{style:{marginTop:'14px'},html:`<tr><th>Segment</th><th>Planned minutes (${S.target}-min session${S.target===90?', includes optional scenes':''})</th></tr>`+CHAPTERS.map((c,ci)=>`<tr><td>${esc(c.title)}</td><td>${Pace.chapterMinutes(ci).toFixed(1)}</td></tr>`).join('')+`<tr><th>Total</th><th>${S.target}</th></tr>`});
+  const plan=h('table',{style:{marginTop:'14px'},html:`<tr><th>Segment</th><th>Planned minutes (${S.target}-min session${S.target===EDITION.max?', includes optional scenes':''})</th></tr>`+CHAPTERS.map((c,ci)=>`<tr><td>${esc(c.title)}</td><td>${Pace.chapterMinutes(ci).toFixed(1)}</td></tr>`).join('')+`<tr><th>Total</th><th>${S.target}</th></tr>`});
   const c=h('div',{},wrap,h('div',{class:'instr'},plan));
   Modal.open('Campus map and lecture plan',c,{width:'1600px'});
 }
@@ -2422,7 +2454,7 @@ function openSettings(){
   box.append(
     h('h3',{},'Mode'),UI.seg([['instructor','Instructor presentation'],['student','Student exploration']],S.mode,v=>{Modal.close();setMode(v);}),
     h('div',{class:'sub'},'Both modes use the same content and simulations. Student mode shows immediate feedback, hides instructor-only notes and pacing, and unlocks chapters as you complete them.'),
-    h('h3',{style:{marginTop:'14px'}},'Session length (instructor pacing)'),UI.seg([[60,'60 min'],[75,'75 min (default)'],[90,'90 min (adds optional scenes)']],S.target,v=>{S.target=+v;saveState();HUD.update();}),
+    h('h3',{style:{marginTop:'14px'}},'Session length (instructor pacing)'),UI.seg(EDITION.targets.map(t=>[t,t+' min'+(t===EDITION.def?' (default)':t===EDITION.max?' (adds optional scenes)':'')]),S.target,v=>{S.target=+v;saveState();HUD.update();}),
     h('h3',{style:{marginTop:'14px'}},'Animation and performance'),
     chk('Reduced motion (cross-fades only; avatar jumps instead of walking)',()=>S.prefs.reduced,v=>S.prefs.reduced=v),
     chk('Lower-performance mode (fewer particles, 30 fps)',()=>S.prefs.low,v=>S.prefs.low=v),

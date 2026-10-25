@@ -31,9 +31,9 @@ function shuffle(a,r=Math.random){a=[...a];for(let i=a.length-1;i>0;i--){const j
 function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
 
 /* ---------------- central application state ---------------- */
-const STORE_KEY='wilmu-ail-journey-v2';
+const STORE_KEY=EDITION.key;
 const S={
-  mode:'instructor',ch:0,sc:0,target:75,
+  mode:'instructor',ch:0,sc:0,target:EDITION.def,
   visited:{},      // "ch:sc" -> true
   quiz:{},         // questionId -> {pick, ok}
   checks:{},       // concept check results

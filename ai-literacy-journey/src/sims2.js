@@ -376,3 +376,22 @@ Vis.rag=(b,sc,cap)=>{
   wrap.append(h('div',{class:'row'},UI.seg([[1,'Retrieval ON'],[0,'Retrieval OFF']],1,v=>{on=v==='1'||v===1;draw();})),docs,out,h('div',{class:'sub',style:{fontSize:'.72em'}},'Scripted demonstration: answers are scripted to illustrate grounding. No model or search is running.'));
   b.append(wrap);draw();
 };
+
+/* Generic step-by-step mechanism figure: concept.steps = [[title, plain-language description], ...] */
+Vis.steps=(b,sc,cap)=>{
+  const st=sc.concept.steps;let cur=0,tok=0;
+  const wrap=h('div',{style:{display:'flex',flexDirection:'column',gap:'6px',padding:'4px 8px',height:'100%',overflow:'auto'}}),list=h('div',{style:{display:'flex',flexDirection:'column',gap:'4px'}});
+  function draw(){
+    list.innerHTML='';
+    st.forEach(([t,d],i)=>{
+      const on=i===cur,seen=i<cur;
+      list.appendChild(h('button',{type:'button',onclick:()=>{tok++;cur=i;draw();},style:{display:'flex',gap:'12px',alignItems:'center',textAlign:'left',padding:'8px 12px',borderRadius:'12px',border:'2px solid '+(on?'var(--gold)':'var(--line)'),background:on?'#f2b7052a':'var(--panel2)',opacity:i>cur?.55:1,font:'inherit',color:'inherit',cursor:'pointer'}},
+        h('span',{style:{flex:'0 0 34px',height:'34px',borderRadius:'50%',background:seen||on?'var(--wu)':'#fff2',display:'grid',placeItems:'center',fontWeight:700}},seen?'✔':String(i+1)),
+        h('span',{style:{fontSize:'.9em'}},h('b',{},t),on?h('div',{class:'sub',style:{fontSize:'.85em'}},d):null)));
+    });
+    cap(st[cur][1]);
+  }
+  const play=()=>{const my=++tok;cur=0;draw();const step=()=>{if(my!==tok||!b.isConnected)return;if(cur<st.length-1){cur++;draw();setTimeout(step,S.prefs.reduced?400:1700);}};setTimeout(step,S.prefs.reduced?400:1700);};
+  wrap.append(list,h('div',{class:'row'},UI.btn('Next step ▸',()=>{tok++;if(cur<st.length-1)cur++;draw();},'pri sm'),UI.btn('▶ Play all',play,'sm'),UI.btn('Start over',()=>{tok++;cur=0;draw();},'sm')));
+  b.append(wrap);draw();
+};

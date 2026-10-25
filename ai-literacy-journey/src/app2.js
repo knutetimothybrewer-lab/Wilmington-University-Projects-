@@ -31,7 +31,7 @@ function MCQ(q,key,store,instant){
 
 /* ---------- pacing ---------- */
 const Pace={
-  plan(){const o=[];CHAPTERS.forEach((C,ci)=>C.scenes.forEach((s,si)=>{if(s.minutes>0&&(!s.optional||S.target===90))o.push({ci,si,m:s.minutes});}));return o;},
+  plan(){const o=[];CHAPTERS.forEach((C,ci)=>C.scenes.forEach((s,si)=>{if(s.minutes>0&&(!s.optional||S.target===EDITION.max))o.push({ci,si,m:s.minutes});}));return o;},
   factor(){const t=this.plan().reduce((a,b)=>a+b.m,0);return S.target/t;},
   endOf(ci,si){const f=this.factor();let acc=0;for(const e of this.plan()){acc+=e.m*f;if(e.ci===ci&&e.si===si)return acc;if(e.ci>ci||(e.ci===ci&&e.si>si))return acc-e.m*f;}return acc;},
   chapterMinutes(ci){const f=this.factor();return this.plan().filter(e=>e.ci===ci).reduce((a,b)=>a+b.m*f,0);},
@@ -45,7 +45,7 @@ const Pace={
   mmss(m){const s=Math.floor(m*60);return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');},
   draw(){
     const e=$('#pace');if(!e)return;const sc=CHAPTERS[S.ch].scenes[S.sc],f=this.factor(),m=sc.minutes*f;
-    const end=this.endOf(S.ch,S.sc),start=end-(sc.minutes>0&&(!sc.optional||S.target===90)?m:0),el=this.elapsedMin();
+    const end=this.endOf(S.ch,S.sc),start=end-(sc.minutes>0&&(!sc.optional||S.target===EDITION.max)?m:0),el=this.elapsedMin();
     let st='on',head,tip;
     if(!S.timer.running&&S.timer.elapsed===0){head='Timer: click to start';tip='Scene budget '+(sc.minutes?m.toFixed(1):'0')+' min';st='';}
     else{
@@ -61,7 +61,7 @@ const Pace={
 /* ---------- navigation ---------- */
 const Nav={
   navId:0,inited:false,beat:0,onAnswer:null,onBeat:null,handle:null,envCh:-1,
-  skipOpt(){return S.mode==='instructor'&&S.target<90;},
+  skipOpt(){return S.mode==='instructor'&&S.target<EDITION.max;},
   seq(){const o=[];CHAPTERS.forEach((C,ci)=>C.scenes.forEach((s,si)=>{if(s.optional&&this.skipOpt())return;o.push([ci,si]);}));return o;},
   find(id){for(let c=0;c<CHAPTERS.length;c++){const i=CHAPTERS[c].scenes.findIndex(s=>s.id===id);if(i>=0)return[c,i];}return null;},
   isDone(ch){return CHAPTERS[ch].scenes.every((s,i)=>s.optional||S.visited[ch+':'+i]);},
@@ -188,7 +188,7 @@ function deeperBtn(sc){return sc.deeper?h('button',{class:'btn gold',type:'butto
 
 function buildConcept(C,sc){
   const c=sc.concept;
-  const ORDER=[['def','Define'],['explain','Explain'],['analogy','Analogy'],['mechanism','How it works'],['classroom','In the classroom'],['misconception','Misconception'],['discuss','Discuss'],['check','Check']].filter(t=>c[t[0]]);
+  const ORDER=[['def','Define'],['explain','Explain'],['analogy','Analogy'],['mechanism','How it works'],['classroom','In the classroom'],['misconception','Misconception'],['discuss','Discuss'],['check','Check']].filter(t=>c[t[0]]).map(([k,l])=>[k,(c.labels&&c.labels[k])||l]);
   let cur=Math.min(Nav.beat||0,ORDER.length-1);const seen=new Set([0]);
   const body=h('div',{class:'tabbody',role:'tabpanel'}),tabs=h('div',{class:'tabs',role:'tablist','aria-label':'Concept layers'});
   const fig=h('div',{class:'fig'}),figBody=h('div',{class:'figbody'}),capEl=h('div',{class:'cap',role:'status'});
@@ -292,7 +292,7 @@ function buildFinale(C,sc){
       const ta=h('textarea',{rows:2,'aria-label':'Your final reflection',placeholder:'Optional private note (stored only in this browser).'});ta.value=S.reflect.final||'';ta.addEventListener('input',()=>{S.reflect.final=ta.value;saveState();});
       wrap.append(h('div',{class:'kicker'},'Final reflection'),h('div',{class:'big',style:{color:'var(--gold)',fontSize:'36px'}},FINAL_QUESTION),h('div',{class:'stu'},ta));
     }
-    if(step>=2)wrap.append(h('div',{class:'synth'},SYNTH.map(([t,d],i)=>h('div',{class:'card'},h('b',{style:{color:'var(--gold)'}},(i+1)+'. '+t),h('div',{},d),h('button',{class:'btn sm',type:'button',onclick:()=>Nav.travelTo(i+1)},'Revisit ▸')))));
+    if(step>=2)wrap.append(h('div',{class:'synth'},(EDITION.synth||SYNTH).map(([t,d],i)=>h('div',{class:'card'},h('b',{style:{color:'var(--gold)'}},(i+1)+'. '+t),h('div',{},d),h('button',{class:'btn sm',type:'button',onclick:()=>Nav.travelTo(i+1)},'Revisit ▸')))));
     const row=h('div',{class:'row',style:{justifyContent:'center'}});
     if(step<2)row.append(h('button',{class:'btn gold',type:'button',onclick:()=>{step++;draw();}},step===0?'Reveal final reflection question ':'Reveal synthesis of the five chapters ',h('kbd',{},'Space')));
     row.append(h('button',{class:'btn',type:'button',onclick:openMap},'Open campus map (revisit any demonstration)'),h('button',{class:'btn pri',type:'button',onclick:()=>Cinematics.credits()},'Play closing sequence'));
@@ -346,7 +346,7 @@ function openMap(){
   });
   wrap.append(map,idx);
   const f=Pace.factor();
-  const plan=h('table',{style:{marginTop:'14px'},html:`<tr><th>Segment</th><th>Planned minutes (${S.target}-min session${S.target===90?', includes optional scenes':''})</th></tr>`+CHAPTERS.map((c,ci)=>`<tr><td>${esc(c.title)}</td><td>${Pace.chapterMinutes(ci).toFixed(1)}</td></tr>`).join('')+`<tr><th>Total</th><th>${S.target}</th></tr>`});
+  const plan=h('table',{style:{marginTop:'14px'},html:`<tr><th>Segment</th><th>Planned minutes (${S.target}-min session${S.target===EDITION.max?', includes optional scenes':''})</th></tr>`+CHAPTERS.map((c,ci)=>`<tr><td>${esc(c.title)}</td><td>${Pace.chapterMinutes(ci).toFixed(1)}</td></tr>`).join('')+`<tr><th>Total</th><th>${S.target}</th></tr>`});
   const c=h('div',{},wrap,h('div',{class:'instr'},plan));
   Modal.open('Campus map and lecture plan',c,{width:'1600px'});
 }
@@ -376,7 +376,7 @@ function openSettings(){
   box.append(
     h('h3',{},'Mode'),UI.seg([['instructor','Instructor presentation'],['student','Student exploration']],S.mode,v=>{Modal.close();setMode(v);}),
     h('div',{class:'sub'},'Both modes use the same content and simulations. Student mode shows immediate feedback, hides instructor-only notes and pacing, and unlocks chapters as you complete them.'),
-    h('h3',{style:{marginTop:'14px'}},'Session length (instructor pacing)'),UI.seg([[60,'60 min'],[75,'75 min (default)'],[90,'90 min (adds optional scenes)']],S.target,v=>{S.target=+v;saveState();HUD.update();}),
+    h('h3',{style:{marginTop:'14px'}},'Session length (instructor pacing)'),UI.seg(EDITION.targets.map(t=>[t,t+' min'+(t===EDITION.def?' (default)':t===EDITION.max?' (adds optional scenes)':'')]),S.target,v=>{S.target=+v;saveState();HUD.update();}),
     h('h3',{style:{marginTop:'14px'}},'Animation and performance'),
     chk('Reduced motion (cross-fades only; avatar jumps instead of walking)',()=>S.prefs.reduced,v=>S.prefs.reduced=v),
     chk('Lower-performance mode (fewer particles, 30 fps)',()=>S.prefs.low,v=>S.prefs.low=v),

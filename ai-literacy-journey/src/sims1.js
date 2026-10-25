@@ -7,11 +7,14 @@
      script = scripted conceptual demonstration (no model is running)
    NO sim here is a real large language model. Probabilities are labelled illustrative.
    ===================================================================== */
-const KINDS={
+const KINDS0={
   real:{cls:'real',label:'REAL COMPUTATION (toy scale)',tip:'The actual algorithm runs on the data shown. It is tiny, so it demonstrates the idea, not the capability of production systems.'},
   sim:{cls:'sim',label:'SIMPLIFIED SIMULATION',tip:'Real arithmetic on illustrative numbers. The numbers are NOT outputs of a real language model.'},
   script:{cls:'script',label:'SCRIPTED DEMONSTRATION',tip:'A conceptual walk-through. No model is running; outcomes are scripted to illustrate the idea.'}
 };
+const KINDS=KINDS0;
+if(EDITION.lite){KINDS.real.label='REAL, JUST SMALL';KINDS.sim.label='SIMPLIFIED MODEL';KINDS.script.label='GUIDED EXAMPLE';
+  KINDS.real.tip='This really runs, but on a tiny scale so you can see how it works.';KINDS.sim.tip='Real arithmetic on made-up numbers. These are NOT outputs from a real chatbot.';KINDS.script.tip='A guided example. No AI is running; the results are written in advance to show the idea.';}
 const Sims={};
 const UI={
   slider(label,min,max,step,val,onInput,f=v=>v){
@@ -117,7 +120,7 @@ mount(el){
     let ok=0;data.forEach((p,i)=>{if(data.length>1&&knn(p,i).pred===p.c)ok++;});
     out.innerHTML=data.length?`<div class="sub">Prediction for the white diamond (a new student)</div><div class="big" style="font-size:32px;color:${cls[r.pred][1]}">${cls[r.pred][0]}</div>
       <div>Neighbors voting: <b>${r.votes[0]}</b> on track · <b>${r.votes[1]}</b> needs support → vote share ${pct(r.conf)}</div>
-      <div class="sub">Training examples: ${data.length} (${data.filter(p=>!p.c).length} / ${data.filter(p=>p.c).length}). Leave-one-out accuracy on this data: <b>${data.length>1?pct(ok/data.length):'n/a'}</b></div>`:'Add some training examples.';
+      <div class="sub">Training examples: ${data.length} (${data.filter(p=>!p.c).length} / ${data.filter(p=>p.c).length}). ${EDITION.lite?'':'Leave-one-out accuracy on this data: <b>'+(data.length>1?pct(ok/data.length):'n/a')+'</b>'}</div>`:'Add some training examples.';
   }
   function pos(e){const b=cv.getBoundingClientRect();return{x:clamp((e.clientX-b.left)/b.width*100,0,100),y:clamp(100-(e.clientY-b.top)/b.height*100,0,100)};}
   cv.addEventListener('pointerdown',e=>{
@@ -128,9 +131,10 @@ mount(el){
   });
   const seg=UI.seg([[0,'+ On track'],[1,'+ Needs support'],[2,'Erase'],[3,'Move test point']],0,v=>{tool=+v;});
   const ks=UI.slider('k (neighbors that vote)',1,9,2,k,v=>{k=v;draw();});
+  if(EDITION.lite)ks.el.style.display='none';
   const reg=h('input',{type:'checkbox',checked:true,id:'regchk',onchange:e=>{showReg=e.target.checked;draw();}});
   el.append(h('div',{class:'row'},seg,UI.btn('Clean data',()=>{preset('clean');draw();},'sm'),UI.btn('Mislabeled examples',()=>{preset('noisy');draw();},'sm'),UI.btn('Unrepresentative sample',()=>{preset('biased');draw();},'sm'),UI.btn('Clear',()=>{data=[];draw();},'sm')),
-    h('div',{class:'row'},h('div',{style:{flex:'0 0 auto'}},cv),h('div',{class:'grow col'},ks.el,h('label',{class:'row'},reg,'Show learned decision regions'),out,UI.note('Nothing here was programmed with a rule like "below 60 means support." The boundary emerges from the examples you place. Change the examples and the same algorithm behaves differently.','good'))));
+    h('div',{class:'row'},h('div',{style:{flex:'0 0 auto'}},cv),h('div',{class:'grow col'},ks.el,h('label',{class:'row'},reg,(EDITION.lite?'Show the colored areas the computer learned':'Show learned decision regions')),out,UI.note('Nothing here was programmed with a rule like "below 60 means support." The boundary emerges from the examples you place. Change the examples and the same algorithm behaves differently.','good'))));
   draw();
 }};
 
@@ -268,7 +272,7 @@ mount(el){
   ta.addEventListener('input',draw);
   const ex=[['Teachers use ChatGPT unexpectedly!','Rare word'],['Photosynthesis is how plants make food.','Science sentence'],['Antidisestablishmentarianism','Very long word'],['Born 2008-09-15; pi is 3.14159','Numbers'],['La enseñanza es importante','Non-English'],['Strawberry','Counting letters?']];
   el.append(h('div',{class:'row'},ex.map(([t,l])=>UI.btn(l,()=>{ta.value=t;draw();},'sm'))),ta,h('div',{class:'row'},UI.seg([['t','Show tokens'],['i','Show token IDs']],'t',v=>{showIds=v==='i';draw();}),stats),view,
-    UI.note('<b>Approximate demo:</b> this uses a small built-in vocabulary and a greedy longest-match rule inspired by subword tokenizers. Real tokenizers (for example byte-pair encoding) learn tens of thousands of pieces from data. The numeric IDs shown here are illustrative hashes, not any real model\'s IDs.','warn'),
+    UI.note(EDITION.lite?'<b>Approximate demo:</b> real chatbots also split text into pieces, but from a much bigger list learned from data. The numbers shown here are made up.':'<b>Approximate demo:</b> this uses a small built-in vocabulary and a greedy longest-match rule inspired by subword tokenizers. Real tokenizers (for example byte-pair encoding) learn tens of thousands of pieces from data. The numeric IDs shown here are illustrative hashes, not any real model\'s IDs.','warn'),
     UI.note('Notice: the model never sees "letters" or "words" directly, only token IDs. That is one reason letter-counting and spelling can trip models up, and why text in languages poorly covered by a tokenizer\'s training data tends to need more tokens.','good'));
   draw();
 }};
@@ -344,9 +348,10 @@ mount(el){
   }
   function choose(i){chosen.push({t:curDist[i][0],p:curDist[i][1]});render();}
   el.append(UI.note('Context so far. In a real model the distribution covers ~100,000 possible tokens; here we show only a few <b>illustrative</b> candidates. <b>Click a bar to choose the next token.</b>'),sent,
-    h('h3',{},'P(next token | everything so far)  ·  illustrative values'),barsBox,prob,
+    h('h3',{},EDITION.lite?'How likely is each next word? (made-up numbers)':'P(next token | everything so far)  ·  illustrative values'),barsBox,prob,
     h('div',{class:'row'},UI.btn('Sample from distribution',()=>{if(curDist)choose(sampleIdx(curDist.map(d=>d[1])));},'pri'),UI.btn('Greedy: most likely',()=>{if(curDist)choose(0);}),UI.btn('Undo',()=>{chosen.pop();render();}),UI.btn('Restart',()=>{chosen=[];render();})),
     UI.note('Notice: the most likely word is not always the "right" word, and each choice changes every later distribution. Because the numbers are invented for teaching, no part of this screen says what any real model would output.','warn'));
+  if(EDITION.lite)prob.style.display='none';
   render();
   return{replay(){chosen=[];render();let n=0;const step=()=>{if(!curDist||n++>5)return;choose(sampleIdx(curDist.map(d=>d[1])));setTimeout(step,S.prefs.reduced?0:700);};setTimeout(step,500);}};
 }};
@@ -365,11 +370,12 @@ mount(el){
     list.innerHTML=last.length?last.map(i=>`<span class="chip" style="background:hsl(${i*55} 75% 72%)">${toks[i]}</span>`).join(''):'<span class="sub">Generated completions appear here.</span>';
   }
   function gen(n){const p=softmax(logits,T);last=[];for(let i=0;i<n;i++){const k=sampleIdx(p);counts[k]++;total++;last.push(k);}draw();}
-  const sl=UI.slider('Temperature T',0,2,.05,T,v=>{T=v;counts=toks.map(()=>0);total=0;last=[];draw();},v=>v===0?'greedy':v.toFixed(2));
+  const sl=UI.slider(EDITION.lite?'Creativity dial':'Temperature T',0,2,.05,T,v=>{T=v;counts=toks.map(()=>0);total=0;last=[];draw();},v=>v===0?'greedy':v.toFixed(2));
   el.append(h('div',{class:'mono card',html:'Prompt: <b>"The most important thing for a learner is ___"</b> <span class="sub">(logits are illustrative)</span>'}),sl.el,
     h('div',{class:'grid2'},h('div',{},h('h3',{},'Probability after softmax(z / T)'),b1),h('div',{},h('h3',{},'Observed choices (sampled)'),b2)),stat,
     h('div',{class:'row'},UI.btn('Generate 1',()=>gen(1),'pri'),UI.btn('Generate 10',()=>gen(10),'pri'),UI.btn('Generate 200',()=>gen(200)),UI.btn('Reset tally',()=>{counts=toks.map(()=>0);total=0;last=[];draw();})),list,
     UI.note('Low T sharpens the distribution toward the top token (T→0 is greedy decoding: always the same answer). High T flattens it, so unlikely tokens like <i>pizza</i> appear more often. Temperature changes <b>how we sample</b>, not what the model "knows".','good'));
+  if(EDITION.lite)stat.style.display='none';
   draw();
   return{replay(){counts=toks.map(()=>0);total=0;gen(10);}};
 }};

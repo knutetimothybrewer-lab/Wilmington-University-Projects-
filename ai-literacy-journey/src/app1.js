@@ -89,7 +89,7 @@ const Cinematics={
     const done=await Cine.run(async c=>{
       View.showCampus(false);Campus.setCam(0);View.avatarCampus(-120);Avatar.face(1);Campus.highlight(0);
       Cap.set('');showTitle('');$('#fade').classList.add('on');
-      showTitle('<div class="kicker" style="font-size:24px">Wilmington University</div><div class="tt">Journey Through the Intelligence Machine</div><div class="ts">AI Literacy for Educators</div>');
+      showTitle(`<div class="kicker" style="font-size:24px">Wilmington University</div><div class="tt">${EDITION.title}</div><div class="ts">${EDITION.sub}</div>`);
       await fadeC(c,false,1400);await c.wait(2200);
       showTitle('');Cap.set(sc.cap[0]);await c.wait(1600);
       Cap.set(sc.cap[1]);
