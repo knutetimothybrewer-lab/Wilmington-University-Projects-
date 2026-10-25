@@ -54,26 +54,29 @@ const Campus={
       ${[[-110,420],[0,380],[110,420],[-60,470],[60,470]].map(([x,y],k)=>`<circle class="flick" cx="${c+x}" cy="${y}" r="9" fill="#38e1ff" style="animation-delay:${k*.4}s"/>`).join('')}
       <path d="M${c-110} 420L${c} 380L${c+110} 420M${c-60} 470L${c} 380L${c+60} 470M${c-110} 420L${c-60} 470M${c+110} 420L${c+60} 470" stroke="#38e1ff" stroke-width="3" fill="none"/>
       ${[-290,-210,210,290].map(x=>`<rect x="${c+x-30}" y="600" width="60" height="200" fill="url(#glass)" stroke="#2a8a9a" stroke-width="4"/>`).join('')}
-      <rect x="${c-340}" y="${gy-24}" width="680" height="24" fill="#2a8a9a"/></g>${this.door(c,1)}${this.sign(c,1,'AI Discovery Center')}`;
+      <rect x="${c-340}" y="${gy-24}" width="680" height="24" fill="#2a8a9a"/></g>${this.door(c,1)}${this.sign(c,1,((EDITION.signs&&EDITION.signs[0])||'AI Discovery Center'))}`;
     // building 2: Computer Lab
     c=C[1];
     s+=`<g><rect x="${c-330}" y="400" width="660" height="${gy-400}" fill="#2a3550"/><rect x="${c-330}" y="400" width="660" height="22" fill="#38e1ff"/>
       <rect x="${c-150}" y="300" width="300" height="100" rx="10" fill="#0b1226" stroke="#38e1ff" stroke-width="5"/><text x="${c}" y="372" text-anchor="middle" fill="#38e1ff" font-size="52" font-family="monospace" font-weight="700">&lt;/AI&gt;</text>
       ${Array.from({length:12},(_,k)=>{const col=k%6,row=Math.floor(k/6);return `<rect class="${(k*7)%3?'':'flick'}" x="${c-300+col*100}" y="${440+row*76}" width="76" height="52" fill="${(k*5)%4?'#7fe7ff':'#ffe08a'}" opacity=".85" style="animation-delay:${k*.3}s"/>`}).join('')}
-      <rect x="${c-340}" y="${gy-24}" width="680" height="24" fill="#16203a"/></g>${this.door(c,2)}${this.sign(c,2,'Language Machine Lab')}`;
+      <rect x="${c-340}" y="${gy-24}" width="680" height="24" fill="#16203a"/></g>${this.door(c,2)}${this.sign(c,2,((EDITION.signs&&EDITION.signs[1])||'Language Machine Lab'))}`;
     // building 3: Library
     c=C[2];
     s+=`<g><polygon points="${c-360},470 ${c},340 ${c+360},470" fill="#c9b27a" stroke="#8c7a4a" stroke-width="5"/><circle cx="${c}" cy="425" r="30" fill="#fff6dd" stroke="#8c7a4a" stroke-width="4"/>
       <rect x="${c-340}" y="470" width="680" height="${gy-470}" fill="#e3d2a4"/>${[-300,-200,-100,100,200,300].map(x=>`<rect x="${c+x-22}" y="480" width="44" height="${gy-500}" fill="#f4ead0" stroke="#b79d5e" stroke-width="3"/>`).join('')}
       <rect x="${c-360}" y="${gy-24}" width="720" height="24" fill="#b79d5e"/><rect x="${c-380}" y="${gy-8}" width="760" height="10" fill="#9a8450"/>
-      ${[-250,250].map(x=>`<g class="float" style="animation-delay:${x/100}s"><rect x="${c+x-30}" y="660" width="60" height="44" rx="4" fill="#8a3b2e"/><rect x="${c+x-24}" y="666" width="48" height="32" fill="#fff6dd"/></g>`).join('')}</g>${this.door(c,3)}${this.sign(c,3,'Digital Library')}`;
+      ${[-250,250].map(x=>`<g class="float" style="animation-delay:${x/100}s"><rect x="${c+x-30}" y="660" width="60" height="44" rx="4" fill="#8a3b2e"/><rect x="${c+x-24}" y="666" width="48" height="32" fill="#fff6dd"/></g>`).join('')}</g>${this.door(c,3)}${this.sign(c,3,((EDITION.signs&&EDITION.signs[2])||'Digital Library'))}`;
     // building 4: School / Observatory
-    c=C[3];
-    s+=`<g><rect x="${c-340}" y="440" width="680" height="${gy-440}" fill="#a2503f"/><rect x="${c-340}" y="440" width="680" height="16" fill="#6e2f24"/>
+        c=C[3];
+    s+=EDITION.lite?`<g><rect x="${c-340}" y="430" width="680" height="${gy-430}" fill="#3a4252"/><rect x="${c-340}" y="430" width="680" height="18" fill="#22c58b"/>
+      ${[-230,-80,70,220].map((x,k)=>`<g><circle cx="${c+x}" cy="380" r="46" fill="#222a38" stroke="#9fb0c8" stroke-width="6"/><g class="spin" style="animation-duration:${3+k}s"><path d="M${c+x} 380l0 -34M${c+x} 380l30 17M${c+x} 380l-30 17" stroke="#cfe0f5" stroke-width="9" stroke-linecap="round"/></g></g>`).join('')}
+      ${Array.from({length:24},(_,k)=>{const col=k%8,row=Math.floor(k/8);return `<rect x="${c-310+col*78}" y="${480+row*64}" width="60" height="40" rx="4" fill="#12161f"/><circle class="flick" cx="${c-292+col*78}" cy="${500+row*64}" r="5" fill="${(k*7)%3?'#22c58b':'#ffb84d'}" style="animation-delay:${(k*.23).toFixed(2)}s"/><circle class="flick" cx="${c-274+col*78}" cy="${500+row*64}" r="5" fill="#38e1ff" style="animation-delay:${(k*.31).toFixed(2)}s"/>`}).join('')}
+      <rect x="${c-340}" y="${gy-24}" width="680" height="24" fill="#222a38"/></g>${this.door(c,4)}${this.sign(c,4,((EDITION.signs&&EDITION.signs[3])||'Decision Observatory'))}`:`<g><rect x="${c-340}" y="440" width="680" height="${gy-440}" fill="#a2503f"/><rect x="${c-340}" y="440" width="680" height="16" fill="#6e2f24"/>
       <rect x="${c-70}" y="270" width="140" height="170" fill="#b45b49"/><polygon points="${c-90},270 ${c},190 ${c+90},270" fill="#6e2f24"/><circle cx="${c}" cy="332" r="38" fill="#fff6dd" stroke="#4a1f18" stroke-width="5"/><path d="M${c} 332V306M${c} 332l18 10" stroke="#222" stroke-width="4"/>
       <path d="M${c-290} 440A60 60 0 0 1 ${c-170} 440Z" fill="#cfd8e6" stroke="#6e7d96" stroke-width="4"/><rect x="${c-232}" y="395" width="6" height="45" fill="#6e7d96"/>
       ${Array.from({length:8},(_,k)=>`<rect x="${c-300+(k%4)*150+(k%4>1?140:0)}" y="${k<4?480:640}" width="62" height="86" fill="${(k*3)%5?'#cfe9ff':'#ffe08a'}" stroke="#fff" stroke-width="5"/>`).join('')}
-      <rect x="${c+250}" y="250" width="6" height="190" fill="#ddd"/><path d="M${c+256} 252h70v44h-70z" fill="#00693C"/></g>${this.door(c,4)}${this.sign(c,4,'Decision Observatory')}`;
+      <rect x="${c+250}" y="250" width="6" height="190" fill="#ddd"/><path d="M${c+256} 252h70v44h-70z" fill="#00693C"/></g>${this.door(c,4)}${this.sign(c,4,((EDITION.signs&&EDITION.signs[3])||'Decision Observatory'))}`;
     // building 5: Collaboration Center
     c=C[4];
     s+=`<g><path d="M${c-350} ${gy}V540Q${c-350} 360 ${c} 330Q${c+350} 360 ${c+350} 540V${gy}Z" fill="#dff3ea" stroke="#00693C" stroke-width="6"/>
@@ -81,7 +84,7 @@ const Campus={
       <rect x="${c-300}" y="640" width="130" height="190" fill="url(#glass)" stroke="#00693C" stroke-width="4"/><rect x="${c+170}" y="640" width="130" height="190" fill="url(#glass)" stroke="#00693C" stroke-width="4"/>
       <circle cx="${c-235}" cy="700" r="20" fill="#00693C"/><rect x="${c-262}" y="725" width="54" height="75" rx="18" fill="#00693C"/>
       <rect x="${c+205}" y="680" width="62" height="58" rx="12" fill="#38a8c8"/><rect x="${c+220}" y="660" width="32" height="20" rx="6" fill="#38a8c8"/><rect x="${c+198}" y="740" width="76" height="60" rx="10" fill="#38a8c8"/>
-      <path d="M${c-170} 730h340" stroke="#f2b705" stroke-width="5" stroke-dasharray="12 10" class="flow"/></g>${this.door(c,5)}${this.sign(c,5,'Human–Machine Center')}`;
+      <path d="M${c-170} 730h340" stroke="#f2b705" stroke-width="5" stroke-dasharray="12 10" class="flow"/></g>${this.door(c,5)}${this.sign(c,5,((EDITION.signs&&EDITION.signs[4])||'Human–Machine Center'))}`;
     // lamp posts
     for(let x=1240;x<W;x+=960)s+=`<g><rect x="${x}" y="${gy-220}" width="10" height="250" fill="#2a2f3a"/><circle class="lamp" cx="${x+5}" cy="${gy-232}" r="20" fill="#fff4b0" opacity=".9"/></g>`;
     return s;
@@ -148,6 +151,12 @@ const Envs={
     ${[[110,170],[1500,170],[800,130]].map(([x,y],i)=>`<g class="${i%2?'float':'float2'}" transform="translate(${x} ${y})"><rect width="310" height="200" rx="14" fill="#38e1ff" fill-opacity=".1" stroke="#38e1ff" stroke-width="3"/>${[0,1,2,3].map(k=>`<rect x="20" y="${26+k*40}" width="${60+((k*71+i*47)%190)}" height="16" rx="6" fill="${k===2?'#ffb84d':'#7fe7ff'}" opacity=".85"/>`).join('')}<circle cx="270" cy="30" r="10" fill="#ffb84d" class="flick"/></g>`).join('')}
     <rect y="880" width="1920" height="200" fill="#0d1a30"/><rect y="880" width="1920" height="8" fill="#6fa8ff"/>
     ${[260,640,1280,1660].map(x=>`<g><rect x="${x-90}" y="950" width="180" height="16" fill="#27406a"/><rect x="${x-70}" y="966" width="12" height="70" fill="#27406a"/><rect x="${x+58}" y="966" width="12" height="70" fill="#27406a"/></g>`).join('')}
+  </svg>`,
+  datacenter:()=>`<svg viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="dcw" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#05101c"/><stop offset="1" stop-color="#0c2a3c"/></linearGradient></defs>
+    <rect width="1920" height="1080" fill="url(#dcw)"/>
+    ${[0,1,2,3,4,5,6,7].map(i=>`<g transform="translate(${80+i*230} 130)"><rect width="190" height="740" rx="8" fill="#101c2c" stroke="#2c4a66" stroke-width="3"/>${Array.from({length:14},(_,k)=>`<rect x="14" y="${16+k*51}" width="162" height="38" rx="4" fill="#0a1220" stroke="#1c3550"/><circle class="flick" cx="30" cy="${35+k*51}" r="5" fill="${(i+k)%4?'#22c58b':'#ffb84d'}" style="animation-delay:${(((i*5+k*3)%10)*.25).toFixed(2)}s"/><circle class="flick" cx="48" cy="${35+k*51}" r="5" fill="#38e1ff" style="animation-delay:${(((i*3+k*7)%10)*.2).toFixed(2)}s"/>`).join('')}</g>`).join('')}
+    <g fill="none" stroke-width="3">${[0,1,2].map(i=>`<path class="flow" d="M0 ${920+i*40}H1920" stroke="${['#22c58b','#38e1ff','#ffb84d'][i]}" stroke-opacity=".45"/>`).join('')}</g>
+    <rect y="880" width="1920" height="200" fill="#08141f" opacity=".85"/><rect y="880" width="1920" height="6" fill="#22c58b"/>
   </svg>`,
   collab:()=>`<svg viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="cb" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#3a2a14"/><stop offset=".5" stop-color="#12304a"/><stop offset="1" stop-color="#0b3a5a"/></linearGradient><radialGradient id="cm"><stop offset="0" stop-color="#fff" stop-opacity=".9"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient></defs>
     <rect width="1920" height="1080" fill="url(#cb)"/>

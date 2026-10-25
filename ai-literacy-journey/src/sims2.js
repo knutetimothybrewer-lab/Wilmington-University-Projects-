@@ -395,3 +395,49 @@ Vis.steps=(b,sc,cap)=>{
   wrap.append(list,h('div',{class:'row'},UI.btn('Next step ▸',()=>{tok++;if(cur<st.length-1)cur++;draw();},'pri sm'),UI.btn('▶ Play all',play,'sm'),UI.btn('Start over',()=>{tok++;cur=0;draw();},'sm')));
   b.append(wrap);draw();
 };
+
+/* Clickable timeline figure: concept.timeline = [[year, title, description], ...] */
+Vis.timeline=(b,sc,cap)=>{
+  const T=sc.concept.timeline;let cur=0;
+  const wrap=h('div',{style:{display:'flex',flexDirection:'column',gap:'5px',padding:'4px 8px',height:'100%'}}),list=h('div',{style:{display:'flex',flexDirection:'column',gap:'4px',overflow:'auto',flex:1}});
+  function draw(){
+    list.innerHTML='';
+    T.forEach(([y,t,d],i)=>{const on=i===cur;
+      list.appendChild(h('button',{type:'button',onclick:()=>{cur=i;draw();},style:{display:'flex',gap:'10px',alignItems:'center',textAlign:'left',padding:'5px 10px',borderRadius:'10px',border:'2px solid '+(on?'var(--gold)':'var(--line)'),background:on?'#f2b7052a':'var(--panel2)',font:'inherit',color:'inherit',cursor:'pointer'}},
+        h('span',{style:{flex:'0 0 118px',whiteSpace:'nowrap',fontWeight:700,color:'var(--gold)',fontFamily:'ui-monospace,Consolas,monospace',fontSize:'.85em'}},y),h('span',{style:{fontSize:'.82em'}},t)));});
+    cap(T[cur][0]+': '+T[cur][2]);
+  }
+  wrap.append(list,h('div',{class:'row'},UI.btn('Earlier',()=>{cur=Math.max(0,cur-1);draw();},'sm'),UI.btn('Later ▸',()=>{cur=Math.min(T.length-1,cur+1);draw();},'pri sm')));
+  b.append(wrap);draw();
+};
+
+/* Lite edition: how a message travels to a data center and back (scripted) */
+Sims.datacenter={kind:'script',title:'Send a Message to a Data Center',
+mount(el){
+  const STG=[['Your device','You type a question and press Send.'],['The internet','Your message travels over cables and networks as small packets of data.'],['A data center','It arrives at a large building full of computers, called servers, in rows of racks.'],['Many chips, working together','Specialized chips split up the work of scoring the next piece of text, over and over.'],['The reply returns','The answer streams back to you, a few pieces at a time.']];
+  let cur=-1,busy=30,tok=0;
+  const W=760,H=300,px=[70,230,400,560,690];
+  const svg=h('svg',{viewBox:`0 0 ${W} ${H}`,width:'100%',role:'img','aria-label':'A message travels from a laptop across the internet to a data center and back'}),cap=h('div',{class:'card',style:{minHeight:'104px'}}),pk=h('circle',{r:9,fill:'#ffe08a',cx:px[0],cy:150});
+  function draw(){
+    svg.innerHTML='';
+    svg.append(h('path',{d:`M${px[0]} 150H${px[4]}`,stroke:'#38e1ff','stroke-width':3,'stroke-dasharray':'8 7',class:'flow',fill:'none'}));
+    STG.forEach(([t],i)=>{const on=i===cur;
+      svg.append(h('rect',{x:px[i]-52,y:90,width:104,height:120,rx:12,fill:on?'#f2b7052a':'#16284f',stroke:on?'#ffe08a':'#6a7fb0','stroke-width':on?4:2}));
+      if(i===0)svg.append(h('rect',{x:px[i]-28,y:118,width:56,height:36,rx:4,fill:'none',stroke:'#fff','stroke-width':3}),h('rect',{x:px[i]-38,y:158,width:76,height:8,rx:3,fill:'#fff'}));
+      if(i===1)svg.append(h('ellipse',{cx:px[i],cy:148,rx:34,ry:22,fill:'none',stroke:'#fff','stroke-width':3}),h('text',{x:px[i],y:154,'text-anchor':'middle',fill:'#fff','font-size':18},'web'));
+      if(i===2||i===3){const n=i===2?3:12;for(let k=0;k<n;k++){const lit=(k/n)*100<busy+10;const rx=i===2?px[i]-30+k*24:px[i]-36+(k%4)*24,ry=i===2?114:112+Math.floor(k/4)*26;svg.append(h('rect',{x:rx,y:ry,width:i===2?18:20,height:i===2?66:18,rx:3,fill:lit?'#22c58b':'#2a3a50'}));}}
+      if(i===4)svg.append(h('rect',{x:px[i]-36,y:116,width:72,height:46,rx:8,fill:'#ffffff14',stroke:'#fff','stroke-width':2}),h('text',{x:px[i],y:146,'text-anchor':'middle',fill:'#fff','font-size':16},'Reply'));
+      svg.append(h('text',{x:px[i],y:240,'text-anchor':'middle',fill:on?'#ffe08a':'#b9c8ea','font-size':14,'font-weight':on?700:400},(i+1)+'. '+t.split(',')[0].replace('Many chips working together','Many chips')));
+    });
+    svg.append(pk);pk.setAttribute('cx',cur>=0?px[cur]:px[0]);pk.setAttribute('cy',150);
+    cap.innerHTML=cur<0?'Press <b>Send a question</b> to follow a message.':'<b>'+STG[cur][0]+'.</b> '+STG[cur][1];
+    if(cur===3)cap.innerHTML+=`<div class="sub" style="margin-top:4px">${busy>70?'Busy time: lots of people are asking at once, so chips are shared and replies can slow down.':'Quiet time: plenty of chips are free.'}</div>`;
+  }
+  async function send(){const my=++tok;for(let i=0;i<STG.length;i++){if(my!==tok)return;cur=i;draw();await sleep(S.prefs.reduced?250:1400);}}
+  const sl=UI.slider('How busy is the data center?',0,100,5,busy,v=>{busy=v;draw();},v=>v+'%');
+  el.append(UI.note('<b>Guided example:</b> no AI is running. It shows the path a message takes when you use a chatbot that runs in the cloud. Some small AI models can run on your own device, but the large ones usually run in data centers.','warn'),svg,cap,
+    h('div',{class:'row'},UI.btn('Send a question ▶',send,'pri'),UI.btn('Step: next stage',()=>{tok++;cur=Math.min(STG.length-1,cur+1);draw();}),UI.btn('Reset',()=>{tok++;cur=-1;draw();})),sl.el,
+    UI.note('Why this matters for schools: the model is not stored on the student’s laptop, so what you type is sent to a company’s computers. That is why privacy rules matter, and why running these systems takes a great deal of electricity and cooling. Exact amounts vary and are still being studied.'));
+  draw();
+  return{replay(){send();}};
+}};

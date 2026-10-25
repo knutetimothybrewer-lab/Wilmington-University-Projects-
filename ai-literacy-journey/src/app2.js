@@ -127,9 +127,9 @@ const Nav={
     HUD.update();Notes.render();announce(`${C.title}. ${sc.title}`);
     const campusScene=C.env==='campus';
     if(sc.type==='cinema'){
-      if(sc.cine==='opening')await Cinematics.opening(sc);else if(sc.cine==='portal'){await Cinematics.portal(sc);this.envCh=2;}else await Cinematics.ret(sc);
+      if(sc.cine==='opening')await Cinematics.opening(sc);else if(sc.cine==='portal'){await Cinematics.portal(sc);this.envCh=S.ch;}else await Cinematics.ret(sc);
       if(id!==this.navId)return;
-      if(sc.cine==='portal')this.envCh=2;
+      if(sc.cine==='portal')this.envCh=S.ch;
       $('#fade').classList.remove('on');return;
     }
     $('#fade').classList.remove('on');

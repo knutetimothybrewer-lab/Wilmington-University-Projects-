@@ -1,9 +1,10 @@
 'use strict';
-const EDITION={lite:true,key:'wilmu-ail-lite-v1',targets:[45,60,75],def:60,max:75,
-  title:'AI Made Simple',sub:'A First Look for Educators',
+const EDITION={lite:true,key:'wilmu-ail-lite-v2',targets:[45,60,75],def:60,max:75,
+  title:'AI Made Simple',sub:'The Story of AI, for New Teachers',
+  signs:['AI Discovery Center','Machine Learning Lab','The Word Library','The Data Center','Fact-Check Center'],
   synth:[
-  ['Kinds of AI','Some AI follows rules people wrote. Some learns from examples. Some builds new text or images. Know which kind you are using.'],
-  ['How chatbots write','A chatbot builds text one small piece at a time, choosing a likely next piece. It does not look facts up.'],
-  ['Made-up answers','Because it picks likely words, a chatbot can sound sure and still be wrong. Always check important facts.'],
-  ['Trusting too much','When a tool is usually right, we stop checking. Build in time and a clear way to say no.'],
-  ['People and machines','Let AI help with drafts and ideas. Keep decisions about students, and the thinking that matters, with people.']]};
+  ['What AI is','AI means computer systems that do tasks we think need intelligence. There are different kinds, and it has a 70-year story.'],
+  ['Machine learning','Instead of being given rules, the computer finds patterns in examples. Good examples make good tools.'],
+  ['LLMs and tokens','A large language model writes by choosing a likely next piece of text, over and over. Pieces are called tokens.'],
+  ['Data centers','Big chatbots are trained and run in data centers full of chips. Your messages travel there, so privacy and energy matter.'],
+  ['Hallucinations','Likely is not the same as true. Check important facts, keep people in charge, and protect student data.']]};

@@ -586,26 +586,29 @@ const Campus={
       ${[[-110,420],[0,380],[110,420],[-60,470],[60,470]].map(([x,y],k)=>`<circle class="flick" cx="${c+x}" cy="${y}" r="9" fill="#38e1ff" style="animation-delay:${k*.4}s"/>`).join('')}
       <path d="M${c-110} 420L${c} 380L${c+110} 420M${c-60} 470L${c} 380L${c+60} 470M${c-110} 420L${c-60} 470M${c+110} 420L${c+60} 470" stroke="#38e1ff" stroke-width="3" fill="none"/>
       ${[-290,-210,210,290].map(x=>`<rect x="${c+x-30}" y="600" width="60" height="200" fill="url(#glass)" stroke="#2a8a9a" stroke-width="4"/>`).join('')}
-      <rect x="${c-340}" y="${gy-24}" width="680" height="24" fill="#2a8a9a"/></g>${this.door(c,1)}${this.sign(c,1,'AI Discovery Center')}`;
+      <rect x="${c-340}" y="${gy-24}" width="680" height="24" fill="#2a8a9a"/></g>${this.door(c,1)}${this.sign(c,1,((EDITION.signs&&EDITION.signs[0])||'AI Discovery Center'))}`;
     // building 2: Computer Lab
     c=C[1];
     s+=`<g><rect x="${c-330}" y="400" width="660" height="${gy-400}" fill="#2a3550"/><rect x="${c-330}" y="400" width="660" height="22" fill="#38e1ff"/>
       <rect x="${c-150}" y="300" width="300" height="100" rx="10" fill="#0b1226" stroke="#38e1ff" stroke-width="5"/><text x="${c}" y="372" text-anchor="middle" fill="#38e1ff" font-size="52" font-family="monospace" font-weight="700">&lt;/AI&gt;</text>
       ${Array.from({length:12},(_,k)=>{const col=k%6,row=Math.floor(k/6);return `<rect class="${(k*7)%3?'':'flick'}" x="${c-300+col*100}" y="${440+row*76}" width="76" height="52" fill="${(k*5)%4?'#7fe7ff':'#ffe08a'}" opacity=".85" style="animation-delay:${k*.3}s"/>`}).join('')}
-      <rect x="${c-340}" y="${gy-24}" width="680" height="24" fill="#16203a"/></g>${this.door(c,2)}${this.sign(c,2,'Language Machine Lab')}`;
+      <rect x="${c-340}" y="${gy-24}" width="680" height="24" fill="#16203a"/></g>${this.door(c,2)}${this.sign(c,2,((EDITION.signs&&EDITION.signs[1])||'Language Machine Lab'))}`;
     // building 3: Library
     c=C[2];
     s+=`<g><polygon points="${c-360},470 ${c},340 ${c+360},470" fill="#c9b27a" stroke="#8c7a4a" stroke-width="5"/><circle cx="${c}" cy="425" r="30" fill="#fff6dd" stroke="#8c7a4a" stroke-width="4"/>
       <rect x="${c-340}" y="470" width="680" height="${gy-470}" fill="#e3d2a4"/>${[-300,-200,-100,100,200,300].map(x=>`<rect x="${c+x-22}" y="480" width="44" height="${gy-500}" fill="#f4ead0" stroke="#b79d5e" stroke-width="3"/>`).join('')}
       <rect x="${c-360}" y="${gy-24}" width="720" height="24" fill="#b79d5e"/><rect x="${c-380}" y="${gy-8}" width="760" height="10" fill="#9a8450"/>
-      ${[-250,250].map(x=>`<g class="float" style="animation-delay:${x/100}s"><rect x="${c+x-30}" y="660" width="60" height="44" rx="4" fill="#8a3b2e"/><rect x="${c+x-24}" y="666" width="48" height="32" fill="#fff6dd"/></g>`).join('')}</g>${this.door(c,3)}${this.sign(c,3,'Digital Library')}`;
+      ${[-250,250].map(x=>`<g class="float" style="animation-delay:${x/100}s"><rect x="${c+x-30}" y="660" width="60" height="44" rx="4" fill="#8a3b2e"/><rect x="${c+x-24}" y="666" width="48" height="32" fill="#fff6dd"/></g>`).join('')}</g>${this.door(c,3)}${this.sign(c,3,((EDITION.signs&&EDITION.signs[2])||'Digital Library'))}`;
     // building 4: School / Observatory
-    c=C[3];
-    s+=`<g><rect x="${c-340}" y="440" width="680" height="${gy-440}" fill="#a2503f"/><rect x="${c-340}" y="440" width="680" height="16" fill="#6e2f24"/>
+        c=C[3];
+    s+=EDITION.lite?`<g><rect x="${c-340}" y="430" width="680" height="${gy-430}" fill="#3a4252"/><rect x="${c-340}" y="430" width="680" height="18" fill="#22c58b"/>
+      ${[-230,-80,70,220].map((x,k)=>`<g><circle cx="${c+x}" cy="380" r="46" fill="#222a38" stroke="#9fb0c8" stroke-width="6"/><g class="spin" style="animation-duration:${3+k}s"><path d="M${c+x} 380l0 -34M${c+x} 380l30 17M${c+x} 380l-30 17" stroke="#cfe0f5" stroke-width="9" stroke-linecap="round"/></g></g>`).join('')}
+      ${Array.from({length:24},(_,k)=>{const col=k%8,row=Math.floor(k/8);return `<rect x="${c-310+col*78}" y="${480+row*64}" width="60" height="40" rx="4" fill="#12161f"/><circle class="flick" cx="${c-292+col*78}" cy="${500+row*64}" r="5" fill="${(k*7)%3?'#22c58b':'#ffb84d'}" style="animation-delay:${(k*.23).toFixed(2)}s"/><circle class="flick" cx="${c-274+col*78}" cy="${500+row*64}" r="5" fill="#38e1ff" style="animation-delay:${(k*.31).toFixed(2)}s"/>`}).join('')}
+      <rect x="${c-340}" y="${gy-24}" width="680" height="24" fill="#222a38"/></g>${this.door(c,4)}${this.sign(c,4,((EDITION.signs&&EDITION.signs[3])||'Decision Observatory'))}`:`<g><rect x="${c-340}" y="440" width="680" height="${gy-440}" fill="#a2503f"/><rect x="${c-340}" y="440" width="680" height="16" fill="#6e2f24"/>
       <rect x="${c-70}" y="270" width="140" height="170" fill="#b45b49"/><polygon points="${c-90},270 ${c},190 ${c+90},270" fill="#6e2f24"/><circle cx="${c}" cy="332" r="38" fill="#fff6dd" stroke="#4a1f18" stroke-width="5"/><path d="M${c} 332V306M${c} 332l18 10" stroke="#222" stroke-width="4"/>
       <path d="M${c-290} 440A60 60 0 0 1 ${c-170} 440Z" fill="#cfd8e6" stroke="#6e7d96" stroke-width="4"/><rect x="${c-232}" y="395" width="6" height="45" fill="#6e7d96"/>
       ${Array.from({length:8},(_,k)=>`<rect x="${c-300+(k%4)*150+(k%4>1?140:0)}" y="${k<4?480:640}" width="62" height="86" fill="${(k*3)%5?'#cfe9ff':'#ffe08a'}" stroke="#fff" stroke-width="5"/>`).join('')}
-      <rect x="${c+250}" y="250" width="6" height="190" fill="#ddd"/><path d="M${c+256} 252h70v44h-70z" fill="#00693C"/></g>${this.door(c,4)}${this.sign(c,4,'Decision Observatory')}`;
+      <rect x="${c+250}" y="250" width="6" height="190" fill="#ddd"/><path d="M${c+256} 252h70v44h-70z" fill="#00693C"/></g>${this.door(c,4)}${this.sign(c,4,((EDITION.signs&&EDITION.signs[3])||'Decision Observatory'))}`;
     // building 5: Collaboration Center
     c=C[4];
     s+=`<g><path d="M${c-350} ${gy}V540Q${c-350} 360 ${c} 330Q${c+350} 360 ${c+350} 540V${gy}Z" fill="#dff3ea" stroke="#00693C" stroke-width="6"/>
@@ -613,7 +616,7 @@ const Campus={
       <rect x="${c-300}" y="640" width="130" height="190" fill="url(#glass)" stroke="#00693C" stroke-width="4"/><rect x="${c+170}" y="640" width="130" height="190" fill="url(#glass)" stroke="#00693C" stroke-width="4"/>
       <circle cx="${c-235}" cy="700" r="20" fill="#00693C"/><rect x="${c-262}" y="725" width="54" height="75" rx="18" fill="#00693C"/>
       <rect x="${c+205}" y="680" width="62" height="58" rx="12" fill="#38a8c8"/><rect x="${c+220}" y="660" width="32" height="20" rx="6" fill="#38a8c8"/><rect x="${c+198}" y="740" width="76" height="60" rx="10" fill="#38a8c8"/>
-      <path d="M${c-170} 730h340" stroke="#f2b705" stroke-width="5" stroke-dasharray="12 10" class="flow"/></g>${this.door(c,5)}${this.sign(c,5,'Human–Machine Center')}`;
+      <path d="M${c-170} 730h340" stroke="#f2b705" stroke-width="5" stroke-dasharray="12 10" class="flow"/></g>${this.door(c,5)}${this.sign(c,5,((EDITION.signs&&EDITION.signs[4])||'Human–Machine Center'))}`;
     // lamp posts
     for(let x=1240;x<W;x+=960)s+=`<g><rect x="${x}" y="${gy-220}" width="10" height="250" fill="#2a2f3a"/><circle class="lamp" cx="${x+5}" cy="${gy-232}" r="20" fill="#fff4b0" opacity=".9"/></g>`;
     return s;
@@ -680,6 +683,12 @@ const Envs={
     ${[[110,170],[1500,170],[800,130]].map(([x,y],i)=>`<g class="${i%2?'float':'float2'}" transform="translate(${x} ${y})"><rect width="310" height="200" rx="14" fill="#38e1ff" fill-opacity=".1" stroke="#38e1ff" stroke-width="3"/>${[0,1,2,3].map(k=>`<rect x="20" y="${26+k*40}" width="${60+((k*71+i*47)%190)}" height="16" rx="6" fill="${k===2?'#ffb84d':'#7fe7ff'}" opacity=".85"/>`).join('')}<circle cx="270" cy="30" r="10" fill="#ffb84d" class="flick"/></g>`).join('')}
     <rect y="880" width="1920" height="200" fill="#0d1a30"/><rect y="880" width="1920" height="8" fill="#6fa8ff"/>
     ${[260,640,1280,1660].map(x=>`<g><rect x="${x-90}" y="950" width="180" height="16" fill="#27406a"/><rect x="${x-70}" y="966" width="12" height="70" fill="#27406a"/><rect x="${x+58}" y="966" width="12" height="70" fill="#27406a"/></g>`).join('')}
+  </svg>`,
+  datacenter:()=>`<svg viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="dcw" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#05101c"/><stop offset="1" stop-color="#0c2a3c"/></linearGradient></defs>
+    <rect width="1920" height="1080" fill="url(#dcw)"/>
+    ${[0,1,2,3,4,5,6,7].map(i=>`<g transform="translate(${80+i*230} 130)"><rect width="190" height="740" rx="8" fill="#101c2c" stroke="#2c4a66" stroke-width="3"/>${Array.from({length:14},(_,k)=>`<rect x="14" y="${16+k*51}" width="162" height="38" rx="4" fill="#0a1220" stroke="#1c3550"/><circle class="flick" cx="30" cy="${35+k*51}" r="5" fill="${(i+k)%4?'#22c58b':'#ffb84d'}" style="animation-delay:${(((i*5+k*3)%10)*.25).toFixed(2)}s"/><circle class="flick" cx="48" cy="${35+k*51}" r="5" fill="#38e1ff" style="animation-delay:${(((i*3+k*7)%10)*.2).toFixed(2)}s"/>`).join('')}</g>`).join('')}
+    <g fill="none" stroke-width="3">${[0,1,2].map(i=>`<path class="flow" d="M0 ${920+i*40}H1920" stroke="${['#22c58b','#38e1ff','#ffb84d'][i]}" stroke-opacity=".45"/>`).join('')}</g>
+    <rect y="880" width="1920" height="200" fill="#08141f" opacity=".85"/><rect y="880" width="1920" height="6" fill="#22c58b"/>
   </svg>`,
   collab:()=>`<svg viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="cb" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#3a2a14"/><stop offset=".5" stop-color="#12304a"/><stop offset="1" stop-color="#0b3a5a"/></linearGradient><radialGradient id="cm"><stop offset="0" stop-color="#fff" stop-opacity=".9"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient></defs>
     <rect width="1920" height="1080" fill="url(#cb)"/>
@@ -1511,6 +1520,52 @@ Vis.steps=(b,sc,cap)=>{
   b.append(wrap);draw();
 };
 
+/* Clickable timeline figure: concept.timeline = [[year, title, description], ...] */
+Vis.timeline=(b,sc,cap)=>{
+  const T=sc.concept.timeline;let cur=0;
+  const wrap=h('div',{style:{display:'flex',flexDirection:'column',gap:'5px',padding:'4px 8px',height:'100%'}}),list=h('div',{style:{display:'flex',flexDirection:'column',gap:'4px',overflow:'auto',flex:1}});
+  function draw(){
+    list.innerHTML='';
+    T.forEach(([y,t,d],i)=>{const on=i===cur;
+      list.appendChild(h('button',{type:'button',onclick:()=>{cur=i;draw();},style:{display:'flex',gap:'10px',alignItems:'center',textAlign:'left',padding:'5px 10px',borderRadius:'10px',border:'2px solid '+(on?'var(--gold)':'var(--line)'),background:on?'#f2b7052a':'var(--panel2)',font:'inherit',color:'inherit',cursor:'pointer'}},
+        h('span',{style:{flex:'0 0 118px',whiteSpace:'nowrap',fontWeight:700,color:'var(--gold)',fontFamily:'ui-monospace,Consolas,monospace',fontSize:'.85em'}},y),h('span',{style:{fontSize:'.82em'}},t)));});
+    cap(T[cur][0]+': '+T[cur][2]);
+  }
+  wrap.append(list,h('div',{class:'row'},UI.btn('Earlier',()=>{cur=Math.max(0,cur-1);draw();},'sm'),UI.btn('Later ▸',()=>{cur=Math.min(T.length-1,cur+1);draw();},'pri sm')));
+  b.append(wrap);draw();
+};
+
+/* Lite edition: how a message travels to a data center and back (scripted) */
+Sims.datacenter={kind:'script',title:'Send a Message to a Data Center',
+mount(el){
+  const STG=[['Your device','You type a question and press Send.'],['The internet','Your message travels over cables and networks as small packets of data.'],['A data center','It arrives at a large building full of computers, called servers, in rows of racks.'],['Many chips, working together','Specialized chips split up the work of scoring the next piece of text, over and over.'],['The reply returns','The answer streams back to you, a few pieces at a time.']];
+  let cur=-1,busy=30,tok=0;
+  const W=760,H=300,px=[70,230,400,560,690];
+  const svg=h('svg',{viewBox:`0 0 ${W} ${H}`,width:'100%',role:'img','aria-label':'A message travels from a laptop across the internet to a data center and back'}),cap=h('div',{class:'card',style:{minHeight:'104px'}}),pk=h('circle',{r:9,fill:'#ffe08a',cx:px[0],cy:150});
+  function draw(){
+    svg.innerHTML='';
+    svg.append(h('path',{d:`M${px[0]} 150H${px[4]}`,stroke:'#38e1ff','stroke-width':3,'stroke-dasharray':'8 7',class:'flow',fill:'none'}));
+    STG.forEach(([t],i)=>{const on=i===cur;
+      svg.append(h('rect',{x:px[i]-52,y:90,width:104,height:120,rx:12,fill:on?'#f2b7052a':'#16284f',stroke:on?'#ffe08a':'#6a7fb0','stroke-width':on?4:2}));
+      if(i===0)svg.append(h('rect',{x:px[i]-28,y:118,width:56,height:36,rx:4,fill:'none',stroke:'#fff','stroke-width':3}),h('rect',{x:px[i]-38,y:158,width:76,height:8,rx:3,fill:'#fff'}));
+      if(i===1)svg.append(h('ellipse',{cx:px[i],cy:148,rx:34,ry:22,fill:'none',stroke:'#fff','stroke-width':3}),h('text',{x:px[i],y:154,'text-anchor':'middle',fill:'#fff','font-size':18},'web'));
+      if(i===2||i===3){const n=i===2?3:12;for(let k=0;k<n;k++){const lit=(k/n)*100<busy+10;const rx=i===2?px[i]-30+k*24:px[i]-36+(k%4)*24,ry=i===2?114:112+Math.floor(k/4)*26;svg.append(h('rect',{x:rx,y:ry,width:i===2?18:20,height:i===2?66:18,rx:3,fill:lit?'#22c58b':'#2a3a50'}));}}
+      if(i===4)svg.append(h('rect',{x:px[i]-36,y:116,width:72,height:46,rx:8,fill:'#ffffff14',stroke:'#fff','stroke-width':2}),h('text',{x:px[i],y:146,'text-anchor':'middle',fill:'#fff','font-size':16},'Reply'));
+      svg.append(h('text',{x:px[i],y:240,'text-anchor':'middle',fill:on?'#ffe08a':'#b9c8ea','font-size':14,'font-weight':on?700:400},(i+1)+'. '+t.split(',')[0].replace('Many chips working together','Many chips')));
+    });
+    svg.append(pk);pk.setAttribute('cx',cur>=0?px[cur]:px[0]);pk.setAttribute('cy',150);
+    cap.innerHTML=cur<0?'Press <b>Send a question</b> to follow a message.':'<b>'+STG[cur][0]+'.</b> '+STG[cur][1];
+    if(cur===3)cap.innerHTML+=`<div class="sub" style="margin-top:4px">${busy>70?'Busy time: lots of people are asking at once, so chips are shared and replies can slow down.':'Quiet time: plenty of chips are free.'}</div>`;
+  }
+  async function send(){const my=++tok;for(let i=0;i<STG.length;i++){if(my!==tok)return;cur=i;draw();await sleep(S.prefs.reduced?250:1400);}}
+  const sl=UI.slider('How busy is the data center?',0,100,5,busy,v=>{busy=v;draw();},v=>v+'%');
+  el.append(UI.note('<b>Guided example:</b> no AI is running. It shows the path a message takes when you use a chatbot that runs in the cloud. Some small AI models can run on your own device, but the large ones usually run in data centers.','warn'),svg,cap,
+    h('div',{class:'row'},UI.btn('Send a question ▶',send,'pri'),UI.btn('Step: next stage',()=>{tok++;cur=Math.min(STG.length-1,cur+1);draw();}),UI.btn('Reset',()=>{tok++;cur=-1;draw();})),sl.el,
+    UI.note('Why this matters for schools: the model is not stored on the student’s laptop, so what you type is sent to a company’s computers. That is why privacy rules matter, and why running these systems takes a great deal of electricity and cooling. Exact amounts vary and are still being studied.'));
+  draw();
+  return{replay(){send();}};
+}};
+
 'use strict';
 /* =====================================================================
    LECTURE CONTENT (data only). Edit here to change what is taught.
@@ -1550,7 +1605,11 @@ const REFS={
   mitchell1997:'Mitchell, T. M. (1997). Machine Learning. McGraw-Hill.',
   goodfellow2016:'Goodfellow, I., Bengio, Y., & Courville, A. (2016). Deep Learning. MIT Press.',
   jurafsky:'Jurafsky, D., & Martin, J. H. Speech and Language Processing (3rd ed. draft). Stanford University. Freely available online.',
-  bjork2011:'Bjork, E. L., & Bjork, R. A. (2011). Making things hard on yourself, but in a good way: Creating desirable difficulties to enhance learning. In Psychology and the Real World (pp. 56–64). Worth.'
+  bjork2011:'Bjork, E. L., & Bjork, R. A. (2011). Making things hard on yourself, but in a good way: Creating desirable difficulties to enhance learning. In Psychology and the Real World (pp. 56–64). Worth.',
+  turing1950:'Turing, A. M. (1950). Computing machinery and intelligence. Mind, 59(236), 433\u2013460.',
+  shannon1948:'Shannon, C. E. (1948). A mathematical theory of communication. Bell System Technical Journal, 27, 379\u2013423, 623\u2013656.',
+  lecun2015:'LeCun, Y., Bengio, Y., & Hinton, G. (2015). Deep learning. Nature, 521, 436\u2013444.',
+  mccarthy1955:'McCarthy, J., Minsky, M. L., Rochester, N., & Shannon, C. E. (1955). A proposal for the Dartmouth summer research project on artificial intelligence.'
 };
 const REFS_NOTE='Citations were written from the instructor’s knowledge of the literature. Practice what the lecture teaches: confirm each entry (DOI, volume, pages) in a library database before reusing it in publications or assignments.';
 
@@ -1568,10 +1627,10 @@ CHAPTERS.push({
   refs:['long2020','ng2021','miao2023'],
   guide:{facilitation:'Keep the opening brisk. The cinematic sets tone; the warm-up reveals prior beliefs you can return to at the end.',transitions:'Use the campus map (M) to show the five stops, then walk to Building 1.'},
   scenes:[
-    {id:'open',type:'cinema',cine:'opening',title:'Opening Cinematic',minutes:2,
+    {id:'open',type:'cinema',cine:'opening',title:'Opening Cinematic',minutes:1,
      cap:['Wilmington University. A new term. A new kind of classroom.','Our student has heard about artificial intelligence, but what is it really?','Five buildings. Five questions. Let’s find out.'],
      notes:{say:'"Welcome. Over the next hour we are going to walk across a virtual campus and open the hood on artificial intelligence. Our student guide will stop at five buildings. At each one we will experiment, argue a little, and leave with something you can use in your own practice."',demo:'The cinematic is a short scripted animation. Press S to skip. Captions provide the text equivalent for screen readers and for sound-off screen sharing.',transition:'Press → to move to the lecture roadmap.'}},
-    {id:'objectives',type:'concept',title:'The Journey Ahead',minutes:2,station:420,
+    {id:'objectives',type:'concept',title:'The Journey Ahead',minutes:1,station:420,
      concept:{term:'AI literacy for educators',
        def:'AI literacy is the set of knowledge, skills and dispositions that let people understand, evaluate, use and make decisions about AI responsibly. For educators it also includes designing learning in a world where AI is available to students.',
        explain:'Today’s lecture has five stops. (1) Kinds of AI: what is different about rules, learning, deep learning and generative systems. (2) Token by token: how a language model produces text. (3) Hallucinations: why fluent output can be wrong. (4) Automation bias: how people over-trust recommendations. (5) Human and machine: what to keep human. At each stop you will operate a working demonstration.',
@@ -1583,6 +1642,17 @@ CHAPTERS.push({
        check:{q:'Which best describes AI literacy as used in this course?',opts:['Knowing how to write effective prompts','Understanding how AI works, evaluating outputs, recognizing limits, and exercising responsible judgment','Learning to program neural networks','Avoiding all use of AI in classrooms'],ans:1,why:'AI literacy is broader than tool skills: it combines conceptual understanding, critical evaluation and responsible use (see Long & Magerko, 2020; Ng et al., 2021).'},
        visual:'roadmap'},
      notes:{say:'"Here is the road map. Notice that every stop pairs a concept with something you can touch. If at any point you want to go deeper, there is a Dive Deeper button; if you want to stay at a high level, ignore it."',facilitate:'Ask for two or three one-sentence definitions of AI and write them on a shared board. You will revisit them at the end.',misc:'Participants often equate AI with chatbots. Gently widen: recommendation engines, spell-check, adaptive practice software.',caveat:'There is no single agreed definition of AI; the course uses a pragmatic one.',transition:'Next: the warm-up discussion, then we walk to the Discovery Center.'}},
+    {id:'history',type:'concept',title:'Where AI Came From',minutes:2,station:620,
+     concept:{term:"Origins of AI and language models",
+       def:"Artificial intelligence has a history of roughly seventy years, with cycles of optimism and disappointment. Modern large language models (LLMs) are the result of older ideas about predicting text, new learning methods, vast data, and powerful hardware coming together.",
+       analogy:"Flight again: gliders, engines and materials each matured separately. Aircraft appeared when they combined. Likewise ideas, data and computing power had to converge for chatbots.",
+       mechanism:"Three ingredients: better algorithms (deep learning, then the transformer in 2017), far more training text (much of the public web and other sources), and specialized processors that can do enormous amounts of arithmetic in parallel.",
+       classroom:"History is a defense against hype. Earlier waves (expert systems, early chatbots) were also met with big claims. Ask of any tool: what does it demonstrably do today, and what are the limits?",
+       misconception:"\u201cChatGPT invented AI\u201d or \u201cLLMs came out of nowhere.\u201d The field dates to 1956 and the idea of predicting text from statistics to at least 1948. Dates here are simplified; many people contributed.",
+       timeline:[["1948", "Shannon: text from word statistics", "Claude Shannon showed that choosing each next letter or word from the statistics of real English produces English-looking text. This is an early version of the \"predict what comes next\" idea."], ["1950", "Turing asks \"Can machines think?\"", "Alan Turing proposed the \"imitation game\", now called the Turing test, as a way to talk about machine intelligence."], ["1956", "The term \"AI\" is born", "A summer workshop at Dartmouth, organized by John McCarthy and colleagues, launched artificial intelligence as a field and gave it its name."], ["1960s", "First chatbots and rule-based AI", "Programs followed hand-written rules. ELIZA (1966) imitated a therapist by matching patterns in what you typed. It had no understanding, yet people found it convincing."], ["1970s-1990s", "Hype, \"AI winters\" and expert systems", "Early promises outran what computers could do and funding dried up more than once. In the 1980s \"expert systems\" (large rule collections) briefly boomed, then also hit limits."], ["1990s-2000s", "Machine learning takes over", "With more data and faster computers, learning patterns from examples began to beat hand-written rules in many tasks."], ["2012", "Deep learning breakthrough", "A deep neural network won a major image-recognition contest by a wide margin, and deep learning became the leading approach."], ["2017", "The transformer", "Researchers introduced the transformer design (\"Attention Is All You Need\"), which handles text much better and faster. It is the basis of today’s language models."], ["2018-2020", "Language models grow large", "Models such as BERT, GPT-2 and GPT-3 were trained on huge amounts of text and became much more capable as they grew."], ["2022", "Chatbots go mainstream", "ChatGPT was released to the public in November 2022. Millions tried a large language model for the first time, and AI arrived in classrooms."]],
+       check:{q:'What made modern chatbots possible?',opts:['One sudden invention in 2022','Better designs, much more data and much faster computers coming together','Computers suddenly became conscious','Teachers asking for them'],ans:1,why:'Several ingredients matured and combined: new designs such as the transformer, huge amounts of text, and powerful hardware. The 2022 launch made the result public.'},
+       visual:'timeline'},
+     notes:{say:'"AI is about seventy years old. Chatbots arrived in 2022, but they stand on a long history of ideas, setbacks and progress."',demo:'Click any date on the right, or use Earlier and Later.',facilitate:'Ask: which of these dates surprised you?',misc:'That AI is brand new or that one company invented it.',caveat:'Dates and milestones are simplified. Many researchers contributed, and different histories choose different milestones.',transition:'"Quick warm-up, then we walk to the first building."'}},
     {id:'warmup',type:'discuss',title:'Warm-Up: What Do You Believe?',minutes:1,station:900,
      prompts:['Complete the sentence: "AI is ______."','Name an AI system you used this week without calling it AI.','What is one decision in teaching that you would never hand to a machine?'],
      moves:['Collect answers silently (chat or sticky notes) before discussing: this lowers the cost of honesty.','Look for categories: tools vs. intelligence, magic vs. statistics, threat vs. help.','Say you will return to these at the end.'],
@@ -2205,9 +2275,9 @@ const Nav={
     HUD.update();Notes.render();announce(`${C.title}. ${sc.title}`);
     const campusScene=C.env==='campus';
     if(sc.type==='cinema'){
-      if(sc.cine==='opening')await Cinematics.opening(sc);else if(sc.cine==='portal'){await Cinematics.portal(sc);this.envCh=2;}else await Cinematics.ret(sc);
+      if(sc.cine==='opening')await Cinematics.opening(sc);else if(sc.cine==='portal'){await Cinematics.portal(sc);this.envCh=S.ch;}else await Cinematics.ret(sc);
       if(id!==this.navId)return;
-      if(sc.cine==='portal')this.envCh=2;
+      if(sc.cine==='portal')this.envCh=S.ch;
       $('#fade').classList.remove('on');return;
     }
     $('#fade').classList.remove('on');

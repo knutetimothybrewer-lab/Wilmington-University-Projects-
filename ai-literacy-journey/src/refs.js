@@ -37,7 +37,11 @@ const REFS={
   mitchell1997:'Mitchell, T. M. (1997). Machine Learning. McGraw-Hill.',
   goodfellow2016:'Goodfellow, I., Bengio, Y., & Courville, A. (2016). Deep Learning. MIT Press.',
   jurafsky:'Jurafsky, D., & Martin, J. H. Speech and Language Processing (3rd ed. draft). Stanford University. Freely available online.',
-  bjork2011:'Bjork, E. L., & Bjork, R. A. (2011). Making things hard on yourself, but in a good way: Creating desirable difficulties to enhance learning. In Psychology and the Real World (pp. 56–64). Worth.'
+  bjork2011:'Bjork, E. L., & Bjork, R. A. (2011). Making things hard on yourself, but in a good way: Creating desirable difficulties to enhance learning. In Psychology and the Real World (pp. 56–64). Worth.',
+  turing1950:'Turing, A. M. (1950). Computing machinery and intelligence. Mind, 59(236), 433\u2013460.',
+  shannon1948:'Shannon, C. E. (1948). A mathematical theory of communication. Bell System Technical Journal, 27, 379\u2013423, 623\u2013656.',
+  lecun2015:'LeCun, Y., Bengio, Y., & Hinton, G. (2015). Deep learning. Nature, 521, 436\u2013444.',
+  mccarthy1955:'McCarthy, J., Minsky, M. L., Rochester, N., & Shannon, C. E. (1955). A proposal for the Dartmouth summer research project on artificial intelligence.'
 };
 const REFS_NOTE='Citations were written from the instructor’s knowledge of the literature. Practice what the lecture teaches: confirm each entry (DOI, volume, pages) in a library database before reusing it in publications or assignments.';
 
