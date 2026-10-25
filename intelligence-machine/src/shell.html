@@ -1,0 +1,564 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#f6f6ed" />
+    <meta
+      name="description"
+      content="Explore an original 2.5D campus for AI Literacy for Educators at Wilmington University. A complete interactive lecture with offline AI laboratories."
+    />
+    <title>AI Literacy for Educators · The Intelligence Campus</title>
+    <!-- STYLES -->
+  </head>
+  <body>
+    <a class="skip-link" href="#chapter-navigation"
+      >Skip to chapter navigation</a
+    >
+    <header class="app-header">
+      <a class="university" href="#campus" id="brand-campus"
+        ><span class="wordmark">Wilmington<br /><span>University</span></span
+        ><span class="brand-separator"></span
+        ><span class="course-label">AI LITERACY<br />FOR EDUCATORS</span></a
+      >
+      <div class="header-center">
+        <span class="status-dot"></span> THE INTELLIGENCE CAMPUS
+        <span class="version">LECTURE EDITION</span>
+      </div>
+      <div class="header-right">
+        <div class="mode-switch" role="group" aria-label="Operating mode">
+          <button id="instructor-mode" aria-pressed="true">Instructor</button
+          ><button id="student-mode" aria-pressed="false">Explore</button>
+        </div>
+        <button
+          class="icon-button"
+          id="settings-button"
+          aria-label="Open display and accessibility settings"
+          title="Display settings"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 7h16M4 17h16M8 4v6M16 14v6" />
+          </svg></button
+        ><button
+          class="icon-button"
+          id="fullscreen-button"
+          aria-label="Enter fullscreen"
+          title="Fullscreen"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5" />
+          </svg>
+        </button>
+      </div>
+    </header>
+    <main id="main">
+      <div class="experience-topline">
+        <div>
+          <span class="micro-label" id="breadcrumb">CAMPUS OVERVIEW</span
+          ><span class="breadcrumb-dot">/</span
+          ><span id="scene-label">Your journey starts here</span>
+        </div>
+        <label id="scene-jump" class="scene-jump" hidden
+          >Scene
+          <select
+            id="scene-selector"
+            aria-label="Jump to a teaching scene"
+          ></select
+        ></label>
+        <div class="pacing">
+          <span id="pacing-label">75 MIN SESSION</span
+          ><span class="pacing-separator"></span
+          ><span id="session-time">00:00</span
+          ><button
+            id="timer-button"
+            class="tiny-button"
+            aria-label="Start lecture clock"
+          >
+            Start clock
+          </button>
+        </div>
+      </div>
+      <section
+        id="experience"
+        class="experience"
+        aria-label="Interactive campus and chapter world"
+      >
+        <div id="campus-layer" class="world-layer"></div>
+        <div id="interior-layer" class="world-layer" hidden></div>
+        <button id="return-exhibit" class="return-exhibit">
+          Return to exhibit →
+        </button>
+        <section
+          id="lesson-workspace"
+          class="lesson-workspace"
+          aria-label="Interactive exhibit"
+          hidden
+        >
+          <div class="workspace-tools">
+            <button id="deeper-button">Dive Deeper</button
+            ><button id="room-button">View environment</button
+            ><button id="lesson-focus" aria-pressed="false">
+              Focus exhibit
+            </button>
+          </div>
+          <div id="lesson-content"></div>
+        </section>
+        <div class="world-grain" aria-hidden="true"></div>
+        <div id="campus-intro" class="campus-intro">
+          <span class="eyebrow"
+            ><span></span> A DIFFERENT KIND OF LEARNING JOURNEY</span
+          >
+          <h1>
+            Step inside<br />the <em>intelligence<br />machine.</em>
+          </h1>
+          <p>
+            Five places to explore.<br />A new perspective on artificial
+            intelligence.
+          </p>
+          <button class="primary-button" id="begin-button">
+            Begin your journey <span aria-hidden="true">→</span>
+          </button>
+          <div class="intro-footnote">
+            WILMINGTON UNIVERSITY · GRADUATE LEARNING
+          </div>
+        </div>
+        <div id="guide-card" class="guide-card">
+          <div id="guide-portrait" aria-hidden="true"></div>
+          <div>
+            <span class="micro-label">YOUR CAMPUS COMPANION</span
+            ><strong>A curious mind. A shared journey.</strong>
+            <p id="guide-message">
+              Choose a building. Your student guide will lead the way.
+            </p>
+          </div>
+        </div>
+        <div id="compass" class="compass" aria-hidden="true">
+          <span>N</span
+          ><svg viewBox="0 0 60 60">
+            <path d="M30 8l7 23-7-4-7 4z" fill="#45654c" />
+            <path d="M30 52l-7-23 7 4 7-4z" fill="#c5cdb8" />
+            <circle cx="30" cy="30" r="24" fill="none" stroke="#b8c5b0" />
+          </svg>
+        </div>
+        <div id="interior-copy" class="interior-copy" hidden>
+          <button id="back-campus-top" class="back-link">
+            ← Campus overview</button
+          ><span id="interior-eyebrow" class="eyebrow"></span>
+          <h1 id="interior-heading"></h1>
+          <p id="interior-description"></p>
+          <div class="scene-tags">
+            <span id="chapter-time"></span><span>LIVE LECTURE</span>
+          </div>
+          <div class="lesson-actions">
+            <button
+              class="secondary-button"
+              id="explanation-button"
+              aria-expanded="false"
+              aria-controls="explanation-panel"
+            >
+              Reveal explanation</button
+            ><button class="text-button" id="discussion-button">
+              Discussion prompt <span aria-hidden="true">→</span>
+            </button>
+          </div>
+          <div id="explanation-panel" hidden>
+            <p id="explanation-text"></p>
+            <strong
+              >Use Dive Deeper for technical detail and educational
+              applications.</strong
+            >
+          </div>
+          <div id="instructor-tools">
+            <button
+              class="notes-link"
+              id="notes-button"
+              aria-expanded="false"
+              aria-controls="notes-panel"
+            >
+              Teaching notes <span>Visible on this screen</span></button
+            ><button class="notes-link" id="popout-notes">
+              Open separate notes window
+              <span>Choose the window you screen-share carefully</span>
+            </button>
+          </div>
+        </div>
+        <div class="map-tools" id="map-tools">
+          <span class="map-hint"
+            ><span aria-hidden="true">⌖</span> SELECT A BUILDING TO
+            EXPLORE</span
+          ><button
+            id="map-zoom"
+            class="map-zoom"
+            aria-pressed="false"
+            aria-label="Zoom campus map"
+          >
+            ＋
+          </button>
+        </div>
+        <div id="travel-banner" class="travel-banner" hidden>
+          <div>
+            <span class="travel-indicator" aria-hidden="true"></span
+            ><span id="travel-message">Walking to your next chapter</span>
+          </div>
+          <button id="skip-transition">Skip transition →</button>
+          <div class="travel-progress" aria-hidden="true">
+            <span id="travel-progress-bar"></span>
+          </div>
+        </div>
+      </section>
+      <aside
+        id="notes-panel"
+        class="notes-panel"
+        hidden
+        aria-label="Instructor notes"
+      >
+        <div>
+          <span class="eyebrow"
+            >INSTRUCTOR NOTES · VISIBLE DURING SCREEN SHARING</span
+          ><button
+            class="icon-button"
+            id="close-notes"
+            aria-label="Close teaching notes"
+          >
+            ×
+          </button>
+        </div>
+        <div id="notes-content"></div>
+      </aside>
+      <nav
+        id="chapter-navigation"
+        class="chapter-navigation"
+        aria-label="Five chapter buildings"
+      ></nav>
+      <div class="presentation-bar">
+        <div class="transport">
+          <button
+            id="campus-button"
+            class="transport-button"
+            aria-label="Return to campus"
+            title="Campus (H)"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M3 10l9-7 9 7M6 9v11h12V9M10 20v-6h4v6" />
+            </svg></button
+          ><span class="toolbar-divider"></span
+          ><button
+            id="previous-button"
+            class="transport-button"
+            aria-label="Previous scene"
+            title="Previous (Left arrow)"
+          >
+            ←</button
+          ><button
+            id="pause-button"
+            class="transport-button"
+            aria-label="Pause animation"
+            aria-pressed="false"
+            title="Pause or resume (Space)"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M8 5v14M16 5v14" />
+            </svg></button
+          ><button
+            id="replay-button"
+            class="transport-button"
+            aria-label="Replay journey or scene"
+            title="Replay (R)"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 9a8 8 0 1 1 0 7M4 4v5h5" />
+            </svg></button
+          ><button
+            id="reset-scene"
+            class="transport-button"
+            aria-label="Reset current scene"
+            title="Reset current scene"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M5 5h14v14H5zM9 9h6v6H9z" />
+            </svg></button
+          ><button
+            id="next-button"
+            class="transport-button"
+            aria-label="Next scene"
+            title="Next (Right arrow)"
+          >
+            →
+          </button>
+        </div>
+        <div class="scene-position">
+          <span id="scene-position-label">Campus hub</span>
+          <div id="scene-dots" aria-hidden="true">
+            <i class="active"></i><i></i><i></i>
+          </div>
+        </div>
+        <div class="progress-label">
+          <span id="visit-progress">0 OF 5 CHAPTERS VISITED</span
+          ><span class="overall-progress" aria-hidden="true"
+            ><i id="overall-progress-bar"></i></span
+          ><button id="resources-button" class="text-button">
+            Lecture tools
+          </button>
+          <button
+            id="help-button"
+            class="help-button"
+            aria-label="Keyboard shortcuts and release information"
+          >
+            ?
+          </button>
+        </div>
+      </div>
+    </main>
+    <section
+      id="study-reading"
+      class="study-reading"
+      aria-label="Independent study explanation"
+      hidden
+    ></section>
+    <footer>
+      <span>JOURNEY THROUGH THE INTELLIGENCE MACHINE</span
+      ><span id="storage-note"
+        >Progress stays in this browser. No personal data collected.</span
+      ><span
+        >ORIGINAL CAMPUS ART · UNIVERSITY-INSPIRED, NOT AN OFFICIAL CAMPUS
+        MAP</span
+      >
+    </footer>
+    <dialog id="settings-dialog" aria-labelledby="settings-title">
+      <div class="dialog-header">
+        <span class="eyebrow">MAKE THE WORLD YOURS</span
+        ><button data-close class="icon-button" aria-label="Close settings">
+          ×
+        </button>
+      </div>
+      <h2 id="settings-title">Presentation settings</h2>
+      <label class="toggle-field"
+        ><span
+          >Reduce motion<small
+            >Instant travel, no walking or camera effects.</small
+          ></span
+        ><input id="reduced-motion" type="checkbox" /></label
+      ><label class="toggle-field"
+        ><span
+          >Low animation setting<small
+            >Shorter journeys and no ambient movement.</small
+          ></span
+        ><input id="low-quality" type="checkbox" /></label
+      ><label class="select-field" for="session-duration"
+        >Suggested session duration<select id="session-duration">
+          <option value="60">60 minutes</option>
+          <option value="75" selected>75 minutes</option>
+          <option value="90">90 minutes</option>
+        </select></label
+      >
+      <p class="settings-note">
+        Pacing is a suggestion, never an automatic advance. The default
+        75-minute plan includes 5 minutes for opening and 3 for closing
+        reflection.
+      </p>
+      <button id="clear-progress" class="text-button">
+        Reset saved learning progress
+      </button>
+      <div id="clear-confirm" hidden>
+        <p>
+          Clear saved visits, laboratory choices, assessment answers, and
+          reflection?
+        </p>
+        <button id="clear-confirm-button" class="primary-button">
+          Clear progress</button
+        ><button id="clear-cancel" class="text-button">Keep progress</button>
+      </div>
+    </dialog>
+    <dialog id="discussion-dialog" aria-labelledby="discussion-title">
+      <div class="dialog-header">
+        <span class="eyebrow">PAUSE THE JOURNEY · START A CONVERSATION</span
+        ><button data-close class="icon-button" aria-label="Close discussion">
+          ×
+        </button>
+      </div>
+      <h2 id="discussion-title"></h2>
+      <p id="discussion-description">
+        Invite a classroom example, a counterexample, and one question the group
+        would like to investigate.
+      </p>
+    </dialog>
+    <dialog id="help-dialog" aria-labelledby="help-title">
+      <div class="dialog-header">
+        <span class="eyebrow">YOUR GUIDE TO THE EXPERIENCE</span
+        ><button data-close class="icon-button" aria-label="Close help">
+          ×
+        </button>
+      </div>
+      <h2 id="help-title">Explore at your own pace.</h2>
+      <dl class="shortcut-list">
+        <div>
+          <dt>← / →</dt>
+          <dd>Previous / next scene</dd>
+        </div>
+        <div>
+          <dt>1–5</dt>
+          <dd>Travel to a chapter</dd>
+        </div>
+        <div>
+          <dt>Space</dt>
+          <dd>Pause / resume animation</dd>
+        </div>
+        <div>
+          <dt>H / R</dt>
+          <dd>Campus / replay</dd>
+        </div>
+        <div>
+          <dt>Escape</dt>
+          <dd>Close a panel or skip a transition</dd>
+        </div>
+        <div>
+          <dt>F</dt>
+          <dd>Fullscreen</dd>
+        </div>
+      </dl>
+      <p>
+        All five buildings are unlocked in both modes. Instructor mode adds
+        pacing and teaching notes; Explore uses the same scenes with optional
+        explanations.
+      </p>
+      <div class="resource-actions">
+        <button id="opening-button" class="primary-button">
+          Opening & roadmap</button
+        ><button id="sources-button" class="secondary-button">
+          References & source notes</button
+        ><button id="export-guide" class="secondary-button">
+          Download complete instructor guide
+        </button>
+      </div>
+      <h3>What this release includes</h3>
+      <p>
+        Five complete chapters, interactive laboratories, explanatory
+        assessments, deeper reading, and instructor notes. All core features
+        work offline.
+      </p>
+      <h3>Simulation honesty</h3>
+      <p>
+        Every exhibit identifies its model type. Approximate tokens, scripted
+        next-token probabilities, and fictional school cases are not outputs
+        from a live commercial AI model.
+      </p>
+    </dialog>
+
+    <dialog id="deeper-dialog" aria-labelledby="deeper-title">
+      <div class="dialog-header">
+        <span class="eyebrow">DIVE DEEPER · SHARED IN BOTH MODES</span
+        ><button
+          data-close
+          class="icon-button"
+          aria-label="Close deeper explanation"
+        >
+          ×
+        </button>
+      </div>
+      <h2 id="deeper-title"></h2>
+      <div id="deeper-content"></div>
+    </dialog>
+    <dialog id="sources-dialog" aria-labelledby="sources-title">
+      <div class="dialog-header">
+        <span class="eyebrow">RESEARCH & PROVENANCE</span
+        ><button data-close class="icon-button" aria-label="Close references">
+          ×
+        </button>
+      </div>
+      <h2 id="sources-title">References & review notes</h2>
+      <p>
+        Scientific sources support mechanisms and concepts; fictional classroom
+        cases are not empirical findings. Review status is stated for each
+        source. Links require internet only when opened.
+      </p>
+      <div id="source-list"></div>
+    </dialog>
+    <dialog id="opening-dialog" aria-labelledby="opening-title">
+      <div class="dialog-header">
+        <span class="eyebrow">OPENING · 5 MINUTES</span
+        ><button data-close class="icon-button" aria-label="Skip opening">
+          ×
+        </button>
+      </div>
+      <h2 id="opening-title">Journey Through the Intelligence Machine</h2>
+      <p>AI Literacy for Educators · Wilmington University</p>
+      <p>
+        <strong
+          >What should students still learn to do themselves when AI can produce
+          an answer?</strong
+        >
+      </p>
+      <ol>
+        <li>Four kinds of AI · 15 min</li>
+        <li>Token by token · 20 min</li>
+        <li>Hallucinations · 12 min</li>
+        <li>Automation bias · 10 min</li>
+        <li>Human and machine · 10 min</li>
+      </ol>
+      <p>
+        Closing reflection · 3 min. Predict before experimenting. Explain what
+        changes. Identify what the model leaves out.
+      </p>
+      <button id="begin-lecture" class="primary-button">
+        Enter the discovery center →
+      </button>
+    </dialog>
+    <dialog id="closing-dialog" aria-labelledby="closing-title">
+      <div class="dialog-header">
+        <span class="eyebrow">CLOSING · 3 MINUTES</span
+        ><button data-close class="icon-button" aria-label="Close synthesis">
+          ×
+        </button>
+      </div>
+      <h2 id="closing-title">
+        The tools change. Human responsibility remains.
+      </h2>
+      <p>
+        AI literacy is not simply knowing how to use artificial intelligence. It
+        is understanding how AI works, critically evaluating its outputs,
+        recognizing its limitations, and exercising responsible human judgment.
+      </p>
+      <details>
+        <summary>Reveal the five-chapter synthesis</summary>
+        <ol>
+          <li>Understand overlapping mechanisms and tasks.</li>
+          <li>Distinguish generation, context, and evidence.</li>
+          <li>Trace claims to sources and verify support.</li>
+          <li>Investigate recommendations before acting.</li>
+          <li>Use collaboration to strengthen learning and agency.</li>
+        </ol>
+      </details>
+      <label class="lab-label" for="closing-reflection"
+        >What should students still learn to do themselves when AI can produce
+        an answer?<textarea
+          id="closing-reflection"
+          rows="4"
+          placeholder="Your professional commitment. Avoid personal or student information."
+        ></textarea>
+      </label>
+      <p>
+        Saved only in this browser/device; export a copy for durable storage.
+      </p>
+      <div class="lab-actions">
+        <button id="export-reflection" class="primary-button">
+          Download reflection</button
+        ><button id="revisit-chapter" class="secondary-button">
+          Revisit the campus
+        </button>
+      </div>
+    </dialog>
+
+    <div
+      id="live-status"
+      class="sr-only"
+      role="status"
+      aria-live="polite"
+    ></div>
+    <noscript
+      ><p class="noscript">
+        Enable JavaScript to explore this offline presentation. No account or
+        internet connection is required.
+      </p></noscript
+    ><!-- SCRIPTS -->
+  </body>
+</html>

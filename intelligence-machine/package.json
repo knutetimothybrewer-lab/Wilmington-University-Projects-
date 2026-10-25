@@ -1,0 +1,16 @@
+{
+  "name": "intelligence-machine-lecture",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Complete offline AI Literacy for Educators lecture",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "test": "node --test tests/registry.test.mjs",
+    "test:browser": "node tests/browser.mjs",
+    "dev": "python3 -m http.server 8010 --bind 127.0.0.1"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
