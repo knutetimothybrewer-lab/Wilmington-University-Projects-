@@ -1,0 +1,1126 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prompting with CRAFT</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout concept: full-screen lecture deck. Fixed chrome (chapters, clock, progress), one slide at a time.
+   Signature: the prompt is built from five colour-coded blocks (C R A F T) that follow the lesson everywhere. */
+:root{
+  --bg:#0e1020; --ink:#f3f0e8; --soft:#d6d3df; --mute:#a3a6c2; --line:rgba(255,255,255,.14); --card:rgba(255,255,255,.06);
+  --c:#ff7a59; --r:#ffc247; --a:#b8e35c; --f:#4fd6c4; --t:#c995ff;
+  --bad:#ff6b81; --good:#62e3a4; --dark:#0b0d1a; --accent:var(--c);
+  --display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;
+  --body:"DM Sans","Segoe UI",system-ui,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+  color-scheme:dark;
+}
+body[data-ch="0"]{--accent:var(--c)}
+body[data-ch="1"]{--accent:var(--r)}
+body[data-ch="2"]{--accent:var(--a)}
+body[data-ch="3"]{--accent:var(--f)}
+body[data-ch="4"]{--accent:var(--t)}
+body[data-ch="5"]{--accent:var(--c)}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;overflow:hidden}
+button{font:inherit;color:inherit}
+#bg{position:fixed;inset:0;z-index:0;width:100%;height:100%}
+
+/* ---------- chrome ---------- */
+#top{position:fixed;top:0;left:0;right:0;z-index:30;display:flex;align-items:center;gap:14px;height:calc(58px + env(safe-area-inset-top,0px));padding:env(safe-area-inset-top,0px) max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px));background:linear-gradient(rgba(14,16,32,.95),rgba(14,16,32,0))}
+.brand{font-family:var(--display);font-weight:700;font-size:14px;letter-spacing:.02em;white-space:nowrap;color:var(--mute)}
+.brand b{color:var(--ink)}
+#chapters{display:flex;gap:7px;flex:1;justify-content:center;overflow:hidden}
+.pill{border:1px solid var(--line);background:rgba(255,255,255,.05);color:var(--mute);border-radius:8px;padding:6px 12px;font-size:13px;cursor:pointer;white-space:nowrap;transition:.3s}
+.pill:hover{color:var(--ink)}
+.pill.active{color:var(--dark);background:var(--accent);border-color:transparent;font-weight:700;box-shadow:0 0 22px -4px var(--accent)}
+#clock{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:12px;border:1px solid var(--line);border-radius:8px;padding:6px 10px;background:rgba(255,255,255,.05);cursor:pointer;white-space:nowrap;color:var(--mute)}
+#clock.late{color:#ffb4a2;border-color:var(--c)}
+#clock.paused{opacity:.6}
+#stage{position:fixed;top:calc(58px + env(safe-area-inset-top,0px));bottom:calc(64px + env(safe-area-inset-bottom,0px));left:0;right:0;z-index:5}
+#bar{position:fixed;bottom:0;left:0;right:0;z-index:30;display:flex;align-items:center;gap:12px;height:calc(64px + env(safe-area-inset-bottom,0px));padding:0 max(16px,env(safe-area-inset-right,0px)) env(safe-area-inset-bottom,0px) max(16px,env(safe-area-inset-left,0px));background:linear-gradient(rgba(14,16,32,0),rgba(14,16,32,.96) 40%)}
+.nav{border:1px solid var(--line);background:rgba(255,255,255,.08);border-radius:8px;padding:9px 16px;cursor:pointer;font-weight:700;transition:.25s}
+.nav:hover{background:var(--accent);color:var(--dark)}
+.nav.sm{padding:9px 11px;font-weight:600}
+#seg{flex:1;display:flex;gap:3px;align-items:center;height:24px;min-width:0}
+#seg i{flex:1;height:6px;border-radius:3px;background:rgba(255,255,255,.14);cursor:pointer;transition:.3s}
+#seg i:hover{height:12px}
+#seg i.done{background:rgba(255,255,255,.4)}
+#seg i.on{background:var(--accent);height:12px;box-shadow:0 0 14px var(--accent)}
+#count{font-size:13px;color:var(--mute);white-space:nowrap;min-width:110px;text-align:right}
+#notes{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(72px + env(safe-area-inset-bottom,0px));width:min(920px,94vw);z-index:40;background:rgba(10,12,28,.97);border:1px solid var(--accent);border-radius:12px;padding:14px 18px;display:none;box-shadow:0 20px 60px #000a}
+body.shownotes #notes{display:block;animation:rise .4s both}
+#notes h4{margin:0 0 6px;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+#notes div{font-size:16px;line-height:1.5;color:#e4e2ee}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* ---------- slides ---------- */
+.slide{position:absolute;inset:0;padding:6px max(16px,3.5vw,env(safe-area-inset-right,0px)) 6px max(16px,3.5vw,env(safe-area-inset-left,0px));overflow-y:auto;overflow-x:hidden;display:flex;opacity:0;visibility:hidden;transform:translateX(70px) scale(.985);transition:opacity .5s,transform .5s,visibility 0s .5s}
+.slide.active{opacity:1;visibility:visible;transform:none;transition-delay:0s}
+.slide.past{transform:translateX(-70px) scale(.985)}
+.wrap{width:100%;max-width:1240px;margin:auto;padding:6px 0;min-width:0}
+.center{text-align:center}
+@keyframes rise{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+.slide.active .rise{animation:rise .7s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i,0)*80ms + 100ms)}
+.kicker{font-family:var(--mono);text-transform:uppercase;letter-spacing:.14em;font-size:clamp(11px,1.05vw,13px);font-weight:600;color:var(--accent);margin-bottom:8px}
+h1,h2,h3{margin:0;font-family:var(--display);text-wrap:balance}
+h2{font-size:clamp(26px,3.6vw,48px);line-height:1.08;font-weight:750;letter-spacing:-.02em;margin-bottom:14px}
+h3{font-size:clamp(16px,1.6vw,22px);font-weight:700;margin-bottom:6px}
+.grad{background:linear-gradient(90deg,var(--c),var(--r),var(--a),var(--f),var(--t),var(--c));background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shine 8s linear infinite}
+@keyframes shine{to{background-position:300% 0}}
+.lead{font-size:clamp(16px,1.8vw,25px);line-height:1.4;color:var(--soft);margin:0 auto 14px;max-width:880px}
+p{line-height:1.5}
+.mute{color:var(--mute)}
+.mono{font-family:var(--mono)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;backdrop-filter:blur(6px);min-width:0}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:stretch}
+.grid2.wide{grid-template-columns:1.15fr .85fr}
+.grid2.wideL{grid-template-columns:.85fr 1.15fr}
+@media(max-width:900px){.grid2,.grid2.wide,.grid2.wideL{grid-template-columns:1fr}#chapters{display:none}.brand span{display:none}}
+.btn{border:1px solid var(--line);background:rgba(255,255,255,.1);border-radius:8px;padding:8px 14px;cursor:pointer;font-weight:700;transition:.25s;font-size:clamp(13px,1.2vw,16px)}
+.btn:hover{background:var(--accent);color:var(--dark);transform:translateY(-1px)}
+.btn.on{background:var(--accent);color:var(--dark);border-color:transparent}
+.btn.big{padding:14px 28px;font-size:clamp(16px,1.7vw,22px);background:var(--accent);color:var(--dark);border:0;box-shadow:0 10px 40px -12px var(--accent)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.row.c{justify-content:center}
+.tag{display:inline-block;font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:3px 8px;border-radius:5px;background:rgba(255,255,255,.12);color:var(--accent);margin-left:8px;vertical-align:middle}
+.cap{color:var(--soft);font-size:clamp(13px,1.25vw,16px);margin:8px 0 0}
+.fine{font-size:12px;color:var(--mute);margin:6px 0 0}
+.hint{margin-top:16px;font-size:13px;color:var(--mute)}
+kbd{font-family:var(--mono);font-size:11px;border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:1px 6px;background:rgba(255,255,255,.07)}
+.notes{display:none}
+@keyframes popin{from{transform:scale(0) rotate(-20deg);opacity:0}to{transform:none;opacity:1}}
+@keyframes floaty{50%{transform:translateY(-10px)}}
+@keyframes blink{50%{opacity:0}}
+@keyframes grow{from{width:0}}
+
+/* CRAFT colours */
+.seg{--col:var(--accent);display:inline;padding:2px 5px;border-radius:4px;background:color-mix(in srgb,var(--col) 17%,transparent);border-bottom:2px solid var(--col);line-height:1.9;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.seg em{font-style:normal;font-family:var(--display);font-weight:800;font-size:.8em;background:var(--col);color:var(--dark);border-radius:3px;padding:0 4px;margin-right:6px}
+.seg.base{--col:#8b90ad;color:var(--mute)}
+.seg.miss{border-bottom-style:dashed;animation:popin .5s both}
+.ghost{--col:var(--mute);font-family:var(--mono);font-size:12px;border:1px dashed var(--col);background:transparent;border-radius:6px;padding:3px 9px;cursor:pointer;color:var(--soft);margin:2px 0;transition:.2s}
+.ghost:hover{background:color-mix(in srgb,var(--col) 25%,transparent);color:var(--ink)}
+.lt{--col:var(--accent);display:inline-grid;place-items:center;font-style:normal;font-family:var(--display);font-weight:800;font-size:10px;width:16px;height:16px;border-radius:4px;background:var(--col);color:var(--dark);margin-left:5px;vertical-align:1px}
+
+/* chat */
+.chat{display:flex;flex-direction:column;gap:9px;min-height:250px;max-height:360px;overflow-y:auto}
+.bubble{max-width:88%;padding:10px 14px;border-radius:12px;font-size:clamp(13px,1.3vw,17px);line-height:1.45;white-space:pre-wrap;animation:popin .35s both;transform-origin:bottom}
+.bubble.user{align-self:flex-end;background:var(--accent);color:var(--dark);font-weight:600;border-bottom-right-radius:3px}
+.bubble.bot{align-self:flex-start;background:rgba(255,255,255,.1);border-bottom-left-radius:3px}
+.bubble.thought{align-self:center;max-width:94%;background:transparent;border:1px dashed var(--accent);color:var(--soft);font-style:italic;text-align:center}
+.dots i{display:inline-block;width:7px;height:7px;margin:0 2px;border-radius:50%;background:var(--mute);animation:floaty 1s infinite}
+.dots i:nth-child(2){animation-delay:.15s}.dots i:nth-child(3){animation-delay:.3s}
+.qlist{display:flex;flex-direction:column;gap:9px;justify-content:center}
+.q{display:flex;gap:12px;align-items:center;text-align:left;padding:11px 14px;border-radius:10px;border:1px solid var(--line);background:rgba(255,255,255,.05);cursor:pointer;transition:.25s}
+.q:hover{transform:translateX(6px);border-color:var(--qc)}
+.q .n{display:grid;place-items:center;width:34px;height:34px;flex:none;border-radius:8px;font-family:var(--display);font-weight:800;color:var(--dark);background:var(--qc)}
+.q b{display:block;font-size:clamp(14px,1.45vw,19px)}
+.q small{color:var(--mute);font-size:clamp(11px,1.1vw,14px)}
+
+/* title */
+.mega{font-size:clamp(60px,15vw,200px);line-height:.9;font-weight:800;letter-spacing:-.04em;display:flex;justify-content:center;gap:clamp(4px,1.2vw,18px);margin:.05em 0 .12em}
+.mega .L{display:flex;flex-direction:column;align-items:center;animation:popin .7s var(--d) both cubic-bezier(.3,1.5,.5,1)}
+.mega .L b{color:var(--col);animation:floaty 5s var(--d) ease-in-out infinite;text-shadow:0 0 40px color-mix(in srgb,var(--col) 55%,transparent)}
+.mega .L small{font-family:var(--mono);font-size:clamp(9px,1.15vw,15px);letter-spacing:.06em;font-weight:600;color:var(--soft);margin-top:4px;text-transform:uppercase;letter-spacing:.1em;letter-spacing:.06em}
+.caret{display:inline-block;width:.07em;height:.55em;background:var(--ink);align-self:flex-start;margin-top:.12em;animation:blink 1s steps(1) infinite}
+.roadmap{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:9px;max-width:920px;margin:0 auto 18px}
+.road{display:flex;flex-direction:column;gap:2px;padding:10px 12px;text-align:left;border-radius:10px;border:1px solid var(--line);background:rgba(255,255,255,.05);cursor:pointer;transition:.25s;border-top:3px solid var(--rc)}
+.road:hover{transform:translateY(-4px);background:rgba(255,255,255,.1)}
+.road span{font-weight:700;font-size:14px}.road em{font-style:normal;font-family:var(--mono);font-size:11px;color:var(--mute)}
+
+/* meters + documents */
+.mt{display:grid;grid-template-columns:minmax(110px,1.1fr) 2fr 34px;gap:10px;align-items:center;margin:7px 0;font-size:clamp(12px,1.2vw,15px)}
+.mt .bar{height:11px;border-radius:6px;background:rgba(255,255,255,.1);overflow:hidden}
+.mt .bar i{display:block;height:100%;width:0;border-radius:6px;background:linear-gradient(90deg,var(--c),var(--r),var(--a));transition:width .8s cubic-bezier(.2,.8,.2,1)}
+.mt output{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:12px;text-align:right;color:var(--soft)}
+.mt.warn .bar{background:repeating-linear-gradient(45deg,rgba(255,255,255,.1) 0 6px,rgba(255,255,255,.03) 6px 12px)}
+.mt.warn .bar i{background:var(--bad)}
+.qrow{display:flex;align-items:baseline;justify-content:space-between;margin-top:8px;border-top:1px solid var(--line);padding-top:8px;color:var(--mute);font-size:13px}
+.qrow b{font-family:var(--display);font-size:clamp(28px,3.4vw,46px);color:var(--accent);font-variant-numeric:tabular-nums}
+.doc{background:#f5f2ea;color:#23233a;border-radius:8px;padding:12px 14px;font-size:clamp(12px,1.2vw,15px);line-height:1.4;min-height:150px;box-shadow:0 12px 30px -14px #000}
+.doc .ol{padding:3px 0;border-bottom:1px solid #ddd7c8}
+.doc .ol:last-child{border:0}
+.doc .ol.h{font-weight:800;font-family:var(--display);font-size:1.1em}
+.doc .ol.dim{color:#6a6a80}
+.pbox{padding:12px 14px;border-radius:10px;background:rgba(0,0,0,.28);border:1px solid var(--line);font-family:var(--mono);font-size:clamp(11px,1.15vw,14px);line-height:1.6;min-height:70px;margin-bottom:10px}
+.cmphead{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+
+/* stepper */
+.stepper{display:grid;grid-template-columns:minmax(250px,.9fr) 1.1fr;gap:18px;align-items:stretch}
+@media(max-width:900px){.stepper{grid-template-columns:1fr}}
+.steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:7px;justify-content:center}
+.steps li{display:flex;gap:12px;align-items:flex-start;padding:9px 12px;border-radius:10px;border:1px solid var(--line);background:rgba(255,255,255,.04);cursor:pointer;opacity:.55;transition:.3s}
+.steps li:hover{opacity:.85}
+.steps li.done{opacity:.8}
+.steps li.active{opacity:1;background:rgba(255,255,255,.12);border-color:var(--sc,var(--accent));transform:translateX(7px);box-shadow:0 0 26px -10px var(--sc,var(--accent))}
+.steps .num{flex:none;display:grid;place-items:center;width:30px;height:30px;border-radius:7px;background:var(--sc,var(--accent));color:var(--dark);font-family:var(--display);font-weight:800}
+.steps b{display:block;font-size:clamp(14px,1.45vw,19px)}
+.steps small{color:var(--soft);font-size:clamp(12px,1.15vw,15px);line-height:1.35;display:block}
+.stepvis{display:flex;flex-direction:column;gap:8px;min-width:0}
+.visbox{flex:1;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;min-height:250px;display:flex;flex-direction:column;justify-content:center;animation:rise .5s both}
+.viscap{color:var(--soft);font-size:clamp(13px,1.25vw,16px);min-height:22px}
+.stepctl{display:flex;gap:8px}
+
+/* CRAFT step visual */
+.frag{--col:var(--c);display:flex;flex-direction:column;gap:10px}
+.frag .top{display:flex;align-items:center;gap:12px}
+.frag .big{display:grid;place-items:center;width:54px;height:54px;border-radius:12px;background:var(--col);color:var(--dark);font-family:var(--display);font-weight:800;font-size:34px}
+.frag .top b{font-family:var(--display);font-size:clamp(20px,2.2vw,30px);color:var(--col)}
+.wk,.st{padding:10px 12px;border-radius:8px;font-size:clamp(12px,1.25vw,16px);line-height:1.5}
+.wk{background:rgba(255,107,129,.1);border:1px dashed var(--bad);color:var(--soft)}
+.st{background:color-mix(in srgb,var(--col) 14%,transparent);border:1px solid var(--col);font-family:var(--mono);font-size:clamp(11px,1.15vw,14px)}
+.wk small,.st small{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:3px;color:var(--mute)}
+.st small{color:var(--col)}
+.why{font-size:clamp(12px,1.2vw,15px);color:var(--soft)}
+
+/* lab */
+.lab{display:grid;grid-template-columns:.8fr 1.1fr 1.1fr;gap:14px;align-items:start}
+@media(max-width:1100px){.lab{grid-template-columns:1fr}}
+.tg{--col:var(--c);display:flex;gap:10px;align-items:center;width:100%;text-align:left;padding:8px 10px;margin-bottom:7px;border-radius:10px;border:1px solid var(--line);background:rgba(255,255,255,.04);cursor:pointer;transition:.25s}
+.tg b{display:grid;place-items:center;flex:none;width:34px;height:34px;border-radius:8px;border:2px solid var(--col);color:var(--col);font-family:var(--display);font-weight:800;font-size:19px;transition:.25s}
+.tg strong{display:block;font-size:14px}
+.tg small{display:block;color:var(--mute);font-size:12px;line-height:1.3}
+.tg.on{background:color-mix(in srgb,var(--col) 15%,transparent);border-color:var(--col)}
+.tg.on b{background:var(--col);color:var(--dark)}
+.tg:hover{transform:translateX(4px)}
+.compose{font-family:var(--mono);font-size:clamp(11px,1.15vw,14px);line-height:1.8;min-height:200px}
+
+/* fix game */
+.pick{--col:var(--c);border-color:var(--col);display:inline-flex;gap:7px;align-items:center}
+.pick b{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:5px;background:var(--col);color:var(--dark);font-family:var(--display)}
+.pick.right{background:var(--good);color:var(--dark)}
+.pick.wrong{opacity:.4;text-decoration:line-through}
+.fixcard{font-size:clamp(14px,1.5vw,20px);line-height:1.9;min-height:130px}
+.fb{margin-top:10px;font-size:clamp(13px,1.3vw,17px);min-height:44px}
+.dots2{display:flex;gap:6px}
+.dots2 i{width:26px;height:6px;border-radius:3px;background:rgba(255,255,255,.18)}
+.dots2 i.ok{background:var(--good)}.dots2 i.no{background:var(--bad)}.dots2 i.now{background:var(--accent)}
+
+/* template */
+.tpl{font-family:var(--mono);font-size:clamp(11px,1.15vw,14px);line-height:1.75;white-space:pre-wrap;user-select:text}
+.tpl .ph{color:var(--mute)}
+.checks{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px}
+.checks li{display:flex;gap:10px;font-size:clamp(13px,1.3vw,17px);line-height:1.4}
+.checks li::before{content:"";flex:none;width:18px;height:18px;margin-top:2px;border-radius:5px;border:2px solid var(--accent);background:radial-gradient(var(--accent) 38%,transparent 42%)}
+
+/* dial */
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:10px;border-radius:6px;background:linear-gradient(90deg,var(--c),var(--r),var(--a));outline-offset:6px}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;height:28px;border-radius:8px;background:var(--ink);border:3px solid var(--dark);box-shadow:0 0 0 3px var(--accent);cursor:grab}
+input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:8px;background:var(--ink);border:3px solid var(--dark);box-shadow:0 0 0 3px var(--accent);cursor:grab}
+.ticks{display:flex;justify-content:space-between;gap:4px;margin-top:10px;font-size:clamp(10px,1.05vw,13px);color:var(--mute);text-align:center}
+.ticks span{flex:1;min-width:0}.ticks span.on{color:var(--accent);font-weight:700}
+.warnnote{margin-top:10px;padding:9px 12px;border-radius:8px;border:1px dashed var(--bad);background:rgba(255,107,129,.08);font-size:clamp(12px,1.2vw,15px);color:var(--soft)}
+
+/* load */
+.terms{display:flex;flex-direction:column;gap:9px}
+.term{padding:10px 13px;border-radius:10px;border:1px solid var(--line);background:rgba(255,255,255,.05);transition:.4s}
+.term b{display:block;font-family:var(--display);font-size:clamp(14px,1.45vw,19px)}
+.term small{color:var(--soft);font-size:clamp(12px,1.15vw,15px);line-height:1.4;display:block}
+.term em{font-style:normal;font-family:var(--mono);font-size:11px;color:var(--mute);display:block;margin-top:4px}
+.term.hot{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,transparent)}
+.evening{display:flex;height:64px;border-radius:10px;overflow:hidden;gap:2px;margin:10px 0}
+.evening div{flex:0 0 auto;display:grid;place-items:center;font-family:var(--mono);font-size:12px;font-weight:600;color:var(--dark);overflow:hidden;transition:flex-basis .9s cubic-bezier(.2,.8,.2,1);white-space:nowrap}
+.k-r{background:#6d7396}.k-v{background:var(--r)}.k-h{background:var(--accent)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:clamp(11px,1.1vw,14px);color:var(--soft)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px}
+.stat{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
+.stat div{padding:8px 10px;border-radius:10px;background:rgba(255,255,255,.06);border:1px solid var(--line)}
+.stat b{display:block;font-family:var(--display);font-size:clamp(22px,2.6vw,36px);font-variant-numeric:tabular-nums}
+.stat small{color:var(--mute);font-size:12px}
+
+/* sort */
+.lanes{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px}
+@media(max-width:700px){.lanes{grid-template-columns:1fr}}
+.lane{--col:var(--f);text-align:left;padding:10px 12px;border-radius:12px;border:2px solid var(--col);background:color-mix(in srgb,var(--col) 9%,transparent);cursor:pointer;min-height:112px;transition:.2s}
+.lane:hover:not(:disabled){background:color-mix(in srgb,var(--col) 24%,transparent);transform:translateY(-3px)}
+.lane:disabled{cursor:default}
+.lane b{display:block;font-family:var(--display);font-size:clamp(16px,1.7vw,22px);color:var(--col)}
+.lane small{display:block;color:var(--soft);font-size:12px;margin-bottom:6px}
+.lane .mini{display:block;font-size:11px;line-height:1.3;padding:3px 6px;margin-top:4px;border-radius:5px;background:rgba(255,255,255,.1);animation:popin .4s both}
+.lane .mini.bad{background:rgba(255,107,129,.28)}
+.task{font-family:var(--display);font-weight:650;font-size:clamp(20px,2.7vw,36px);line-height:1.2;text-align:center;padding:22px 12px;min-height:130px;display:grid;place-items:center;text-wrap:balance}
+.task.in{animation:rise .5s both}
+
+/* lenses */
+.lensvis{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:12px;align-items:center}
+@media(max-width:700px){.lensvis{grid-template-columns:1fr}}
+.pent text{font-family:var(--body);font-size:11px;font-weight:700;fill:var(--soft)}
+.pent .ctr{font-family:var(--mono);font-size:9px;fill:var(--mute);font-weight:400}
+.lensinfo h3{font-size:clamp(18px,2vw,27px);color:var(--accent);margin-bottom:8px}
+.lensinfo p{margin:0 0 8px;font-size:clamp(12px,1.25vw,16px);color:var(--soft)}
+.lensinfo p b{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);margin-bottom:2px}
+.lensinfo .flag b{color:var(--bad)}
+
+/* inspect */
+.hand{background:#f5f2ea;color:#23233a;border-radius:10px;padding:16px 18px;font-size:clamp(14px,1.45vw,19px);line-height:1.7}
+.hand h4{margin:0 0 4px;font-family:var(--display);font-size:1.15em}
+.hand .goal{font-size:.78em;color:#5a5a70;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #ddd7c8}
+.hand .s{cursor:pointer;border-radius:4px;padding:1px 3px;transition:.2s;background-image:linear-gradient(transparent 62%,rgba(35,35,58,.13) 62%)}
+.hand .s:hover{background-color:#e6e0cf}
+.hand .s.ok{background:#bfe9cf}.hand .s.no{background:#ffc9d1}
+.hand .s .lt{width:auto;padding:0 5px;height:17px;font-size:10px;vertical-align:2px;color:var(--dark)}
+.lens-row{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border-radius:10px;border:1px solid var(--line);margin-bottom:7px;font-size:clamp(12px,1.2vw,15px);transition:.3s;opacity:.65}
+.lens-row .dot{flex:none;width:12px;height:12px;border-radius:50%;margin-top:4px;border:2px solid var(--mute)}
+.lens-row b{display:block}
+.lens-row small{color:var(--soft);display:block;line-height:1.35}
+.lens-row.ok{opacity:1;border-color:var(--good)}.lens-row.ok .dot{background:var(--good);border-color:var(--good)}
+.lens-row.no{opacity:1;border-color:var(--bad)}.lens-row.no .dot{background:var(--bad);border-color:var(--bad)}
+
+/* browser mock */
+.brw{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#161a33}
+.tabs{display:flex;gap:3px;padding:6px 6px 0;background:rgba(0,0,0,.35);min-height:34px;overflow:hidden}
+.tab{padding:6px 11px;font-size:11px;border-radius:7px 7px 0 0;background:rgba(255,255,255,.07);color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:46%;animation:popin .4s both;transform-origin:bottom}
+.tab.on{background:#161a33;color:var(--ink)}
+.page{padding:12px 14px;min-height:196px;font-size:clamp(12px,1.2vw,15px);position:relative}
+.page .ln{height:9px;border-radius:4px;background:rgba(255,255,255,.14);margin:8px 0}
+.page .badge{display:inline-block;padding:3px 8px;border-radius:5px;font-size:11px;background:rgba(98,227,164,.18);color:var(--good)}
+.find{padding:7px 10px;margin:6px 0;border-radius:8px;background:rgba(255,255,255,.07);border-left:3px solid var(--accent);animation:rise .4s both;font-size:clamp(11px,1.15vw,14px)}
+.find.bad{border-left-color:var(--bad)}
+.thumb{position:absolute;right:5px;top:10px;width:5px;height:42px;border-radius:3px;background:var(--mute)}
+.srch{display:flex;gap:8px;align-items:center;background:#fff;color:#23233a;border-radius:99px;padding:8px 14px;font-size:clamp(11px,1.2vw,14px);min-height:38px;margin-bottom:10px;font-family:var(--mono)}
+.res{padding:9px 12px;border-radius:8px;font-size:clamp(12px,1.2vw,15px);line-height:1.45;margin-top:6px;animation:rise .4s both}
+.res.ok{background:rgba(98,227,164,.13);border:1px solid var(--good)}
+.res.no{background:rgba(255,107,129,.12);border:1px solid var(--bad)}
+.res.nt{background:rgba(255,255,255,.07);border:1px solid var(--line)}
+.claim{padding:10px 14px;border-radius:10px;border:1px dashed var(--bad);background:rgba(255,107,129,.08);font-size:clamp(13px,1.35vw,18px);margin-bottom:12px}
+
+/* wrap */
+.recap{display:flex;flex-direction:column;gap:8px}
+.rc{display:grid;grid-template-columns:40px 1fr;gap:12px;align-items:center;padding:9px 13px;border-radius:10px;background:rgba(255,255,255,.06);border:1px solid var(--line)}
+.rc .e{display:grid;place-items:center;width:36px;height:36px;border-radius:8px;background:var(--rcc);color:var(--dark);font-family:var(--display);font-weight:800;font-size:18px}
+.rc b{display:block;font-size:clamp(14px,1.45vw,19px)}
+.rc span{color:var(--soft);font-size:clamp(12px,1.2vw,15px)}
+.conf{position:fixed;top:-30px;font-family:var(--display);font-weight:800;font-size:28px;z-index:60;pointer-events:none;animation:conf linear forwards}
+@keyframes conf{to{transform:translateY(105vh) rotate(720deg)}}
+@media(max-width:700px){#count{display:none}.nav{white-space:nowrap;padding:9px 12px}#clock{font-size:10px;padding:5px 7px}#top{gap:8px}}
+.cmp .ol.dim:last-child{display:none}
+.cmp .doc{min-height:0;padding:9px 12px}
+.cmp .pbox{min-height:0;margin-bottom:8px}
+.cmpmet{display:grid;grid-template-columns:1fr 1fr;gap:0 18px;margin-top:8px}
+.cmpmet .mt{grid-template-columns:minmax(0,1fr) 54px 28px;margin:4px 0;font-size:12px}
+@media(max-width:900px){.cmpmet{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01s!important;animation-iteration-count:1!important;transition-duration:.01s!important}}
+</style>
+<canvas id="bg"></canvas>
+
+<header id="top">
+  <div class="brand"><b>AI Literacy for Educators</b><span> · Week 2</span></div>
+  <nav id="chapters"></nav>
+  <div id="clock" title="Click to start / pause · double-click to reset">00:00 / 30:00</div>
+</header>
+
+<main id="stage">
+
+<!-- ============ TITLE ============ -->
+<section class="slide" data-id="title" data-ch="0" data-min="1" data-title="Welcome">
+  <div class="wrap center">
+    <div class="kicker rise">Week 2 · AI Literacy for Educators</div>
+    <h1 class="mega rise" id="craftWord" aria-label="CRAFT"></h1>
+    <p class="lead rise">Five parts that turn “make me a quiz” into something you can use on Monday, plus how to check what comes back.</p>
+    <div class="roadmap rise" id="roadmap"></div>
+    <button class="btn big rise" data-act="next">Begin ▶</button>
+    <div class="hint rise"><kbd>→</kbd> steps through every animation · <kbd>PgDn</kbd> skips ahead · <kbd>N</kbd> talking points · <kbd>F</kbd> full-screen</div>
+  </div>
+  <div class="notes"><b>Welcome (1 min).</b> Say: “Last week we learned what is under the hood. This week is the steering wheel. Same AI, different prompt, very different result.” Point at the five letters: each is a part of a good prompt, and each keeps its colour all session. Then the roadmap: prompting, quality, cognitive load, evaluating, lateral reading. Everything is clickable; demos are optional if you run short.</div>
+</section>
+
+<!-- ============ STORY ============ -->
+<section class="slide" data-id="story" data-ch="0" data-min="1.5" data-title="Meet Mr. Okafor">
+  <div class="wrap">
+    <div class="kicker rise">The story</div>
+    <h2 class="rise">Sunday, 9:40 pm. <span class="grad">Mr. Okafor</span> needs an exit ticket.</h2>
+    <div class="grid2 wide">
+      <div class="card rise"><div class="chat" id="storyChat"></div></div>
+      <div class="qlist" id="storyQs"></div>
+    </div>
+  </div>
+  <div class="notes"><b>Story hook (1.5 min).</b> Mr. Okafor teaches 5th grade math. He types four words and gets ten questions about simplifying, adding unlike denominators and mixed numbers. His class just learned equivalent fractions. Ask the room: “Was the AI bad, or was the ask?” Take two answers. His four questions become our four chapters; click any to jump.</div>
+</section>
+
+<!-- ============ COMPARE ============ -->
+<section class="slide" data-id="compare" data-ch="0" data-min="1.5" data-title="Same AI, two prompts">
+  <div class="wrap">
+    <div class="kicker rise">Question 1 · Was it the AI or the ask?</div>
+    <h2 class="rise">Same AI. <span class="grad">Two prompts.</span></h2>
+    <div class="grid2 rise">
+      <div class="card cmp"><div class="cmphead"><h3>Prompt A</h3><span class="tag" style="margin:0">4 words</span></div>
+        <div class="pbox" id="cmpA"></div><div class="doc" id="cmpAout"></div><div id="cmpAmet" class="cmpmet"></div>
+        <div class="qrow"><span>Overall usefulness</span><b id="cmpAq">0</b></div></div>
+      <div class="card cmp"><div class="cmphead"><h3>Prompt B</h3><span class="tag" style="margin:0">5 parts</span></div>
+        <div class="pbox" id="cmpB"></div><div class="doc" id="cmpBout"></div><div id="cmpBmet" class="cmpmet"></div>
+        <div class="qrow"><span>Overall usefulness</span><b id="cmpBq">0</b></div></div>
+    </div>
+    <div class="row rise" style="margin-top:10px"><button class="btn" id="cmpRun">↻ Replay</button><span class="fine">Ratings are illustrative scores from a teacher’s point of view, not measurements.</span></div>
+  </div>
+  <div class="notes"><b>Compare (1.5 min).</b> Press Replay and narrate. A: four words, ten generic questions, wrong level. B: five coloured parts, five targeted questions with an answer key and a misconception for each wrong answer. Same model both times. Key line: “The AI did not get smarter. It got information.” Prompts do not make an AI knowledgeable; they make it informed about <i>you</i>.</div>
+</section>
+
+<!-- ============ CRAFT STEPPER ============ -->
+<section class="slide" data-id="craft" data-ch="1" data-min="2" data-title="The five parts">
+  <div class="wrap">
+    <div class="kicker rise">Question 2 · How do I ask so it gets it right?</div>
+    <h2 class="rise">Five parts: <span class="grad">C · R · A · F · T</span></h2>
+    <div id="craftStep" class="rise"></div>
+  </div>
+  <div class="notes"><b>The five parts (2 min).</b> Walk the list. Context: what the AI cannot see about your class. Role: who it should act as, which steers vocabulary and what it notices. Action: one clear verb, a number, a purpose. Format: the shape of the output before you get it. Target and tone: the audience, reading level, voice, and limits. Click each step and compare the weak line with the strong one. Order does not matter; completeness does.</div>
+</section>
+
+<!-- ============ LAB ============ -->
+<section class="slide" data-id="lab" data-ch="1" data-min="3.5" data-title="Prompt lab">
+  <div class="wrap">
+    <div class="kicker rise">Prompt lab</div>
+    <h2 class="rise">Switch parts on. <span class="grad">Watch the answer change.</span></h2>
+    <div class="lab rise">
+      <div class="card">
+        <h3>Parts</h3><div id="labTog"></div>
+        <div class="row"><button class="btn" id="labNone">Clear</button><button class="btn" id="labAll">All five</button></div>
+      </div>
+      <div class="card"><h3>Your prompt</h3><div class="compose" id="labPrompt"></div></div>
+      <div class="card"><h3>The answer</h3><div class="doc" id="labOut"></div><div id="labMet" style="margin-top:8px"></div>
+        <div class="qrow"><span>Overall usefulness</span><b id="labScore">0</b></div></div>
+    </div>
+    <p class="fine">Letters on the right of each line show which parts shaped it. Scores are illustrative.</p>
+  </div>
+  <div class="notes"><b>Prompt lab (3.5 min).</b> It plays itself once: C, then R, A, F, T. Then take over. Ask the room to predict before each click: “What do you think changes when I add Role?” Watch the meters. Context moves fit and level the most. Role moves the quality of the answer key (it brings in misconceptions). Format moves usability. Click parts off again to show which one the room would miss least.</div>
+</section>
+
+<!-- ============ FIX GAME ============ -->
+<section class="slide" data-id="fix" data-ch="1" data-min="2" data-title="Which part is missing?">
+  <div class="wrap">
+    <div class="kicker rise">Your turn</div>
+    <h2 class="rise">Each prompt is missing <span class="grad">one part</span>. Which one?</h2>
+    <div class="card rise">
+      <div class="row" style="justify-content:space-between;margin-bottom:8px"><div class="dots2" id="fixProg"></div><span class="fine" id="fixScore"></span></div>
+      <div class="fixcard" id="fixCard"></div>
+      <div class="fb" id="fixFb"></div>
+      <div class="row" id="fixBtns" style="margin-top:6px"></div>
+      <div class="row" style="margin-top:10px"><button class="btn big" id="fixNext" style="display:none">Next prompt ▶</button></div>
+    </div>
+  </div>
+  <div class="notes"><b>Which part is missing? (2 min).</b> Read each prompt aloud and take a show of hands before anyone clicks. After the answer, the colours appear so the room can see the pattern, and a suggested fix drops in. Prompt 3 gets a laugh: “Put it on one page” but put <i>what</i>? Prompt 4: the AI is asked to give feedback on a paragraph it cannot see.</div>
+</section>
+
+<!-- ============ ITERATE ============ -->
+<section class="slide" data-id="iterate" data-ch="1" data-min="1.5" data-title="Steer with follow-ups">
+  <div class="wrap">
+    <div class="kicker rise">After the first answer</div>
+    <h2 class="rise">The first answer is a draft. <span class="grad">Steer it.</span></h2>
+    <div class="grid2 wide">
+      <div class="card rise"><div class="chat" id="itChat"></div></div>
+      <div class="rise">
+        <div class="qlist" id="itMoves"></div>
+        <p class="cap"><b>Rule of thumb:</b> change one thing per follow-up so you can see what worked.</p>
+      </div>
+    </div>
+  </div>
+  <div class="notes"><b>Follow-ups (1.5 min).</b> Click the moves in any order. “Ask me three questions first” is the favourite: the AI interviews you instead of guessing. “What did you assume?” exposes hidden defaults. Remind the room that the conversation is the tool: they do not have to get it perfect in one prompt, they have to get it steerable.</div>
+</section>
+
+<!-- ============ TEMPLATE ============ -->
+<section class="slide" data-id="template" data-ch="1" data-min="1" data-title="Copy-ready template">
+  <div class="wrap">
+    <div class="kicker rise">Take this home</div>
+    <h2 class="rise">Your CRAFT template, <span class="grad">and one safety check.</span></h2>
+    <div class="grid2 wide">
+      <div class="card rise">
+        <div class="tpl" id="tplText"></div>
+        <div class="row" style="margin-top:10px"><button class="btn on" id="tplCopy">Copy template</button><span class="fine" id="tplMsg"></span></div>
+      </div>
+      <div class="card rise">
+        <h3>Before you press Enter</h3>
+        <ul class="checks">
+          <li>No student names, IDs, photos or grades.</li>
+          <li>No health, IEP or 504 details. Describe the need instead: “a student reading two grades below level.”</li>
+          <li>If you would not put it on a hallway bulletin board, do not paste it.</li>
+          <li>Use the tools your school or district has approved. Student records are protected by laws such as FERPA in the US.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="notes"><b>Template + privacy (1 min).</b> The copy button puts a plain-text version on their clipboard. Fill-ins are in square brackets. Privacy is part of prompt design: you can get an excellent answer without any student identifying data. Invite them to share their district’s policy in the discussion board.</div>
+</section>
+
+<!-- ============ DIAL ============ -->
+<section class="slide" data-id="dial" data-ch="2" data-min="1.5" data-title="Prompt design vs output quality">
+  <div class="wrap">
+    <div class="kicker rise">Question 3 · Does a better prompt mean a better answer?</div>
+    <h2 class="rise">Better prompts make answers <span class="grad">fit</span>. They do not make them <span class="grad">true</span>.</h2>
+    <div class="grid2 wide">
+      <div class="card rise">
+        <h3 id="dialName">Vague</h3>
+        <div class="compose" id="dialPrompt" style="min-height:110px"></div>
+        <div style="margin-top:12px"><input type="range" id="dialRange" min="0" max="4" step="1" value="0" aria-label="Prompt detail"></div>
+        <div class="ticks" id="dialTicks"></div>
+      </div>
+      <div class="card rise">
+        <h3>Quality of the answer</h3>
+        <div id="dialMet"></div>
+        <div class="warnnote"><b>Facts bar:</b> wording cannot lift it. An AI can follow your format perfectly and still get a date wrong.</div>
+        <p class="cap" id="dialCap"></p>
+      </div>
+    </div>
+  </div>
+  <div class="notes"><b>Design vs quality (1.5 min).</b> Drag the slider slowly. Fit, usability and format climb. The red hatched bar barely moves. This is the bridge to chapter 4: even a perfect prompt gives you a draft that must be checked. At the far right, asking “tell me what you are unsure about” can surface weak spots, but the model can be confidently wrong, so treat it as a pointer for your own checking, not a guarantee. The scores are illustrative.</div>
+</section>
+
+<!-- ============ LOAD ============ -->
+<section class="slide" data-id="load" data-ch="3" data-min="1.5" data-title="Cognitive load">
+  <div class="wrap">
+    <div class="kicker rise">Question 4 · What should I hand off?</div>
+    <h2 class="rise">Spend your mental energy <span class="grad">where it counts.</span></h2>
+    <div class="grid2 wideL">
+      <div class="terms rise">
+        <div class="term" id="tIn"><b>Intrinsic load</b><small>How hard the idea itself is. Fractions are hard. That is the job.</small><em>stays</em></div>
+        <div class="term" id="tEx"><b>Extraneous load</b><small>Effort wasted by the setup: retyping, reformatting, hunting for files, blank-page first drafts.</small><em>shrink this</em></div>
+        <div class="term" id="tGe"><b>Germane load</b><small>Effort that builds understanding: deciding what students need, giving feedback, knowing the kids.</small><em>grow this</em></div>
+        <p class="fine">Cognitive load theory · John Sweller</p>
+      </div>
+      <div class="card rise">
+        <div class="row" style="justify-content:space-between"><h3>A sample Sunday evening (3 hours)</h3>
+          <div class="row"><button class="btn on" id="ldA" data-m="without">By hand</button><button class="btn" id="ldB" data-m="with">AI drafts, I decide</button></div></div>
+        <div class="evening" id="evening"></div>
+        <div class="legend"><span><i class="k-r"></i>Routine work</span><span><i class="k-v"></i>Checking the AI’s work</span><span><i class="k-h"></i>High-leverage teaching</span></div>
+        <div class="stat" id="ldStat"></div>
+        <p class="fine">Illustrative example, not research data. Notice the new job: you review what the AI drafted.</p>
+      </div>
+    </div>
+  </div>
+  <div class="notes"><b>Cognitive load (1.5 min).</b> Left: three kinds of mental effort. Our goal is not to think less, it is to think about the right thing. Toggle the evening. The routine slab shrinks, a new amber slab appears (checking), and the high-leverage minutes grow. Be honest: offloading is not free; reviewing is real work. Say: “Offload the routine, never the responsibility.”</div>
+</section>
+
+<!-- ============ SORT ============ -->
+<section class="slide" data-id="sort" data-ch="3" data-min="2" data-title="Offload, co-pilot or keep">
+  <div class="wrap">
+    <div class="kicker rise">Your turn</div>
+    <h2 class="rise">Offload it, co-pilot it, <span class="grad">or keep it?</span></h2>
+    <div class="card rise">
+      <div class="row" style="justify-content:space-between"><div class="dots2" id="sortProg"></div><span class="fine" id="sortScore"></span></div>
+      <div class="task" id="sortTask"></div>
+      <div class="fb" id="sortFb" style="text-align:center"></div>
+      <div class="lanes" id="sortLanes"></div>
+      <div class="row c" style="margin-top:10px"><button class="btn big" id="sortNext" style="display:none">Next task ▶</button></div>
+    </div>
+  </div>
+  <div class="notes"><b>Sort (2 min).</b> Eight tasks, one at a time. Take a vote, then click. Offload: routine, easy to check. Co-pilot: you and the AI trade ideas, you decide. Keep: it depends on your knowledge of real students, or it is verification itself. The “check the answer key” card surprises people: verification is the one task you cannot hand to the thing that might be wrong. At the end, the summary shows time freed by sorting well.</div>
+</section>
+
+<!-- ============ LENSES ============ -->
+<section class="slide" data-id="lenses" data-ch="4" data-min="1.5" data-title="Five lenses">
+  <div class="wrap">
+    <div class="kicker rise">Question 5 · How do I know it is any good?</div>
+    <h2 class="rise">Look through <span class="grad">five lenses</span></h2>
+    <div id="lensStep" class="rise"></div>
+  </div>
+  <div class="notes"><b>Five lenses (1.5 min).</b> Accuracy: is it right? Credibility: who stands behind it, do the sources exist? Bias: whose view is missing? Reliability: would it say this again, and does a trusted source agree? Educational value: does it teach what you meant it to? Each has a quick test and a red flag. A single output often fails one lens and passes the rest, which is why we use all five.</div>
+</section>
+
+<!-- ============ INSPECT ============ -->
+<section class="slide" data-id="inspect" data-ch="4" data-min="3" data-title="Inspect the handout">
+  <div class="wrap">
+    <div class="kicker rise">Your turn</div>
+    <h2 class="rise">An AI wrote this handout. <span class="grad">Click every sentence.</span></h2>
+    <div class="grid2 wide">
+      <div class="rise">
+        <div class="hand">
+          <h4>Why did colonists protest the Tea Act?</h4>
+          <div class="goal">My goal: students explain <i>why</i> people protested (cause and effect).</div>
+          <span class="s" data-i="0">In December 1773, colonists dumped 342 chests of tea into Boston Harbor to protest the Tea Act.</span>
+          <span class="s" data-i="1" id="s2">The protest was led by Benjamin Franklin, who climbed aboard the ships himself.</span>
+          <span class="s" data-i="2">A 2019 Harvard study found that 9 in 10 colonists supported the protest.</span>
+          <span class="s" data-i="3">Every colonist agreed that the tea had to go.</span>
+          <span class="s" data-i="4">Quick check: What year did the Boston Tea Party happen? (Answer: 1773)</span>
+        </div>
+        <div class="row" style="margin-top:10px"><button class="btn" id="inRegen">↻ Run the same prompt again</button><span class="fine" id="inRegenMsg"></span></div>
+      </div>
+      <div class="rise" id="inLens"></div>
+    </div>
+  </div>
+  <div class="notes"><b>Inspect (3 min).</b> Let the room call out which sentence is wrong before you reveal. Sentence 1 is correct: 342 chests is the standard figure, so not everything is flagged. Sentence 2: Franklin was in London. Sentence 3: no such study; you will check this laterally next. Sentence 4: one group stands in for everyone. Sentence 5: recall only, but your goal was cause and effect. Then press “Run the same prompt again”: the “fact” changes. That is Reliability.</div>
+</section>
+
+<!-- ============ LATERAL 1 ============ -->
+<section class="slide" data-id="lat1" data-ch="4" data-min="2" data-title="Lateral reading">
+  <div class="wrap">
+    <div class="kicker rise">Skill · Lateral reading</div>
+    <h2 class="rise">Do not stay on the page. <span class="grad">Leave it.</span></h2>
+    <p class="lead rise" style="text-align:center">Open new tabs and see what the rest of the web says about the source <i>before</i> you read it closely.</p>
+    <div class="grid2 rise">
+      <div class="card">
+        <h3>Vertical reading <span class="tag">stays on the page</span></h3>
+        <div class="brw"><div class="tabs"><span class="tab on">teachfactsdaily.example</span></div>
+          <div class="page" id="vPage"></div></div>
+        <div class="mt" style="grid-template-columns:150px 1fr 40px"><span>Feels trustworthy</span><div class="bar"><i id="vBar"></i></div><output id="vOut">0</output></div>
+      </div>
+      <div class="card">
+        <h3>Lateral reading <span class="tag">leaves the page</span></h3>
+        <div class="brw"><div class="tabs" id="lTabs"></div><div class="page" id="lPage"></div></div>
+        <div class="mt" style="grid-template-columns:150px 1fr 40px"><span>Backed by evidence</span><div class="bar"><i id="lBar"></i></div><output id="lOut">0</output></div>
+      </div>
+    </div>
+    <div class="row rise" style="margin-top:8px"><button class="btn" id="latRun">↻ Replay</button><span class="fine">A fictional site, for illustration. Stanford researchers (2017) found professional fact-checkers left unfamiliar sites quickly to check them elsewhere, while many historians and students stayed and judged by appearance.</span></div>
+  </div>
+  <div class="notes"><b>Lateral reading (2 min).</b> Left: the habit most of us have. The page looks professional, has an About page, says it is trusted. We read down and our confidence climbs. Right: the fact-checker’s habit. Within seconds she opens new tabs: who runs this, what do others say about it, does anyone else report the claim? Confidence now comes from evidence. For AI: an AI answer is not a source, it is a lead. Take the claim and read it laterally.</div>
+</section>
+
+<!-- ============ LATERAL 2 ============ -->
+<section class="slide" data-id="lat2" data-ch="4" data-min="2" data-title="Check one claim">
+  <div class="wrap">
+    <div class="kicker rise">Practice · SIFT</div>
+    <h2 class="rise">Check one claim <span class="grad">laterally.</span></h2>
+    <div class="claim rise"><b>The AI said:</b> “A 2019 Harvard study found that 9 in 10 colonists supported the protest.”</div>
+    <div id="siftStep" class="rise"></div>
+  </div>
+  <div class="notes"><b>SIFT (2 min).</b> SIFT is a four-move routine from Mike Caulfield: Stop, Investigate the source, Find better coverage, Trace claims to the original. The searches shown are simulated for the demo; in class, do it live with a real claim and a real browser. The outcome here: no such study exists, historians describe divided opinion. The AI produced a plausible-sounding source. Discard the claim, keep the question.</div>
+</section>
+
+<!-- ============ WRAP ============ -->
+<section class="slide" data-id="wrap" data-ch="5" data-min="2" data-title="Recap">
+  <div class="wrap">
+    <div class="kicker rise">Recap</div>
+    <h2 class="rise">Five things to <span class="grad">take with you</span></h2>
+    <div class="grid2 wide">
+      <div class="recap" id="recap"></div>
+      <div class="rise">
+        <div class="card" style="margin-bottom:12px"><h3>This week’s practice</h3>
+          <p style="margin:0 0 8px">Take one prompt you actually used this month. Rewrite it with CRAFT, run both, and compare. Then pick one claim from the answer and read it laterally.</p></div>
+        <div class="card"><h3>Discuss</h3><p style="margin:0">Which part of CRAFT do you leave out most often, and what has it cost you?</p></div>
+        <div class="row" style="margin-top:12px"><button class="btn big" id="confBtn">Finish ✦</button></div>
+      </div>
+    </div>
+  </div>
+  <div class="notes"><b>Wrap-up (2 min).</b> Read the five lines quickly. Assign the practice, and leave a minute for the discussion question. Fire the confetti to end on a high note.</div>
+</section>
+
+</main>
+
+<aside id="notes" aria-live="polite"><h4 id="notesH">Talking points</h4><div id="notesB"></div></aside>
+
+<footer id="bar">
+  <button class="nav" data-act="prev" aria-label="Previous">◀</button>
+  <div id="seg" aria-label="Progress"></div>
+  <div id="count"></div>
+  <button class="nav" data-act="next" aria-label="Next">Next ▶</button>
+  <button class="nav sm" id="btnNotes" title="Talking points (N)">Notes</button>
+  <button class="nav sm" id="btnFs" title="Full-screen (F)">⛶</button>
+</footer>
+<script>
+'use strict';
+/* ===================================================== helpers */
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const rand=(a,b)=>a+Math.random()*(b-a);
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const hooks={}, subs={};
+async function typeTok(el,text,speed,ok){
+  for(let i=0;i<text.length;i++){ if(!ok()) return false; el.textContent=text.slice(0,i+1); await sleep(speed); }
+  return true;
+}
+async function say(chat,who,text,ok,speed=12){
+  const b=document.createElement('div'); b.className='bubble '+who; chat.appendChild(b);
+  if(who==='bot'){
+    b.innerHTML='<span class="dots"><i></i><i></i><i></i></span>'; chat.scrollTop=chat.scrollHeight; await sleep(550);
+    if(!ok()) return false; b.textContent='';
+    const done=await typeTok(b,text,speed,ok); chat.scrollTop=chat.scrollHeight; return done;
+  }
+  b.textContent=text; chat.scrollTop=chat.scrollHeight; return true;
+}
+function countTo(el,to,ms=900){
+  const from=+el.textContent||0,t0=performance.now();
+  (function f(t){const k=Math.min(1,(t-t0)/ms);el.textContent=Math.round(from+(to-from)*(1-Math.pow(1-k,3)));if(k<1)requestAnimationFrame(f)})(t0);
+}
+function confetti(){
+  const cols=['var(--c)','var(--r)','var(--a)','var(--f)','var(--t)'];
+  for(let i=0;i<46;i++){const s=document.createElement('span');s.className='conf';s.textContent='CRAFT'[i%5];s.style.left=rand(0,100)+'vw';s.style.color=cols[i%5];
+    s.style.animationDuration=rand(2.2,4.2)+'s';s.style.animationDelay=rand(0,.8)+'s';document.body.appendChild(s);setTimeout(()=>s.remove(),6000);}
+}
+
+/* ===================================================== animated background: a signal travelling through a dot grid */
+(function(){
+  const c=$('#bg'),x=c.getContext('2d'); let W,H,t=0,hue=14,target=14;
+  function size(){W=c.width=innerWidth;H=c.height=innerHeight}
+  addEventListener('resize',size); size();
+  window.setHue=h=>{target=h};
+  function tick(){
+    hue+=(target-hue)*.04; t+=.012; x.clearRect(0,0,W,H);
+    const g=x.createRadialGradient(W*.15,H*.95,0,W*.15,H*.95,Math.max(W,H)*.9);
+    g.addColorStop(0,`hsla(${hue},70%,22%,.55)`); g.addColorStop(1,'rgba(14,16,32,0)'); x.fillStyle=g; x.fillRect(0,0,W,H);
+    const s=34;
+    for(let gx=s/2;gx<W;gx+=s) for(let gy=s/2;gy<H;gy+=s){
+      const d=Math.hypot(gx-W*.82,gy-H*.18), w=Math.sin(d/90-t*3)*.5+.5;
+      x.fillStyle=`hsla(${hue},85%,68%,${.06+.26*w*w})`; const z=2+w*1.6; x.fillRect(gx-z/2,gy-z/2,z,z);
+    }
+    if(!reduce) requestAnimationFrame(tick);
+  }
+  tick();
+})();
+
+/* ===================================================== the five parts + a mock "AI answer" that responds to them */
+const PARTS=[
+ {k:'C',name:'Context',q:'What does the AI not know about my class?',text:'I teach 5th grade math. My class just finished a unit on equivalent fractions using bar models. 4 of my 25 students are English learners.'},
+ {k:'R',name:'Role',q:'Who should it act as?',text:'You are an experienced elementary math teacher who writes assessments.'},
+ {k:'A',name:'Action',q:'What exactly should it do?',text:'Write a 5-question exit ticket: three quick checks and two “explain your thinking” questions.'},
+ {k:'F',name:'Format',q:'What shape should the answer take?',text:'Put it in a table with the answer key and the mistake each wrong answer would reveal.'},
+ {k:'T',name:'Target & tone',q:'Who is it for, and how should it sound?',text:'Use friendly grade-5 language with ribbons and pizzas as examples. Keep denominators 12 or smaller.'}];
+const PCOL={C:'var(--c)',R:'var(--r)',A:'var(--a)',F:'var(--f)',T:'var(--t)'};
+const NONE={C:0,R:0,A:0,F:0,T:0}, ALL={C:1,R:1,A:1,F:1,T:1};
+const MNAMES=['Fits my class','Ready to use','Right level','Catches misconceptions'];
+const WT={fit:{b:12,C:40,T:22,R:10,A:6},ready:{b:10,A:30,F:35,T:8,C:10,R:2},level:{b:10,T:35,C:35,R:10},mis:{b:5,R:45,F:25,C:15,A:5}};
+function renderOut(f,tags){
+  const tg=s=>tags?s.split('').filter(k=>f[k]).map(k=>`<i class="lt" style="--col:${PCOL[k]}">${k}</i>`).join(''):'';
+  const L=(t,i,c='')=>`<div class="ol ${c}">${t}${tg(i)}</div>`;
+  const Q=f.C&&f.T?['1. Two ribbons are the same length. One is cut into 3 parts, the other into 6. Is 2/3 the same as 4/6? Shade the bars to show how you know.','2. Fill in the box: 3/4 = □/8','3. Mia says 1/2 = 2/4. Explain why she is right.']
+    :f.C?['1. Determine whether 2/3 and 4/6 are equivalent. Justify using a visual model.','2. Express 3/4 as an equivalent fraction with denominator 8.','3. Explain why 1/2 and 2/4 are equivalent.']
+    :f.T?['1. Tom ate 12/18 of a pizza. Say that with smaller numbers.','2. Lena ate 3/4 of a pizza and Ravi ate 1/6. How much did they eat?','3. Write 17/5 as a mixed number. Think of 17 slices in boxes of 5.']
+    :['1. Simplify 12/18.','2. Compute 3/4 + 1/6.','3. Convert 17/5 to a mixed number.'];
+  const key=f.F&&f.R?'Key table: answer + “Watch for: changes only the top number (3/4 → 6/4)”':f.F?'Key table: answers only':f.R?'Answers and teaching notes in one long paragraph at the end':'Answers run together at the bottom, no layout';
+  let h=L(`${f.A?'Exit Ticket':'Quiz'} · ${f.C?'Equivalent Fractions':'Fractions'} · ${f.A?'5 questions':'10 questions'}`,'AC','h');
+  h+=Q.map(q=>L(q,'CT')).join('');
+  if(!f.A) h+=L('…and 7 more questions on mixed skills','A','dim');
+  h+=L(key,'FR','dim')+L(f.T?'Reading level: grade 5 · friendly voice':'Reading level: not specified','T','dim');
+  const sc=o=>Math.min(100,Object.keys(o).reduce((a,k)=>a+(k==='b'||f[k]?o[k]:0),0));
+  const m=[sc(WT.fit),sc(WT.ready),sc(WT.level),sc(WT.mis)];
+  return {html:h,m,q:Math.round(m.reduce((a,b)=>a+b,0)/4)};
+}
+function meterHTML(names){return names.map(n=>{const w=Array.isArray(n);return `<div class="mt${w&&n[1]?' warn':''}"><span>${w?n[0]:n}</span><div class="bar"><i></i></div><output>0</output></div>`}).join('')}
+function setMeters(el,v){$$('.mt',el).forEach((r,i)=>{$('i',r).style.width=v[i]+'%';$('output',r).textContent=v[i]})}
+
+/* ===================================================== stepper component */
+function stepper(sel,steps,key){
+  const root=$(sel); root.classList.add('stepper');
+  root.innerHTML=`<ol class="steps">${steps.map((s,i)=>`<li data-i="${i}" style="--sc:${s.col||'var(--accent)'}"><span class="num">${s.n||i+1}</span><div><b>${s.title}</b><small>${s.text}</small></div></li>`).join('')}</ol>
+  <div class="stepvis"><div class="visbox"></div><div class="viscap"></div><div class="stepctl"><button class="btn" data-s="prev">◀</button><button class="btn" data-s="play">▶ Auto-play</button><button class="btn" data-s="next">▶</button></div></div>`;
+  const lis=$$('li',root),box=$('.visbox',root),cap=$('.viscap',root),play=$('[data-s=play]',root);
+  const o={n:steps.length,i:0,timer:null,
+    set(i){o.i=clamp(i,0,o.n-1);lis.forEach((l,k)=>{l.classList.toggle('active',k===o.i);l.classList.toggle('done',k<o.i)});box.innerHTML=steps[o.i].vis;cap.innerHTML=steps[o.i].cap||'';},
+    stop(){clearInterval(o.timer);o.timer=null;play.textContent='▶ Auto-play'},
+    auto(){o.stop();play.textContent='⏸ Pause';o.timer=setInterval(()=>{if(o.i>=o.n-1){o.stop();return}o.set(o.i+1)},4200)}};
+  o.go=o.set; o.reset=i=>{o.stop();o.set(i)};
+  lis.forEach(l=>l.onclick=()=>{o.stop();o.set(+l.dataset.i)});
+  $('[data-s=prev]',root).onclick=()=>{o.stop();o.set(o.i-1)};
+  $('[data-s=next]',root).onclick=()=>{o.stop();o.set(o.i+1)};
+  play.onclick=()=>o.timer?o.stop():(o.i>=o.n-1&&o.set(0),o.auto());
+  o.set(0); subs[key]=o; return o;
+}
+
+/* ===================================================== router + chrome */
+const slides=$$('.slide');
+const CH=['The hook','1 · CRAFT','2 · Quality','3 · Load','4 · Evaluate','Wrap-up'];
+const CHFULL=['The hook','CRAFT','Design vs quality','Cognitive load','Evaluate','Wrap-up'];
+const HUE=[14,40,80,172,275,14], CHC=['var(--c)','var(--r)','var(--a)','var(--f)','var(--t)','var(--c)'];
+let cur=-1;
+const mins=slides.map(s=>+s.dataset.min);
+const planAt=mins.map((_,i)=>mins.slice(0,i).reduce((a,b)=>a+b,0));
+const TOTAL=mins.reduce((a,b)=>a+b,0);
+slides.forEach(s=>$$('.rise',s).forEach((e,i)=>e.style.setProperty('--i',i)));
+const chNav=$('#chapters');
+CH.forEach((n,i)=>{const b=document.createElement('button');b.className='pill';b.textContent=n;b.onclick=()=>go(slides.findIndex(s=>+s.dataset.ch===i));chNav.appendChild(b)});
+(function(){const r=$('#roadmap');
+  CHFULL.forEach((n,i)=>{const m=slides.reduce((a,s,k)=>a+(+s.dataset.ch===i?mins[k]:0),0);
+    const b=document.createElement('button');b.className='road';b.style.setProperty('--rc',CHC[i]);b.innerHTML=`<span>${n}</span><em>${m} min</em>`;
+    b.onclick=()=>go(slides.findIndex(s=>+s.dataset.ch===i));r.appendChild(b)});
+})();
+const seg=$('#seg'); slides.forEach((s,i)=>{const e=document.createElement('i');e.title=`${i+1}. ${s.dataset.title}`;e.onclick=()=>go(i);seg.appendChild(e)});
+function go(n,dir){
+  n=clamp(n,0,slides.length-1); if(n===cur) return;
+  dir=dir??(n>cur?1:-1);
+  const prev=cur>=0?slides[cur]:null;
+  if(prev&&hooks[prev.dataset.id]?.leave) hooks[prev.dataset.id].leave();
+  cur=n;
+  slides.forEach((s,i)=>{s.classList.toggle('active',i===n);s.classList.toggle('past',i<n);if(i!==n)s.scrollTop=0});
+  const s=slides[n],ch=+s.dataset.ch;
+  document.body.dataset.ch=ch; window.setHue(HUE[ch]);
+  $$('.pill').forEach((p,i)=>p.classList.toggle('active',i===ch));
+  $$('#seg i').forEach((e,i)=>{e.classList.toggle('on',i===n);e.classList.toggle('done',i<n)});
+  $('#count').textContent=`${n+1} / ${slides.length} · ≈${mins[n]} min`;
+  $('#notesH').textContent=`Talking points · ${s.dataset.title} · ≈${mins[n]} min`;
+  $('#notesB').innerHTML=$('.notes',s).innerHTML;
+  const sub=subs[s.dataset.id]; if(sub) sub.reset(dir>0?0:sub.n-1);
+  if(hooks[s.dataset.id]?.enter) hooks[s.dataset.id].enter(dir);
+  if(n>0) clock.start();
+  try{history.replaceState(null,'','#'+(n+1))}catch(e){}
+  clock.render();
+}
+function next(skip){const sub=subs[slides[cur].dataset.id];if(!skip&&sub&&sub.i<sub.n-1){sub.go(sub.i+1);return}go(cur+1,1)}
+function prevS(skip){const sub=subs[slides[cur].dataset.id];if(!skip&&sub&&sub.i>0){sub.go(sub.i-1);return}go(cur-1,-1)}
+document.addEventListener('click',e=>{const a=e.target.closest('[data-act]');if(!a)return;a.dataset.act==='next'?next():prevS();a.blur()});
+addEventListener('keydown',e=>{
+  if(e.target.matches('input[type=range]')&&['ArrowRight','ArrowLeft','ArrowUp','ArrowDown'].includes(e.key)) return;
+  if(e.target.matches('textarea,input[type=text]')) return;
+  if(e.key===' '&&e.target.closest('button')) return;
+  switch(e.key){
+    case 'ArrowRight':case ' ':e.preventDefault();next();break;
+    case 'ArrowLeft':e.preventDefault();prevS();break;
+    case 'PageDown':e.preventDefault();go(cur+1,1);break;
+    case 'PageUp':e.preventDefault();go(cur-1,-1);break;
+    case 'Home':go(0);break; case 'End':go(slides.length-1);break;
+    case 'n':case 'N':document.body.classList.toggle('shownotes');break;
+    case 'f':case 'F':toggleFs();break;
+    case 'Escape':document.body.classList.remove('shownotes');break;
+  }
+});
+$('#btnNotes').onclick=e=>{document.body.classList.toggle('shownotes');e.currentTarget.blur()};
+function toggleFs(){try{document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen?.().catch(()=>{})}catch(e){}}
+$('#btnFs').onclick=e=>{toggleFs();e.currentTarget.blur()};
+
+const clock=(function(){
+  let elapsed=0,last=0,running=false,el=$('#clock');
+  const f=s=>`${String(Math.floor(s/60)).padStart(2,'0')}:${String(Math.floor(s%60)).padStart(2,'0')}`;
+  const o={start(){if(!running&&!o.manual){running=true;last=Date.now()}},
+    render(){const plan=cur>=0?planAt[cur]*60:0;el.textContent=`${f(elapsed/1000)} / ${f(TOTAL*60)} · plan ${f(plan)}`;
+      el.classList.toggle('late',running&&elapsed/1000>plan+(mins[cur]||1)*60+30);el.classList.toggle('paused',!running&&elapsed>0)}};
+  setInterval(()=>{if(running){const n=Date.now();elapsed+=n-last;last=n}o.render()},500);
+  el.onclick=()=>{if(running){running=false;o.manual=true}else{running=true;o.manual=false;last=Date.now()}o.render()};
+  el.ondblclick=()=>{elapsed=0;running=false;o.manual=false;o.render()};
+  return o;
+})();
+
+/* ===================================================== TITLE */
+(function(){
+  const w=$('#craftWord'); const cols=['c','r','a','f','t'];
+  w.innerHTML=PARTS.map((p,i)=>`<span class="L" style="--d:${(i*.12+.15).toFixed(2)}s;--col:var(--${cols[i]})"><b>${p.k}</b><small>${p.name.split(' ')[0]}</small></span>`).join('')+'<span class="caret"></span>';
+})();
+
+/* ===================================================== STORY */
+(function(){
+  const chat=$('#storyChat'),qs=$('#storyQs'); let tok=0;
+  const Q=[['var(--r)','1','How do I ask so it gets it right?','Chapter 1 · the CRAFT framework',1],
+    ['var(--a)','2','Does a better prompt mean a better answer?','Chapter 2 · prompt design vs output quality',2],
+    ['var(--f)','3','What should I hand off, and what should I keep?','Chapter 3 · cognitive load',3],
+    ['var(--t)','4','How do I know the answer is any good?','Chapter 4 · evaluating &amp; lateral reading',4]];
+  qs.innerHTML=Q.map((q,i)=>`<button class="q rise" style="--qc:${q[0]};--i:${i+2}" data-g="${q[4]}"><span class="n">${q[1]}</span><span><b>${q[2]}</b><small>${q[3]}</small></span></button>`).join('');
+  $$('.q',qs).forEach(b=>b.onclick=()=>go(slides.findIndex(s=>+s.dataset.ch===+b.dataset.g)));
+  hooks.story={async enter(){
+    const my=++tok,ok=()=>tok===my; chat.innerHTML='';
+    if(!await say(chat,'user','make a fractions quiz',ok)) return; await sleep(300);
+    if(!await say(chat,'bot','Sure! 📝 Fractions Quiz\n1. Simplify 12/18\n2. Compute 3/4 + 1/6\n3. Convert 17/5 to a mixed number\n…(7 more questions)',ok,10)) return; await sleep(500);
+    if(ok()) await say(chat,'thought','Hmm. My class just learned equivalent fractions, and I have 8 minutes. Was the AI bad… or was my question?',ok);
+  },leave(){tok++}};
+})();
+
+/* ===================================================== COMPARE */
+(function(){
+  const A=$('#cmpA'),B=$('#cmpB'),aM=$('#cmpAmet'),bM=$('#cmpBmet'); let tok=0;
+  aM.innerHTML=meterHTML(MNAMES); bM.innerHTML=meterHTML(MNAMES);
+  async function play(){
+    const my=++tok,ok=()=>tok===my;
+    A.textContent='';B.innerHTML='';$('#cmpAout').innerHTML='';$('#cmpBout').innerHTML='';setMeters(aM,[0,0,0,0]);setMeters(bM,[0,0,0,0]);$('#cmpAq').textContent='0';$('#cmpBq').textContent='0';
+    await sleep(500); if(!await typeTok(A,'Make a fractions quiz.',45,ok)) return;
+    for(const p of PARTS){ if(!ok()) return; B.insertAdjacentHTML('beforeend',`<span class="seg" style="--col:${PCOL[p.k]};animation:rise .5s both"><em>${p.k}</em>${p.text}</span> `); await sleep(520); }
+    await sleep(300); if(!ok()) return;
+    const a=renderOut(NONE),b=renderOut(ALL);
+    $('#cmpAout').innerHTML=a.html; $('#cmpBout').innerHTML=b.html; await sleep(400); if(!ok()) return;
+    setMeters(aM,a.m); setMeters(bM,b.m); countTo($('#cmpAq'),a.q); countTo($('#cmpBq'),b.q);
+  }
+  $('#cmpRun').onclick=play; hooks.compare={enter:play,leave(){tok++}};
+})();
+
+/* ===================================================== CRAFT stepper */
+(function(){
+  const W=['Make a fractions quiz.','Write feedback.','Help me with fractions.','(the AI picks whatever shape it likes)','(the AI defaults to a generic adult voice)'];
+  const WHY=['The AI cannot see your classroom. Context is everything it does not know.','A role steers vocabulary and what gets noticed. It sets a style, not real credentials.','One clear verb, a number, and a purpose.','Name the shape before you get it: table, bullets, rubric, email, script. It saves reformatting.','Audience, reading level, voice, and limits (what to avoid).'];
+  const steps=PARTS.map((p,i)=>({n:p.k,col:PCOL[p.k],title:p.name,text:p.q,
+    vis:`<div class="frag" style="--col:${PCOL[p.k]}"><div class="top"><span class="big">${p.k}</span><b>${p.name}</b></div>
+      <div class="wk"><small>Without it</small>${W[i]}</div><div class="st"><small>With it</small>${p.text}</div><div class="why">${WHY[i]}</div></div>`}));
+  stepper('#craftStep',steps,'craft');
+})();
+
+/* ===================================================== LAB */
+(function(){
+  const flags={...NONE}, tog=$('#labTog'), comp=$('#labPrompt'), out=$('#labOut'), met=$('#labMet'), sc=$('#labScore'); let tok=0;
+  tog.innerHTML=PARTS.map(p=>`<button class="tg" data-k="${p.k}" style="--col:${PCOL[p.k]}"><b>${p.k}</b><span><strong>${p.name}</strong><small>${p.q}</small></span></button>`).join('');
+  met.innerHTML=meterHTML(MNAMES);
+  function draw(){
+    comp.innerHTML=PARTS.map(p=>{
+      if(flags[p.k]) return `<span class="seg" style="--col:${PCOL[p.k]}"><em>${p.k}</em>${p.text}</span>`;
+      if(p.k==='A') return `<span class="seg base"><em>·</em>Make a fractions quiz.</span> <button class="ghost" data-k="A" style="--col:${PCOL.A}">+ Action</button>`;
+      return `<button class="ghost" data-k="${p.k}" style="--col:${PCOL[p.k]}">+ ${p.name}</button>`;
+    }).join(' ');
+    const o=renderOut(flags,true); out.innerHTML=o.html; setMeters(met,o.m); countTo(sc,o.q,500);
+    $$('.tg',tog).forEach(b=>b.classList.toggle('on',!!flags[b.dataset.k]));
+  }
+  const flip=k=>{tok++;flags[k]=flags[k]?0:1;draw()};
+  tog.onclick=e=>{const b=e.target.closest('.tg');if(b)flip(b.dataset.k)};
+  comp.onclick=e=>{const b=e.target.closest('.ghost');if(b)flip(b.dataset.k)};
+  $('#labNone').onclick=()=>{tok++;Object.assign(flags,NONE);draw()};
+  $('#labAll').onclick=()=>{tok++;Object.assign(flags,ALL);draw()};
+  hooks.lab={async enter(){
+    const my=++tok; Object.assign(flags,NONE); draw(); await sleep(1300);
+    for(const k of 'CRAFT'){ if(tok!==my) return; flags[k]=1; draw(); await sleep(1600); }
+  },leave(){tok++}};
+})();
+
+/* ===================================================== FIX GAME */
+(function(){
+  const P=[
+   {miss:'R',fix:'You are an experienced elementary math teacher.',segs:[['C','My 5th graders just finished a unit on equivalent fractions.'],['A','Write five exit-ticket questions'],['F','in a table with an answer key,'],['T','at a grade-5 reading level.']]},
+   {miss:'F',fix:'Make it a one-page worksheet with a matching section and two short-answer questions.',segs:[['R','You are a middle school history teacher.'],['C','My 8th graders are studying the causes of the American Revolution and struggle with cause and effect.'],['A','Write a review activity'],['T','in a friendly, grade-8 voice.']]},
+   {miss:'A',fix:'Write a handout that gives three strategies for staying calm on test day.',segs:[['R','You are a school counselor.'],['C','My 7th graders are nervous about state testing.'],['F','Put it on one page with three headings'],['T','in a calm voice for 12-year-olds.']]},
+   {miss:'C',fix:'The assignment was a paragraph about a favorite animal; the goal is a topic sentence and two details. Here is the paragraph: [paste, no names].',segs:[['R','You are an experienced 4th grade writing coach.'],['A','Give feedback on a student paragraph'],['F','in a two-column table: Glow and Grow.'],['T','Keep it kind and use words a 9-year-old understands.']]},
+   {miss:'T',fix:'Use a grade-6 reading level, short sentences, and no double negatives.',segs:[['R','You are a science teacher.'],['C','My 6th graders learned the water cycle but mix up evaporation and condensation.'],['A','Write six true/false statements'],['F','as a numbered list with an answer key.']]}];
+  const card=$('#fixCard'),btns=$('#fixBtns'),fb=$('#fixFb'),prog=$('#fixProg'),nx=$('#fixNext'),scEl=$('#fixScore');
+  let i=0,score=0,locked=false,res=[],slip=false;
+  btns.innerHTML=PARTS.map(p=>`<button class="btn pick" data-k="${p.k}" style="--col:${PCOL[p.k]}"><b>${p.k}</b>${p.name}</button>`).join('');
+  const dots=()=>{prog.innerHTML=P.map((_,k)=>`<i class="${res[k]||(k===i?'now':'')}"></i>`).join('');scEl.textContent=`${score} first-try`};
+  function show(){
+    locked=false; slip=false; nx.style.display='none'; const q=P[i];
+    card.innerHTML=q.segs.map(s=>s[1]).join(' ');
+    fb.innerHTML='<span class="mute">Which part of CRAFT is missing?</span>';
+    $$('.pick',btns).forEach(b=>b.classList.remove('right','wrong')); dots();
+  }
+  btns.onclick=e=>{
+    const b=e.target.closest('.pick'); if(!b||locked) return; const q=P[i], ok=b.dataset.k===q.miss;
+    if(!ok){ slip=true; b.classList.add('wrong'); fb.innerHTML='<span style="color:var(--bad)">Not that one.</span> Look again at what the AI would have to guess.'; return; }
+    locked=true; if(!slip) score++; res[i]=slip?'no':'ok'; b.classList.add('right');
+    card.innerHTML=q.segs.map(s=>`<span class="seg" style="--col:${PCOL[s[0]]}"><em>${s[0]}</em>${s[1]}</span>`).join(' ')+` <span class="seg miss" style="--col:${PCOL[q.miss]}"><em>${q.miss}</em>${q.fix}</span>`;
+    fb.innerHTML=`<b style="color:var(--good)">Yes.</b> The dashed part is a possible fix.`;
+    nx.textContent=i<P.length-1?'Next prompt ▶':'See result ▶'; nx.style.display=''; dots();
+  };
+  nx.onclick=()=>{
+    if(i<P.length-1){i++;show();return}
+    card.innerHTML=`<div style="text-align:center;font-family:var(--display);font-size:1.5em">${score} of ${P.length} on the first try.</div>`;
+    fb.innerHTML='<div style="text-align:center">Spotting the gap is the skill. Now you will do it on your own prompts.</div>'; nx.style.display='none'; btns.style.display='none'; confetti();
+  };
+  hooks.fix={enter(){i=0;score=0;res=[];btns.style.display='';show()}};
+})();
+
+/* ===================================================== ITERATE */
+(function(){
+  const chat=$('#itChat'),mv=$('#itMoves'); let tok=0;
+  const M=[
+   ['Make question 3 easier for English learners','Targeted revision','Done. Question 3 now reads: “Two bars are the same size. One has 2 of 4 parts shaded. The other has 1 of 2 shaded. Circle: same / not the same.” I added a sentence frame: “They are ___ because ___.”'],
+   ['Ask me 3 questions before you write','Make the AI interview you','Before I write: 1) How many minutes will students have? 2) Printed or on screen? 3) Do you want one challenge question for early finishers?'],
+   ['Give me a Version B with new numbers','Reuse the pattern','Version B keeps the same structure: Q1 uses 3/5 and 6/10, Q2 asks 2/3 = □/12, Q3 asks why 4/8 and 1/2 match. The answer key is updated.'],
+   ['What did you assume about my class?','Surface hidden assumptions','I assumed students use bar models, know halves, thirds and fourths, and can read short sentences independently. I did not assume any calculator use.'],
+   ['Cut it to half a page','Constrain the length','Shortened to three questions: two quick checks and one “explain your thinking.” The key is one line each. It fits on a half sheet.']];
+  mv.innerHTML=M.map((m,i)=>`<button class="q" style="--qc:var(--r)" data-i="${i}"><span class="n">+</span><span><b>${m[0]}</b><small>${m[1]}</small></span></button>`).join('');
+  mv.onclick=async e=>{
+    const b=e.target.closest('.q'); if(!b||b.dataset.used) return; b.dataset.used=1; b.style.opacity=.5;
+    const my=tok, ok=()=>tok===my, m=M[+b.dataset.i];
+    await say(chat,'user',m[0],ok); await sleep(250); await say(chat,'bot',m[2],ok,8);
+  };
+  hooks.iterate={async enter(){
+    const my=++tok,ok=()=>tok===my; chat.innerHTML=''; $$('.q',mv).forEach(b=>{delete b.dataset.used;b.style.opacity=''});
+    await say(chat,'bot','Here is your 5-question exit ticket as a table, with an answer key and a “watch for” column. Want me to change anything?',ok,10);
+  },leave(){tok++}};
+})();
+
+/* ===================================================== TEMPLATE */
+(function(){
+  const T=[['C','CONTEXT','I teach [grade and subject]. My students [just learned / need ___]. [Anything important: class size, English learners, time available.]'],
+   ['R','ROLE','You are [an experienced ___ teacher / coach / writer].'],
+   ['A','ACTION','[Write / Draft / Suggest] [how many] [what], so that [purpose].'],
+   ['F','FORMAT','Give it to me as [table / bullets / rubric / email / script] with [the parts you need].'],
+   ['T','TARGET','For [audience] at [reading level], in a [friendly / calm / formal] voice. Avoid [limits].']];
+  $('#tplText').innerHTML=T.map(t=>`<div><span class="seg" style="--col:${PCOL[t[0]]}"><em>${t[0]}</em>${t[1]}</span> ${t[2].replace(/\[([^\]]+)\]/g,'<span class="ph">[$1]</span>')}</div>`).join('');
+  const plain=T.map(t=>`${t[1]}: ${t[2]}`).join('\n');
+  $('#tplCopy').onclick=async()=>{
+    const m=$('#tplMsg');
+    try{ await navigator.clipboard.writeText(plain); m.textContent='Copied.'; }
+    catch(e){ const r=document.createRange(); r.selectNodeContents($('#tplText')); const s=getSelection(); s.removeAllRanges(); s.addRange(r); m.textContent='Selected. Press Ctrl+C (or Cmd+C) to copy.'; }
+  };
+})();
+
+/* ===================================================== DIAL */
+(function(){
+  const S=(k,t)=>[k,t];
+  const full=[S('C','I teach 5th grade; we just finished bar models.'),S('R','You are an elementary math teacher.'),S('A','Write a 5-question exit ticket on equivalent fractions.'),S('F','Use a table with an answer key.'),S('T','Friendly grade-5 language.')];
+  const D=[
+   {n:'1 · Vague',segs:[['b','Make a fractions quiz.']],fit:10,ready:10,fmt:5,facts:55,cap:'The AI fills every blank with its most average guess.'},
+   {n:'2 · Clear task',segs:[S('A','Write a 5-question exit ticket on equivalent fractions.')],fit:35,ready:35,fmt:25,facts:56,cap:'A verb, a number and a topic. Better, but it still does not know your class.'},
+   {n:'3 · Add context',segs:[S('C','I teach 5th grade; we just finished bar models.'),S('A','Write a 5-question exit ticket on equivalent fractions.')],fit:62,ready:55,fmt:40,facts:56,cap:'It now knows the level and what students have seen.'},
+   {n:'4 · Full CRAFT',segs:full,fit:88,ready:86,fmt:92,facts:57,cap:'All five parts. Fit, usability and format are near the top. The facts bar barely moved.'},
+   {n:'5 · CRAFT + example + ask first',segs:[...full,['x','Here is a question I like: “Is 1/2 the same as 3/6? Show how you know.” Ask me anything you need before you write.']],fit:95,ready:93,fmt:95,facts:58,cap:'An example and permission to ask questions help most. The facts bar still needs you.'}];
+  const met=$('#dialMet'),rng=$('#dialRange');
+  met.innerHTML=meterHTML([['Fits my class'],['Ready to use'],['Follows my format'],['Facts are correct',1]]);
+  $('#dialTicks').innerHTML=D.map(d=>`<span>${d.n}</span>`).join('');
+  function draw(){
+    const d=D[+rng.value];
+    $('#dialName').textContent=d.n;
+    $('#dialPrompt').innerHTML=d.segs.map(s=>s[0]==='b'?`<span class="seg base"><em>·</em>${s[1]}</span>`:s[0]==='x'?`<span class="seg" style="--col:var(--mute)"><em>+</em>${s[1]}</span>`:`<span class="seg" style="--col:${PCOL[s[0]]}"><em>${s[0]}</em>${s[1]}</span>`).join(' ');
+    setMeters(met,[d.fit,d.ready,d.fmt,d.facts]); $('#dialCap').textContent=d.cap;
+    $$('#dialTicks span').forEach((t,k)=>t.classList.toggle('on',k===+rng.value));
+    $$('.mt output',met).forEach(o=>o.textContent='');
+  }
+  rng.addEventListener('input',draw);
+  hooks.dial={enter(){rng.value=0;draw();let k=0;const my=hooks.dial.t=Date.now();
+    (async()=>{await sleep(1400);for(k=1;k<=4;k++){if(hooks.dial.t!==my||+rng.value!==k-1)return;rng.value=k;draw();await sleep(1700)}})()},leave(){hooks.dial.t=0}};
+})();
+
+/* ===================================================== LOAD */
+(function(){
+  const SEGS={
+   without:[['Reformatting & retyping',55,'r'],['Writing first drafts',50,'r'],['Hunting for materials',30,'r'],['Deciding what students need',20,'h'],['Feedback to students',25,'h']],
+   with:[['Reformatting',10,'r'],['Reviewing first drafts',15,'r'],['Finding materials',10,'r'],['Checking the AI’s work',20,'v'],['Deciding what students need',55,'h'],['Feedback to students',70,'h']]};
+  const ev=$('#evening'),st=$('#ldStat'); let mode='without';
+  st.insertAdjacentHTML('beforebegin','<div class="legend" id="evList" style="margin-top:8px"></div>');
+  const sum=(a,k)=>a.filter(s=>s[2]===k).reduce((x,s)=>x+s[1],0);
+  function draw(m,first){
+    mode=m; const a=SEGS[m];
+    $('#ldA').classList.toggle('on',m==='without'); $('#ldB').classList.toggle('on',m==='with');
+    ev.innerHTML=a.map(s=>`<div class="k-${s[2]}" style="flex-basis:0%" title="${s[0]}, ${s[1]} min">${s[1]}m</div>`).join('');
+    requestAnimationFrame(()=>requestAnimationFrame(()=>$$('div',ev).forEach((d,i)=>d.style.flexBasis=(a[i][1]/180*100)+'%')));
+    $('#evList').innerHTML=a.map(s=>`<span><i class="k-${s[2]}"></i>${s[0]} · ${s[1]} min</span>`).join('');
+    const old=$$('b',st).map(b=>+b.textContent||0);
+    st.innerHTML=[['Routine work','r'],['Checking the AI','v'],['High-leverage teaching','h']].map(x=>`<div><b>0</b><small>${x[0]} (min)</small></div>`).join('');
+    $$('b',st).forEach((b,i)=>{b.textContent=old[i]||0;countTo(b,sum(a,['r','v','h'][i]),800)});
+    $('#tEx').classList.toggle('hot',m==='with'); $('#tGe').classList.toggle('hot',m==='with');
+  }
+  $('#ldA').onclick=()=>draw('without'); $('#ldB').onclick=()=>draw('with');
+  hooks.load={async enter(){draw('without'); const my=hooks.load.t=Date.now(); await sleep(2600); if(hooks.load.t===my&&mode==='without') draw('with')},leave(){hooks.load.t=0}};
+})();
+
+/* ===================================================== SORT */
+(function(){
+  const T=[
+   ['Reformat my notes into a one-page student handout','o',25,'Routine layout work. You still read it before it goes out.'],
+   ['Draft the first version of a parent newsletter','o',30,'Good first draft material. You edit for voice and accuracy, and leave names out.'],
+   ['Make a second set of practice problems with new numbers','o',20,'Pattern work. Solve them yourself to check the key.'],
+   ['Brainstorm five hooks for tomorrow’s lesson','c',15,'Ideas are cheap. Your judgment picks what suits your class.'],
+   ['Build a lesson sequence for a tricky concept','c',40,'The AI proposes, you adjust to what you know about your students’ gaps.'],
+   ['Write feedback on a student’s reasoning','k',0,'The judgment and the relationship are the point. At most, ask for help polishing wording.'],
+   ['Decide which students need small-group support','k',0,'It needs your knowledge of real kids, and their data should stay private.'],
+   ['Check that the answer key is correct','k',0,'Verification is yours. It is exactly where a confident error hides.']];
+  const L={o:['Offload','AI drafts, I review','var(--f)'],c:['Co-pilot','We work on it together','var(--r)'],k:['Keep','Mine to do','var(--c)']};
+  const task=$('#sortTask'),fb=$('#sortFb'),lanes=$('#sortLanes'),nx=$('#sortNext'),prog=$('#sortProg'),scEl=$('#sortScore');
+  let i=0,score=0,locked=false,res=[],placed,freed=0;
+  function drawLanes(){
+    lanes.innerHTML=Object.keys(L).map(k=>`<button class="lane" data-l="${k}" style="--col:${L[k][2]}" ${locked?'disabled':''}><b>${L[k][0]}</b><small>${L[k][1]}</small>${placed[k].map(p=>`<span class="mini ${p[1]?'':'bad'}">${p[0]}</span>`).join('')}</button>`).join('');
+  }
+  const dots=()=>{prog.innerHTML=T.map((_,k)=>`<i class="${res[k]||(k===i?'now':'')}"></i>`).join('');scEl.textContent=`${score} correct`};
+  function show(){
+    locked=false; nx.style.display='none'; task.className='task in'; task.textContent=T[i][0];
+    fb.innerHTML='<span class="mute">Where does this belong?</span>'; drawLanes(); dots();
+  }
+  lanes.onclick=e=>{
+    const b=e.target.closest('.lane'); if(!b||locked) return; locked=true;
+    const t=T[i], ok=b.dataset.l===t[1]; if(ok){score++; freed+=t[1]==='o'?t[2]:t[1]==='c'?t[2]/2:0;}
+    res[i]=ok?'ok':'no'; placed[b.dataset.l].push([t[0].length>34?t[0].slice(0,32)+'…':t[0],ok]);
+    fb.innerHTML=`<b style="color:${ok?'var(--good)':'var(--bad)'}">${ok?'Yes.':'Better in “'+L[t[1]][0]+'”.'}</b> ${t[3]}`;
+    drawLanes(); dots(); nx.textContent=i<T.length-1?'Next task ▶':'See result ▶'; nx.style.display='';
+  };
+  nx.onclick=()=>{
+    if(i<T.length-1){i++;show();return}
+    task.className='task in'; task.textContent=`You sorted ${score} of ${T.length} well.`;
+    fb.innerHTML=`Handing off the routine and co-piloting the rest frees about <b>${Math.round(freed/10)*10} minutes</b> in this example. Spend them on feedback and conversations with students.`;
+    nx.style.display='none'; if(score>=6) confetti();
+  };
+  hooks.sort={enter(){i=0;score=0;res=[];freed=0;placed={o:[],c:[],k:[]};show()}};
+})();
+
+/* ===================================================== LENSES */
+(function(){
+  const N=['Accuracy','Credibility','Bias','Reliability','Ed. value'];
+  const D=[
+   ['Is it correct?','Solve it yourself. Check dates, numbers, names, and every answer key.','A confident tone with no way to verify it.'],
+   ['Who stands behind this?','Look up every citation. Does the source exist? Does it say that?','Real-sounding authors, journals or percentages.'],
+   ['Whose view is missing?','Swap names, places and perspectives. Ask what someone who disagrees would say.','One group described as “everyone.”'],
+   ['Would it say this again?','Ask twice, ask differently, then compare with a trusted source.','The facts change between runs.'],
+   ['Does it teach what I meant?','Match it to your objective. Could a student answer without thinking?','Recall-only questions, wrong level, busywork.']];
+  function pent(a){
+    const cx=150,cy=112,R=78; let s=`<svg class="pent" viewBox="0 0 300 230" role="img" aria-label="Five lenses" width="100%">`;
+    const P=N.map((n,i)=>{const t=-Math.PI/2+i*2*Math.PI/5;return [cx+R*Math.cos(t),cy+R*Math.sin(t),Math.cos(t),n]});
+    s+=`<polygon points="${P.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ')}" fill="rgba(255,255,255,.04)" stroke="rgba(255,255,255,.25)" stroke-width="1.5"/>`;
+    P.forEach((p,i)=>{
+      s+=`<line x1="${cx}" y1="${cy}" x2="${p[0].toFixed(1)}" y2="${p[1].toFixed(1)}" stroke="${i===a?'var(--accent)':'rgba(255,255,255,.14)'}" stroke-width="${i===a?2.5:1}"/>`;
+      if(i===a) s+=`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="19" fill="none" stroke="var(--accent)" stroke-width="2" opacity=".5"><animate attributeName="r" values="12;24;12" dur="1.8s" repeatCount="indefinite"/></circle>`;
+      s+=`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="${i===a?11:6}" fill="${i===a?'var(--accent)':'#6d7396'}"/>`;
+      const anc=p[2]>.3?'start':p[2]<-.3?'end':'middle', dx=p[2]>.3?16:p[2]<-.3?-16:0, dy=i===0?-20:p[1]>cy+40?26:5;
+      s+=`<text x="${(p[0]+dx).toFixed(1)}" y="${(p[1]+dy).toFixed(1)}" text-anchor="${anc}" fill="${i===a?'#fff':'#d6d3df'}">${p[3]}</text>`;
+    });
+    return s+`<circle cx="${cx}" cy="${cy}" r="24" fill="#161a33" stroke="rgba(255,255,255,.25)"/><text class="ctr" x="${cx}" y="${cy-2}" text-anchor="middle">AI</text><text class="ctr" x="${cx}" y="${cy+9}" text-anchor="middle">output</text></svg>`;
+  }
+  const steps=D.map((d,i)=>({title:['Accuracy','Credibility','Bias','Reliability','Educational value'][i],text:d[0],
+    vis:`<div class="lensvis"><div>${pent(i)}</div><div class="lensinfo"><h3>${d[0]}</h3><p><b>Quick test</b>${d[1]}</p><p class="flag"><b>Red flag</b>${d[2]}</p></div></div>`}));
+  stepper('#lensStep',steps,'lenses');
+})();
+
+/* ===================================================== INSPECT */
+(function(){
+  const S=[['Accuracy','ok','342 chests is the standard figure. This one checks out, so not everything is wrong.'],
+   ['Accuracy','no','Franklin was in London in 1773. The action was carried out by a group linked to the Sons of Liberty.'],
+   ['Credibility','no','No such study. A precise number from a famous university is the classic invented source. Search the title and nothing appears.'],
+   ['Bias','no','Many colonists were loyal to Britain or undecided. Enslaved people, women and Native peoples are missing. One group stands in for everyone.'],
+   ['Educational value','no','Recall only. The goal was cause and effect: why did people protest?']];
+  const LENS=['Accuracy','Credibility','Bias','Reliability','Educational value'], state={}, panel=$('#inLens'); let regen=false;
+  function draw(){
+    const used=LENS.filter(l=>state[l]).length;
+    panel.innerHTML=`<div class="card"><div class="row" style="justify-content:space-between"><h3>Lenses used</h3><b style="font-family:var(--display);font-size:1.6em;color:var(--accent)">${used}/5</b></div>`+
+      LENS.map(l=>{const e=state[l]||[],bad=e.some(x=>!x[0]);return `<div class="lens-row ${e.length?(bad?'no':'ok'):''}"><span class="dot"></span><div><b>${l}</b>${e.length?e.map(x=>`<small>${x[1]}</small>`).join(''):'<small>Not checked yet</small>'}</div></div>`}).join('')+`</div>`;
+  }
+  const spans=$$('.hand .s');
+  spans.forEach(sp=>sp.onclick=()=>{
+    const i=+sp.dataset.i; if(sp.dataset.done) return; sp.dataset.done=1; const s=S[i], ok=s[1]==='ok';
+    sp.classList.add(ok?'ok':'no'); sp.insertAdjacentHTML('beforeend',`<i class="lt">${s[0]} ${ok?'✓':'✗'}</i>`);
+    (state[s[0]]=state[s[0]]||[]).push([ok,s[2]]); draw();
+  });
+  $('#inRegen').onclick=e=>{
+    if(regen) return; regen=true; e.currentTarget.disabled=true;
+    const s2=$('#s2'); s2.firstChild.textContent='The protest was led by Thomas Jefferson, who rowed out to the ships at midnight. ';
+    $('#inRegenMsg').textContent='Same prompt. A different “fact.”';
+    (state.Reliability=state.Reliability||[]).push([false,'Same prompt, new run: first Franklin, now Jefferson. Neither is right. Facts that change between runs cannot be trusted.']); draw();
+  };
+  hooks.inspect={enter(){for(const k in state)delete state[k];regen=false;spans.forEach(sp=>{delete sp.dataset.done;sp.classList.remove('ok','no');$$('.lt',sp).forEach(x=>x.remove())});
+    $('#s2').firstChild.textContent='The protest was led by Benjamin Franklin, who climbed aboard the ships himself. ';
+    $('#inRegen').disabled=false;$('#inRegenMsg').textContent='';draw()}};
+  draw();
+})();
+
+/* ===================================================== LATERAL 1 */
+(function(){
+  const vp=$('#vPage'),lt=$('#lTabs'),lp=$('#lPage'); let tok=0;
+  const bar=(id,v)=>{$('#'+id).style.width=v+'%'};
+  async function play(){
+    const my=++tok,ok=()=>tok===my;
+    vp.innerHTML='<div style="font-weight:800;font-family:var(--display);font-size:1.15em">10 Facts Every Teacher Should Know</div>';
+    lt.innerHTML='<span class="tab on">teachfactsdaily.example</span>'; lp.innerHTML='<div class="ln" style="width:70%"></div><div class="ln" style="width:90%"></div><div class="ln" style="width:55%"></div>';
+    bar('vBar',0);bar('lBar',0);$('#vOut').textContent='0';$('#lOut').textContent='0';
+    await sleep(500); if(!ok()) return;
+    vp.insertAdjacentHTML('beforeend','<div class="thumb" id="vThumb"></div>');
+    const lines=['<div class="ln" style="width:95%"></div><div class="ln" style="width:80%"></div>','<span class="badge">✓ Trusted by thousands of educators</span>','<div class="ln" style="width:90%"></div><div class="ln" style="width:60%"></div>','<div class="mute" style="font-size:.9em">About us · Our mission · Awards</div>'];
+    for(let k=0;k<lines.length;k++){ if(!ok()) return; vp.insertAdjacentHTML('beforeend',lines[k]); const th=$('#vThumb'); if(th) th.style.top=(10+k*38)+'px'; bar('vBar',[30,60,75,88][k]); countTo($('#vOut'),[30,60,75,88][k],500); await sleep(750); }
+    await sleep(500); if(!ok()) return;
+    const T=[['Who runs this site?','A content farm. No authors named, ads on every page.'],['What do others say about it?','Librarian guides list it as unreliable for research.'],['Does anyone else report the claim?','No archive, journal or textbook repeats it.']];
+    lp.innerHTML='';
+    for(let k=0;k<T.length;k++){ if(!ok()) return; lt.insertAdjacentHTML('beforeend',`<span class="tab">${T[k][0]}</span>`); await sleep(500); if(!ok()) return;
+      lp.insertAdjacentHTML('beforeend',`<div class="find bad">${T[k][1]}</div>`); const v=[30,14,6][k]; bar('lBar',v); countTo($('#lOut'),v,500); await sleep(900); }
+    if(ok()) lp.insertAdjacentHTML('beforeend','<div class="find" style="border-left-color:var(--good)"><b>Verdict:</b> do not use this claim.</div>');
+  }
+  $('#latRun').onclick=play; hooks.lat1={enter:play,leave(){tok++}};
+})();
+
+/* ===================================================== LATERAL 2 (SIFT) */
+(function(){
+  const sr=q=>`<div class="srch">🔍 ${q}</div>`;
+  const S=[
+   ['S','Stop','Pause. Do you know this is true, or does it just sound right?',
+     `<div class="brw"><div class="page"><div class="res nt">The pull: a <b>precise number</b> and a <b>famous university</b>.</div><div class="res no" style="animation-delay:.3s">Neither one is evidence. Feeling convinced is the cue to slow down.</div></div></div>`],
+   ['I','Investigate the source','Who is behind this? Open a new tab and look.',
+     `<div class="brw"><div class="tabs"><span class="tab">AI answer</span><span class="tab on">New tab</span></div><div class="page">${sr('2019 Harvard study colonists supported Tea Party')}<div class="res no">No matching paper on the university’s site or in scholarly databases.</div><div class="res nt" style="animation-delay:.3s">The “source” is not a source.</div></div></div>`],
+   ['F','Find better coverage','What do trusted sources say about the topic itself?',
+     `<div class="brw"><div class="tabs"><span class="tab">AI answer</span><span class="tab on">New tab</span></div><div class="page">${sr('how many colonists supported the Tea Party historians')}<div class="res ok">A state historical society page describes the event and says nothing about a Harvard poll.</div><div class="res ok" style="animation-delay:.3s">Historians describe divided opinion. John Adams later recalled roughly thirds, a rough and debated estimate.</div></div></div>`],
+   ['T','Trace to the original','Follow the claim back to where it started.',
+     `<div class="brw"><div class="tabs"><span class="tab">AI answer</span><span class="tab on">New tab</span></div><div class="page">${sr('“9 in 10 colonists” origin')}<div class="res no">No original. The AI produced a plausible-sounding source.</div><div class="res ok" style="animation-delay:.3s"><b>Verdict:</b> discard the statistic. Keep the question: how divided was opinion?</div></div></div>`]];
+  const steps=S.map(s=>({n:s[0],title:s[1],text:s[2],vis:s[3],cap:'Search results are simulated for the demo. In class, do it live.'}));
+  stepper('#siftStep',steps,'lat2');
+})();
+
+/* ===================================================== WRAP */
+(function(){
+  const R=[['C','CRAFT','Context, Role, Action, Format, Target & tone. Missing parts get guessed.','var(--c)'],
+   ['Q','Fit is not truth','A better prompt improves fit, usability and format. It does not make facts correct.','var(--a)'],
+   ['L','Offload routine, keep responsibility','Reduce extraneous load so there is room for feedback and judgment.','var(--f)'],
+   ['5','Five lenses','Accuracy, credibility, bias, reliability, educational value.','var(--t)'],
+   ['↔','Read laterally','Leave the page. An AI answer is a lead, not a source.','var(--r)']];
+  $('#recap').innerHTML=R.map((r,i)=>`<div class="rc rise" style="--rcc:${r[3]};--i:${i+2}"><span class="e">${r[0]}</span><div><b>${r[1]}</b><span>${r[2]}</span></div></div>`).join('');
+  $('#confBtn').onclick=confetti;
+})();
+
+/* ===================================================== go */
+const h0=parseInt(location.hash.slice(1)); go(Number.isFinite(h0)?h0-1:0);
+</script>
+
+</body></html>
