@@ -8,7 +8,7 @@
 /* Layout concept: full-screen lecture deck. Fixed chrome (chapters, clock, progress), one slide at a time.
    Signature: the prompt is built from five colour-coded blocks (C R A F T) that follow the lesson everywhere. */
 :root{
-  --bg:#0e1020; --ink:#f3f0e8; --soft:#d6d3df; --mute:#a3a6c2; --line:rgba(255,255,255,.14); --card:rgba(255,255,255,.06);
+  --bg:#4a5099; --ink:#f3f0e8; --soft:#d6d3df; --mute:#a3a6c2; --line:rgba(255,255,255,.14); --card:rgba(255,255,255,.06);
   --c:#ff7a59; --r:#ffc247; --a:#b8e35c; --f:#4fd6c4; --t:#c995ff;
   --bad:#ff6b81; --good:#62e3a4; --dark:#0b0d1a; --accent:var(--c);
   --display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;
@@ -29,7 +29,7 @@ button{font:inherit;color:inherit}
 #bg{position:fixed;inset:0;z-index:0;width:100%;height:100%}
 
 /* ---------- chrome ---------- */
-#top{position:fixed;top:0;left:0;right:0;z-index:30;display:flex;align-items:center;gap:14px;height:calc(58px + env(safe-area-inset-top,0px));padding:env(safe-area-inset-top,0px) max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px));background:linear-gradient(rgba(14,16,32,.95),rgba(14,16,32,0))}
+#top{position:fixed;top:0;left:0;right:0;z-index:30;display:flex;align-items:center;gap:14px;height:calc(58px + env(safe-area-inset-top,0px));padding:env(safe-area-inset-top,0px) max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px));background:linear-gradient(rgba(74,80,153,.95),rgba(74,80,153,0))}
 .brand{font-family:var(--display);font-weight:700;font-size:14px;letter-spacing:.02em;white-space:nowrap;color:var(--mute)}
 .brand b{color:var(--ink)}
 #chapters{display:flex;gap:7px;flex:1;justify-content:center;overflow:hidden}
@@ -40,7 +40,7 @@ button{font:inherit;color:inherit}
 #clock.late{color:#ffb4a2;border-color:var(--c)}
 #clock.paused{opacity:.6}
 #stage{position:fixed;top:calc(58px + env(safe-area-inset-top,0px));bottom:calc(64px + env(safe-area-inset-bottom,0px));left:0;right:0;z-index:5}
-#bar{position:fixed;bottom:0;left:0;right:0;z-index:30;display:flex;align-items:center;gap:12px;height:calc(64px + env(safe-area-inset-bottom,0px));padding:0 max(16px,env(safe-area-inset-right,0px)) env(safe-area-inset-bottom,0px) max(16px,env(safe-area-inset-left,0px));background:linear-gradient(rgba(14,16,32,0),rgba(14,16,32,.96) 40%)}
+#bar{position:fixed;bottom:0;left:0;right:0;z-index:30;display:flex;align-items:center;gap:12px;height:calc(64px + env(safe-area-inset-bottom,0px));padding:0 max(16px,env(safe-area-inset-right,0px)) env(safe-area-inset-bottom,0px) max(16px,env(safe-area-inset-left,0px));background:linear-gradient(rgba(74,80,153,0),rgba(74,80,153,.96) 40%)}
 .nav{border:1px solid var(--line);background:rgba(255,255,255,.08);border-radius:8px;padding:9px 16px;cursor:pointer;font-weight:700;transition:.25s}
 .nav:hover{background:var(--accent);color:var(--dark)}
 .nav.sm{padding:9px 11px;font-weight:600}
@@ -50,7 +50,7 @@ button{font:inherit;color:inherit}
 #seg i.done{background:rgba(255,255,255,.4)}
 #seg i.on{background:var(--accent);height:12px;box-shadow:0 0 14px var(--accent)}
 #count{font-size:13px;color:var(--mute);white-space:nowrap;min-width:110px;text-align:right}
-#notes{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(72px + env(safe-area-inset-bottom,0px));width:min(920px,94vw);z-index:40;background:rgba(10,12,28,.97);border:1px solid var(--accent);border-radius:12px;padding:14px 18px;display:none;box-shadow:0 20px 60px #000a}
+#notes{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(72px + env(safe-area-inset-bottom,0px));width:min(920px,94vw);z-index:40;background:rgba(30,34,84,.98);border:1px solid var(--accent);border-radius:12px;padding:14px 18px;display:none;box-shadow:0 20px 60px #000a}
 body.shownotes #notes{display:block;animation:rise .4s both}
 #notes h4{margin:0 0 6px;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
 #notes div{font-size:16px;line-height:1.5;color:#e4e2ee}
@@ -223,7 +223,7 @@ input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:8px;bac
 .term.hot{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,transparent)}
 .evening{display:flex;height:64px;border-radius:10px;overflow:hidden;gap:2px;margin:10px 0}
 .evening div{flex:0 0 auto;display:grid;place-items:center;font-family:var(--mono);font-size:12px;font-weight:600;color:var(--dark);overflow:hidden;transition:flex-basis .9s cubic-bezier(.2,.8,.2,1);white-space:nowrap}
-.k-r{background:#6d7396}.k-v{background:var(--r)}.k-h{background:var(--accent)}
+.k-r{background:#a1a7dc}.k-v{background:var(--r)}.k-h{background:var(--accent)}
 .legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:clamp(11px,1.1vw,14px);color:var(--soft)}
 .legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px}
 .stat{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
@@ -270,10 +270,10 @@ input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:8px;bac
 .lens-row.no{opacity:1;border-color:var(--bad)}.lens-row.no .dot{background:var(--bad);border-color:var(--bad)}
 
 /* browser mock */
-.brw{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#161a33}
+.brw{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#343b87}
 .tabs{display:flex;gap:3px;padding:6px 6px 0;background:rgba(0,0,0,.35);min-height:34px;overflow:hidden}
 .tab{padding:6px 11px;font-size:11px;border-radius:7px 7px 0 0;background:rgba(255,255,255,.07);color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:46%;animation:popin .4s both;transform-origin:bottom}
-.tab.on{background:#161a33;color:var(--ink)}
+.tab.on{background:#343b87;color:var(--ink)}
 .page{padding:12px 14px;min-height:196px;font-size:clamp(12px,1.2vw,15px);position:relative}
 .page .ln{height:9px;border-radius:4px;background:rgba(255,255,255,.14);margin:8px 0}
 .page .badge{display:inline-block;padding:3px 8px;border-radius:5px;font-size:11px;background:rgba(98,227,164,.18);color:var(--good)}
@@ -647,7 +647,7 @@ function confetti(){
   function tick(){
     hue+=(target-hue)*.04; t+=.012; x.clearRect(0,0,W,H);
     const g=x.createRadialGradient(W*.15,H*.95,0,W*.15,H*.95,Math.max(W,H)*.9);
-    g.addColorStop(0,`hsla(${hue},70%,22%,.55)`); g.addColorStop(1,'rgba(14,16,32,0)'); x.fillStyle=g; x.fillRect(0,0,W,H);
+    g.addColorStop(0,`hsla(${hue},75%,40%,.6)`); g.addColorStop(1,'rgba(74,80,153,0)'); x.fillStyle=g; x.fillRect(0,0,W,H);
     const s=34;
     for(let gx=s/2;gx<W;gx+=s) for(let gy=s/2;gy<H;gy+=s){
       const d=Math.hypot(gx-W*.82,gy-H*.18), w=Math.sin(d/90-t*3)*.5+.5;
@@ -1027,11 +1027,11 @@ const clock=(function(){
     P.forEach((p,i)=>{
       s+=`<line x1="${cx}" y1="${cy}" x2="${p[0].toFixed(1)}" y2="${p[1].toFixed(1)}" stroke="${i===a?'var(--accent)':'rgba(255,255,255,.14)'}" stroke-width="${i===a?2.5:1}"/>`;
       if(i===a) s+=`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="19" fill="none" stroke="var(--accent)" stroke-width="2" opacity=".5"><animate attributeName="r" values="12;24;12" dur="1.8s" repeatCount="indefinite"/></circle>`;
-      s+=`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="${i===a?11:6}" fill="${i===a?'var(--accent)':'#6d7396'}"/>`;
+      s+=`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="${i===a?11:6}" fill="${i===a?'var(--accent)':'#a1a7dc'}"/>`;
       const anc=p[2]>.3?'start':p[2]<-.3?'end':'middle', dx=p[2]>.3?16:p[2]<-.3?-16:0, dy=i===0?-20:p[1]>cy+40?26:5;
-      s+=`<text x="${(p[0]+dx).toFixed(1)}" y="${(p[1]+dy).toFixed(1)}" text-anchor="${anc}" fill="${i===a?'#fff':'#d6d3df'}">${p[3]}</text>`;
+      s+=`<text x="${(p[0]+dx).toFixed(1)}" y="${(p[1]+dy).toFixed(1)}" text-anchor="${anc}" fill="${i===a?'#fff':'#efecf7'}">${p[3]}</text>`;
     });
-    return s+`<circle cx="${cx}" cy="${cy}" r="24" fill="#161a33" stroke="rgba(255,255,255,.25)"/><text class="ctr" x="${cx}" y="${cy-2}" text-anchor="middle">AI</text><text class="ctr" x="${cx}" y="${cy+9}" text-anchor="middle">output</text></svg>`;
+    return s+`<circle cx="${cx}" cy="${cy}" r="24" fill="#343b87" stroke="rgba(255,255,255,.25)"/><text class="ctr" x="${cx}" y="${cy-2}" text-anchor="middle">AI</text><text class="ctr" x="${cx}" y="${cy+9}" text-anchor="middle">output</text></svg>`;
   }
   const steps=D.map((d,i)=>({title:['Accuracy','Credibility','Bias','Reliability','Educational value'][i],text:d[0],
     vis:`<div class="lensvis"><div>${pent(i)}</div><div class="lensinfo"><h3>${d[0]}</h3><p><b>Quick test</b>${d[1]}</p><p class="flag"><b>Red flag</b>${d[2]}</p></div></div>`}));
