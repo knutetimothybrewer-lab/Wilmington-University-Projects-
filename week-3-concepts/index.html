@@ -104,8 +104,6 @@ h3.s{font:700 1.1em/1.2 var(--serif);color:var(--wu-deep);margin:.2em 0 .25em}
 .arrow{color:var(--wu-green);font-weight:800}
 .word5{font:700 1.5em/1.5 var(--serif);color:var(--wu-green);display:flex;gap:.6em;align-items:center}
 .word5.last{color:var(--accent)}
-.slidemini{aspect-ratio:16/9;background:linear-gradient(135deg,#00693C,#0a8a52);color:#fff;border-radius:8px;padding:.5em .7em;font-size:.72em;display:flex;flex-direction:column;justify-content:center}
-.slidemini b{font:700 1.3em var(--serif)}
 .slide.coverslide{position:absolute;inset:0}
 .cover{position:absolute;inset:0;background:linear-gradient(160deg,#00693C,#00331F);display:grid;place-items:center;padding:1.2em 1.2em 1.2em 5em;color:#fff;z-index:2}
 .label{background:var(--paper);color:var(--text);border:3px solid var(--wu-deep);border-radius:14px;padding:1em 1.4em;max-width:46em;width:100%;box-shadow:0 8px 24px rgba(0,0,0,.4);
@@ -171,6 +169,7 @@ ol.toc .pn{font-family:var(--hand);color:var(--wu-green)}
    All the words are in the data objects below, in the first block:
      DECK     the title, the optional logo, and the chapter names
      T        the words on each slide (T.grounding, T.hcd, T.udl ...)
+     CONTENTS, EXAMPLES, PATTERN, PROMPT, UDL_AI   the contents list, grounding examples, prompt parts, and UDL prompts
      SORT     the learner-first and tool-first examples
      UDL_ROWS the "label" and "real option" examples
      KEEP     the cards for "what to keep human"
@@ -185,13 +184,14 @@ const DECK = {
   course: "AI Literacy for Educators",
   logoSrc: "",   /* optional, e.g. "assets/wilmu-logo.png". Empty = text wordmark */
   storageKey: "ail-week3-concepts-v1",
-  chapters: ["Welcome", "Grounding", "Human-centered design", "UDL", "Checking and testing", "Keep it human", "Privacy", "Wrap-up"]
+  chapters: ["Welcome", "Grounding", "Prompting", "UDL with AI", "Checking AI output", "Keep it human", "Privacy", "Wrap-up"]
 };
 
 const T = {
   contentsWords: [
     ["AI", "short for artificial intelligence. Here it means tools like ChatGPT and Claude that generate text and files when you type a request."],
     ["Grounding", "giving the AI your own trusted material to work from."],
+    ["Prompt", "the message you type to tell an AI tool what to do."],
     ["UDL", "short for Universal Design for Learning. A way to plan lessons with options built in."]
   ],
   outcomes: [
@@ -257,17 +257,10 @@ const T = {
     cast: "CAST released its Guidelines 3.0 in 2024.",
     realWords: [
       ["Real option", "keeps the same learning goal and the same criteria, but offers different ways to meet them."],
-      ["Label", "a name with no option behind it. AI often writes things like “multiple means of expression” without any real option behind them."],
-      ["Graphic organizer", "a page with boxes or shapes that helps students sort their ideas."]
+      ["Label", "a name with no option behind it. AI often writes things like “multiple means of expression” without any real option behind them."]
     ],
     realTest: "The test is one question: What does a student actually do differently?",
     realHelper: "Not sure? Ask: could two students do this differently and still meet the same goal?",
-    fixStart: "Students choose how to show their learning. Everyone completes the same worksheet.",
-    fixes: [
-      { t: "(a) Rename it “differentiated.”", kind: "chk", why: "Renaming changes the label, not what a student can choose." },
-      { t: "(b) Offer a choice of three tasks that are all scored with the same checklist.", kind: "good", why: "Students now choose different tasks, and the goal and criteria stay the same. That is a real option." },
-      { t: "(c) Add more pages to the worksheet.", kind: "chk", why: "More pages change the amount of work, not what a student can choose." }
-    ],
     reviewIntro: "Teachers can ask an AI tool to review a lesson for UDL. Here is a prompt you can copy.",
     excerptTitle: "Lesson excerpt",
     excerpt: "Slides have captions that can be turned on or off. Every student completes the same worksheet. Students work in pairs for the lab.",
@@ -283,17 +276,11 @@ const T = {
       ["ADHD", "a condition that can make focus and planning harder."],
       ["IEP", "a written plan for a student who gets special education services."]
     ],
-    chips: ["Read-aloud", "Short steps", "Captions", "Picture descriptions", "More than one way to respond"],
     privacyNote: "Never put a real student's diagnosis or IEP details into an AI tool. Describe needs in general terms."
   },
   check: {
     polishWords: [["Slide deck", "a set of slides, like a presentation."]],
     polishText: "People tend to trust output that looks polished. Here are three slides from an invented AI-generated deck.",
-    slides: [
-      { n: 1, h: "The Water Cycle", b: ["Grade 4 Science"] },
-      { n: 3, h: "Three Big Steps", b: ["Evaporation: liquid water becomes vapor", "Condensation: vapor becomes tiny drops", "Precipitation: water falls as rain or snow"] },
-      { n: 6, h: "Activity: Water Cycle in a Bag", b: ["Time: 15 minutes"] }
-    ],
     cmpA: "Slide 6: Activity, 15 minutes",
     cmpB: "Teaching guide: Activity, 20 minutes",
     polishRight: "The two documents disagree about how long the activity takes. A polished look does not make them right.",
@@ -348,9 +335,7 @@ const UDL_ROWS = {
   real: [
     { t: "Students may listen to the text read aloud or read it themselves.", p: "Representation" },
     { t: "Students choose a poster, a one-minute recording, or a written paragraph. All are scored with the same four-point checklist.", p: "Action and expression" },
-    { t: "Students pick one of three local water questions to investigate, then use the same lab steps.", p: "Engagement" },
-    { t: "Students can use a graphic organizer if they want one.", p: "a support for Action and expression" },
-    { t: "The slide deck has captions that students can turn on or off.", p: "Representation" }
+    { t: "Students pick one of three local water questions to investigate, then use the same lab steps.", p: "Engagement" }
   ]
 };
 const KEEP = [
@@ -364,8 +349,8 @@ const KEEP = [
 const IDEAS = [
   "AI generates likely words. It does not look facts up.",
   "Ground it, then check it.",
-  "Start with the learner, not the tool.",
-  "Ask what a student actually does differently. A real option beats a label.",
+  "Start with the learner, not the tool. Then write the prompt: goal, learners, source, rules, format.",
+  "Ask what a student actually does differently. A real option beats a label. AI drafts the options and you check them.",
   "Polished is not proof. Test what you generate, and keep human what matters most."
 ];
 const WEEK = [
@@ -375,6 +360,62 @@ const WEEK = [
   { name: "Lab", lo: 40, hi: 50 },
   { name: "Build", lo: 70, hi: 90 },
   { name: "Discussion", lo: 20, hi: 25 }
+];
+
+/* ---------- Chapters and contents ---------- */
+const CONTENTS = [
+  [1, "Grounding: give AI your own material"],
+  [2, "Prompting: start with learners, then write the prompt"],
+  [3, "UDL with AI: build real options, then check them"],
+  [4, "Checking what AI generates"],
+  [5, "What to keep human"],
+  [6, "Privacy: what never goes into an AI tool"],
+  [7, "Big ideas and your week at a glance"]
+];
+
+/* ---------- Grounding in three classrooms (all invented) ---------- */
+const EXAMPLES = [
+  { grade: "Grade 2 reading", docTitle: "Your passage: The Little Garden",
+    doc: "Mia plants three seeds. She waters them each day. On the fifth day, a small green shoot comes up.",
+    prompt: "Write three questions about the attached passage. Use only the attached passage. Put the sentence you used next to each question.",
+    change: "Every question points to a sentence you can check in seconds." },
+  { grade: "Grade 7 science", docTitle: "Your lab sheet: Density Lab",
+    doc: "Density is how much mass fits in a certain space. Students measure mass and volume, then divide mass by volume.",
+    prompt: "Make a word list with simple definitions. Use only words from the attached lab sheet. If a word is not defined in the sheet, write “not in sheet” next to it.",
+    change: "Words your sheet never defined get flagged. They are not defined from memory." },
+  { grade: "Grade 10 English", docTitle: "Your rubric: Argument Essay",
+    doc: "Criteria: a clear claim, two pieces of evidence, and a closing sentence that ties back to the claim.",
+    prompt: "Write five feedback sentence starters that match only the criteria in the attached rubric. Do not add new criteria.",
+    change: "The starters match your rubric, so your feedback stays true to how you grade." }
+];
+const PATTERN = ["Attach your own material.", "Say “use only” that material.", "Ask to see where each answer came from.", "Ask it to mark what is missing."];
+
+/* ---------- Prompting: five parts ---------- */
+const PROMPT = {
+  weak: "Make a worksheet about the water cycle.",
+  weakOutput: "The water cycle is how water moves around Earth. Here is a fun worksheet with 10 questions about clouds, rain, and rivers. Question 1: What is the biggest ocean?",
+  weakNote: "No learners, no source, no rules. The output is generic, and it drifts away from your unit.",
+  parts: [
+    { k: "Goal", t: "Make a one-page word list for a Grade 4 water cycle unit.", why: "Say what you need made." },
+    { k: "Learners", t: "The class has a mix of reading levels and a few English learners.", why: "Use general terms. No names, no IEP details." },
+    { k: "Source", t: "Use only the attached unit notes.", why: "This is grounding." },
+    { k: "Rules", t: "Keep each definition to one short sentence. Mark any word that is not in the notes, and ask me instead of guessing.", why: "Rules keep the output close to your goal." },
+    { k: "Format", t: "Put it in a table with two columns: word and simple definition.", why: "Say how the output should look." }
+  ],
+  strongOutput: "Word | Simple definition\nevaporation | Liquid water changes into water vapor.\ncondensation | NOT IN YOUR NOTES. I marked it. Should I add it?",
+  strongNote: "The output uses your notes, fits your table, and tells you what is missing.",
+  template: "Goal: \nLearners (general terms only): \nSource: Use only the attached ______.\nRules: Mark anything you are not sure of, and ask me instead of guessing. \nFormat: ",
+  revise: "If the output misses, change one part of the prompt and ask again. Then check it against your source."
+};
+
+/* ---------- Using AI to build real UDL options ---------- */
+const UDL_AI = [
+  { p: "Engagement", prompt: "Write three short investigation questions about local water (a puddle, a pond, a rain barrel). All three must use the same four lab steps in the attached lab sheet.",
+    check: "Same learning goal? Same lab steps? Same criteria?" },
+  { p: "Representation", prompt: "Rewrite the attached passage at two reading levels. Keep every fact the same. Add six key words with simple definitions, using only words from the passage.",
+    check: "Did any fact change? Compare each version with your original." },
+  { p: "Action and expression", prompt: "Write a four-point checklist for a Grade 4 water cycle explanation. Then describe three ways to show it: a poster, a one-minute recording, or a paragraph. All three are scored with the same checklist.",
+    check: "Is every option scored with the same checklist?" }
 ];
 
 /* =====================================================================
@@ -443,9 +484,8 @@ function markStep(el, mk) { return step(el, () => { requestAnimationFrame(() => 
 
 /* Contents */
 addSlide(0, "Contents", "Walk through the six ideas in order. Click a line to jump. Say once that being new to this is normal, and that nothing here is graded.", s => {
-  const rows = [["Grounding: why AI makes things up", 3], ["Human-centered design: start with your learners", 8], ["UDL: real options versus labels", 9], ["Checking and testing what you generate", 15], ["What to keep human", 19], ["Privacy: what never goes into an AI tool", 21], ["Big ideas and your week at a glance", 22]];
   s.append(h("div", { class: "cols c2" },
-    h("div", {}, h("h3", { class: "s" }, "In this lecture"), h("ol", { class: "toc" }, rows.map(([t, p]) => h("li", {}, h("button", { type: "button", onclick: () => go(p - 1) }, h("span", {}, t), h("span", { class: "pn" }, "p. " + p))))),
+    h("div", {}, h("h3", { class: "s" }, "In this lecture"), h("ol", { class: "toc" }, CONTENTS.map(([ch, t]) => { const p = SLIDES.findIndex(x => x.ch === ch) + 1; return h("li", {}, h("button", { type: "button", onclick: () => go(p - 1) }, h("span", {}, t), h("span", { class: "pn" }, "p. " + p))); })),
       h("p", { class: "muted", style: "margin-top:.8em;font-size:.85em" }, "You do not need any tech skills. Nothing here is graded. This page sends nothing anywhere.")),
     h("div", { class: "stack" }, h("h3", { class: "s" }, "By the end, you can:"),
       h("ol", { style: "margin:0;padding-left:1.2em" }, T.outcomes.map(o => step(h("li", { style: "margin-bottom:.5em" }, o)))),
@@ -453,13 +493,7 @@ addSlide(0, "Contents", "Walk through the six ideas in order. Click a line to ju
       step(plain(T.contentsWords)))));
 });
 
-/* Grounding */
-addSlide(1, "AI can sound sure and still be wrong", "Let the output type out. Ask the room to read it as a teacher would. Then reveal the three plain-words ideas. Do not say which parts are wrong yet.", s => {
-  const g = T.grounding, c = chatBox("AI output (a draft to check)"), b = bubble(g.hookOutput);
-  c.body.append(h("div", { style: "margin-bottom:.4em" }, badge()), b);
-  s.append(h("p", { class: "big" }, g.hookHead), h("div", { style: "margin-top:.7em" }, step(c.el, inst => b.type(inst))));
-  s.append(h("div", { style: "margin-top:.8em" }, step(h("p", {}, "It reads smoothly. It sounds confident. Some of it is wrong or made up. You will find out which parts in a minute."))), h("div", { style: "margin-top:.6em" }, step(plain(g.hookWords))));
-});
+/* ===== Chapter 1: Grounding ===== */
 addSlide(1, "How AI writes", "Tap each likely word as a pretend autocomplete. Stress: likely, not looked up. Read the caption slowly.", s => {
   const g = T.grounding;
   s.append(h("div", { class: "cols c2" }, h("div", { class: "stack" }, h("p", { class: "lead" }, g.howText), step(plain([["Autocomplete", "the phone feature that suggests the next word while you type."]]))),
@@ -467,15 +501,14 @@ addSlide(1, "How AI writes", "Tap each likely word as a pretend autocomplete. St
       return h("div", { style: "border:3px solid var(--text);border-radius:22px;padding:.8em;background:#f3f7f4" }, badge(), typed, h("div", { class: "row" }, chips)); })())));
   s.append(h("p", { class: "lead", style: "margin-top:.8em;font-weight:700" }, step(h("span", {}, g.autoCaption))));
 });
-addSlide(1, "Find the made-up parts", "Reveal one line at a time. Before each verdict, ask the room: Error, Good, or Check this? Then click. End on the three kinds of problems.", s => {
+addSlide(1, "AI can sound sure and still be wrong", "Read the headline, then go line by line. Ask Error, Good, or Check this before you reveal each verdict. The sample output is the same one students saw on the check page. End on the three kinds of problems.", s => {
   const g = T.grounding;
-  s.append(h("p", {}, "Here is the sample output again, split into four lines."), h("div", { style: "margin:.3em 0 .5em" }, badge()));
-  const rows = g.lines.map((ln, i) => {
+  s.append(h("p", { class: "big" }, g.hookHead), h("div", { style: "margin:.3em 0" }, badge()), plain(g.hookWords));
+  g.lines.forEach((ln, i) => {
     const mk = h("span", { class: "mk mk-" + ln.kind }, h("strong", {}, (i + 1) + ". "), ln.text);
-    const row = h("div", { class: "cols c2", style: "align-items:start;margin-bottom:.5em" }, h("div", {}, mk), verdict(ln.kind, ln.note));
-    return markStep(row, mk);
+    s.append(markStep(h("div", { class: "cols c2", style: "align-items:start;margin-top:.4em" }, h("div", {}, mk), verdict(ln.kind, ln.note)), mk));
   });
-  s.append(...rows, step(h("div", { class: "verdict v-good" }, h("p", { class: "v-h" }, icon("star"), "What to remember"), h("p", {}, g.findSummary))));
+  s.append(step(h("div", { class: "verdict v-good", style: "margin-top:.5em" }, h("p", { class: "v-h" }, icon("star"), "What to remember"), h("p", {}, g.findSummary))));
 });
 addSlide(1, "What is grounding?", "Compare the two sides. Then show the prompt. Tell students they will try both in the lab.", s => {
   const g = T.grounding, c1 = chatBox("AI output, no source"), c2 = chatBox("AI output, grounded on your notes"), b2 = bubble(g.groundedOutput);
@@ -487,6 +520,13 @@ addSlide(1, "What is grounding?", "Compare the two sides. Then show the prompt. 
     h("div", { class: "stack" }, h("h3", { class: "s" }, "With your source"), step(docBox(g.notesTitle, [badge(), h("p", {}, g.notes)])), step(c2.el, inst => b2.type(inst)))));
   s.append(h("div", { style: "margin-top:.7em" }, step(h("div", {}, h("h3", { class: "s" }, "The prompt that made the difference"), copyBlock(g.groundPrompt, "Grounding prompt")))));
 });
+addSlide(1, "Grounding in three classrooms", "Walk across the grades. For each one: your material, the prompt, and what changes. Then name the pattern. Every prompt attaches a source, says use only, asks where it came from, or asks what is missing.", s => {
+  s.append(h("div", { style: "margin-bottom:.3em" }, badge()));
+  s.append(h("div", { class: "cols c3" }, EXAMPLES.map(x => step(h("div", { class: "stack", style: "border-top:4px solid var(--wu-green);padding-top:.4em" },
+    h("h3", { class: "s", style: "margin:0" }, x.grade), docBox(x.docTitle, [h("p", { style: "font-size:.85em" }, x.doc)]),
+    copyBlock(x.prompt, "Prompt for " + x.grade), h("div", { class: "verdict v-good" }, h("p", { class: "v-h" }, icon("check"), "What changes"), h("p", {}, x.change)))))));
+  s.append(step(h("div", { class: "plain", style: "margin-top:.7em" }, h("p", { class: "plain-h" }, "The pattern"), h("ol", { style: "margin:.2em 0 0;padding-left:1.2em" }, PATTERN.map(t => h("li", {}, t))))));
+});
 addSlide(1, "Grounding helps, but it does not fix everything", "Read the quiz aloud, then reveal the highlight. Point out that the fact may sound fine. The notes never said it. Close on Ground it, then check it, and name the lab.", s => {
   const g = T.grounding, c = chatBox("AI output: quiz “using only the attached lesson”");
   const lines = g.quiz.map((q, i) => h("div", { style: "margin-bottom:.3em" }, i === 2 ? h("span", { class: "mk mk-chk" }, q) : q));
@@ -496,8 +536,8 @@ addSlide(1, "Grounding helps, but it does not fix everything", "Read the quiz al
   s.append(step(h("p", { class: "big", style: "margin-top:.7em;color:var(--wu-green)" }, g.limitMessage)), step(h("div", { class: "sticky", style: "margin-top:.7em;display:inline-block" }, g.bridge)));
 });
 
-/* Human-centered design */
-addSlide(2, "Start with your learners", "Read one plan from each side. Ask: where does this one start? The point is not that tools are bad. The point is the order.", s => {
+/* ===== Chapter 2: Prompting ===== */
+addSlide(2, "Start with the learner, then prompt", "Read one plan from each side. Ask: where does this one start? The point is not that tools are bad. The point is the order: learners first, then the prompt.", s => {
   const hd = T.hcd;
   s.append(plain(hd.plain), h("div", { style: "margin:.6em 0 .3em" }, badge()));
   const colL = h("div", { class: "stack" }, h("div", { class: "colhead" }, tag("good"), "Starts with the learner"));
@@ -506,8 +546,23 @@ addSlide(2, "Start with your learners", "Read one plan from each side. Ask: wher
   SORT.tool.forEach(t => colT.append(step(h("div", { class: "card c" }, "“" + t + "”"))));
   s.append(h("div", { class: "cols c2" }, colL, colT), step(h("p", { class: "big", style: "margin-top:.7em;color:var(--wu-green)" }, hd.close)));
 });
+addSlide(2, "A prompt has five parts", "Start with the weak prompt and its vague output. Then reveal the five parts one at a time, and the grounded output. Each part answers one question about your learners or your material.", s => {
+  const P = PROMPT, cw = chatBox("AI output, weak prompt"), cs = chatBox("AI output, five-part prompt");
+  cw.body.append(h("div", { class: "bubble", style: "font-size:.85em" }, P.weakOutput));
+  cs.body.append(h("div", { class: "bubble", style: "font-size:.85em;white-space:pre-wrap" }, P.strongOutput));
+  s.append(badge(), h("div", { class: "cols c2", style: "margin-top:.4em" },
+    h("div", { class: "stack" }, h("div", { class: "card c" }, h("span", { class: "tag tg-chk" }, icon("mag"), "Check this"), h("p", { style: "margin-top:.3em" }, "“" + P.weak + "”")), step(cw.el), step(verdict("chk", P.weakNote))),
+    h("div", { class: "stack" }, P.parts.map((x, i) => step(h("div", { class: "card g", style: "padding:.3em .7em" }, h("span", { class: "tag tg-pl" }, (i + 1) + ". " + x.k), h("span", { class: "mk mk-good on", style: "margin:0 .3em" }, x.t), h("div", { class: "muted", style: "font-size:.8em" }, x.why)))))));
+  s.append(h("div", { class: "cols c2", style: "margin-top:.6em" }, h("div", {}), h("div", { class: "stack" }, step(cs.el), step(verdict("good", P.strongNote)))));
+});
+addSlide(2, "Fill in the five parts", "Give them the template to copy. Stress that learners are described in general terms only. Say that revising the prompt is normal.", s => {
+  const P = PROMPT;
+  s.append(h("p", { class: "lead" }, "Copy this template into your AI chat and fill in each part."), h("div", { style: "margin:.5em 0" }, copyBlock(P.template, "Five-part prompt template")));
+  s.append(h("div", { class: "row", style: "margin:.5em 0" }, P.parts.map((x, i) => step(h("span", { class: "node" }, h("span", { class: "num" }, String(i + 1)), x.k)))));
+  s.append(step(h("p", { class: "lead", style: "font-weight:700" }, P.revise)), h("div", { style: "margin-top:.6em" }, step(verdict("chk", "Never put student names, IDs, or IEP details into a prompt. Describe learners in general terms."))));
+});
 
-/* UDL */
+/* ===== Chapter 3: UDL with AI ===== */
 addSlide(3, "Why UDL", "Step through the three made-up learners. First the wall, then the path. Say aloud that these are examples, not types of students.", s => {
   const u = T.udl;
   s.append(plain(u.plain), h("p", { class: "muted", style: "margin:.5em 0" }, u.lessonLine));
@@ -524,86 +579,69 @@ addSlide(3, "The three principles", "One principle per click: why, what, how. Re
     h("div", {}, badge()), h("p", { style: "font-size:.85em" }, p.ex))))));
   s.append(h("p", { class: "muted", style: "margin-top:.7em;font-size:.85em" }, "The examples are for a Grade 4 water cycle lesson. " + u.cast));
 });
-addSlide(3, "Real option or just a label?", "Define the two words first. Then reveal the labels and the real options. Ask one student per card: what does a student actually do differently?", s => {
+addSlide(3, "Real option or just a label?", "Define the two words first. Then reveal the labels and the real options. Ask: what does a student actually do differently? Tie it to AI: AI often writes labels.", s => {
   const u = T.udl;
-  s.append(plain(u.realWords), step(h("p", { class: "big", style: "margin:.5em 0;color:var(--wu-green)" }, u.realTest)));
+  s.append(plain(u.realWords), step(h("p", { class: "big", style: "margin:.5em 0;color:var(--wu-green)" }, u.realTest)), badge());
   const colL = h("div", { class: "stack" }, h("div", { class: "colhead" }, tag("chk"), "Just a label"));
   const colR = h("div", { class: "stack" }, h("div", { class: "colhead" }, tag("good"), "Real option"));
   UDL_ROWS.labels.forEach(l => colL.append(step(h("div", { class: "card c" }, badge(), h("p", {}, "“" + l.t + "”"), l.note ? h("p", { class: "muted", style: "font-size:.8em;font-style:italic" }, l.note) : null, h("p", { style: "font-size:.85em" }, l.why)))));
   UDL_ROWS.real.forEach(r => colR.append(step(h("div", { class: "card g" }, h("p", {}, "“" + r.t + "”"), h("p", { style: "font-size:.8em" }, tag("good"), " ", r.p)))));
   s.append(h("div", { class: "cols c2" }, colL, colR), step(h("p", { class: "lead", style: "margin-top:.6em;font-weight:700" }, u.realHelper)));
 });
-addSlide(3, "Fix a label", "Show the weak line. Ask which fix is real. Then reveal each choice. Two change the label or the amount of work. One changes what a student can choose.", s => {
-  const u = T.udl;
-  s.append(badge(), docBox("Lesson line", [h("p", {}, u.fixStart)]));
-  s.append(h("p", { class: "big", style: "margin:.7em 0 .4em" }, "Which fix makes this a real option?"));
-  s.append(h("div", { class: "stack" }, u.fixes.map(f => step(h("div", { class: "cols c2", style: "align-items:start" }, h("div", { class: "card" }, f.t), verdict(f.kind, f.why))))));
+addSlide(3, "Use AI to build real options", "Three prompts, one per principle. After each, read the check question aloud. The AI drafts the options. You decide if the goal and criteria stayed the same.", s => {
+  s.append(h("p", { class: "lead" }, "AI drafts the options. You check that the goal and the criteria stay the same."), h("div", { style: "margin:.3em 0" }, badge()));
+  s.append(h("div", { class: "cols c3" }, UDL_AI.map(x => step(h("div", { class: "stack", style: "border-top:4px solid var(--wu-green);padding-top:.4em" },
+    h("h3", { class: "s", style: "margin:0" }, x.p), copyBlock(x.prompt, "Prompt for " + x.p), h("div", { class: "verdict v-chk" }, h("p", { class: "v-h" }, icon("mag"), "You check"), h("p", {}, x.check)))))));
 });
-addSlide(3, "Do not take the AI's word for it", "Show the prompt, then the excerpt, then each claim. Compare every claim to the excerpt out loud. Finish on: AI can mislabel its own work.", s => {
+addSlide(3, "Have AI review your lesson, then verify", "Show the review prompt, then the excerpt, then each claim. Compare every claim to the excerpt out loud. Finish with the question to ask every time. Say the privacy line: general terms only.", s => {
   const u = T.udl, c = chatBox("AI review (invented)");
   s.append(h("p", {}, u.reviewIntro), h("div", { style: "margin:.4em 0" }, copyBlock(u.udlPrompt, "UDL review prompt")));
   const rows = u.claims.map((cl, i) => { const mk = h("span", { class: "mk mk-" + cl.kind }, h("strong", {}, "Claim " + (i + 1) + ". "), cl.text); return markStep(h("div", { class: "cols c2", style: "align-items:start;margin-bottom:.4em" }, h("div", {}, mk), verdict(cl.kind, cl.note)), mk); });
-  c.body.append(badge());
-  s.append(h("div", { class: "cols c2", style: "margin-top:.6em" }, h("div", {}, docBox(u.excerptTitle, [badge(), h("p", {}, u.excerpt)])), c.el));
-  s.append(h("div", { style: "margin-top:.6em" }, rows), step(h("p", { class: "big", style: "color:var(--wu-green)" }, u.reviewTeach)));
-});
-addSlide(3, "Ask this every time", "Read the question slowly. Ask the room for one more idea to add. Then say the privacy line out loud: describe needs in general terms.", s => {
-  const u = T.udl;
-  s.append(h("p", { class: "big" }, u.askQuestion));
-  s.append(h("div", { style: "margin-top:.6em" }, step(plain(u.askWords))));
-  s.append(h("div", { class: "row", style: "margin-top:.7em" }, u.chips.map(c => step(h("span", { class: "card", style: "padding:.2em .8em;font-weight:700" }, c)))));
-  s.append(h("div", { style: "margin-top:.8em" }, step(h("div", { class: "verdict v-chk" }, h("p", { class: "v-h" }, icon("mag"), "Check this"), h("p", {}, u.privacyNote)))));
+  c.body.append(h("div", { style: "margin-bottom:.4em" }, badge()), ...rows);
+  s.append(h("div", { style: "margin-top:.6em" }, docBox(u.excerptTitle, [badge(), h("p", {}, u.excerpt)])), h("div", { style: "margin-top:.6em" }, c.el));
+  s.append(step(h("p", { class: "lead", style: "color:var(--wu-green);font-weight:700;margin-top:.5em" }, u.reviewTeach)));
+  s.append(h("h3", { class: "s", style: "margin-top:.6em" }, "Then ask this every time"), step(h("p", { class: "big" }, u.askQuestion)), step(plain(u.askWords)), step(h("div", { class: "verdict v-chk", style: "margin-top:.5em" }, h("p", { class: "v-h" }, icon("mag"), "Check this"), h("p", {}, u.privacyNote))));
 });
 
-/* Checking */
-addSlide(4, "Polished is not proof", "Flip through the slides. Then ask: what is the problem? Reveal the two cards and the highlight. Say it simply: if it looks nice, slow down and check.", s => {
-  const k = T.check;
-  s.append(plain(k.polishWords), h("p", { style: "margin:.5em 0" }, k.polishText), badge());
-  s.append(h("div", { class: "cols c3", style: "margin-top:.5em" }, k.slides.map(x => step(h("div", { class: "slidemini" }, h("span", {}, "Slide " + x.n), h("b", {}, x.h), x.b.map(t => h("span", {}, t)))))));
-  const a = h("span", { class: "mk mk-err" }, k.cmpA), b = h("span", { class: "mk mk-err" }, k.cmpB);
-  s.append(h("div", { class: "cols c2", style: "margin-top:.6em" }, step(h("div", { class: "card" }, a), () => requestAnimationFrame(() => a.classList.add("on"))), step(h("div", { class: "card" }, b), () => requestAnimationFrame(() => b.classList.add("on")))));
-  s.append(h("div", { style: "margin-top:.6em" }, step(verdict("err", k.polishRight))), step(h("p", { class: "big", style: "margin-top:.5em;color:var(--wu-green)" }, k.polishSay)));
+/* ===== Chapter 4: Checking ===== */
+addSlide(4, "Check what AI generates", "Show the two cards and ask: what is the problem? Then the three steps. The AI's list is a set of leads, not proof. Asking the AI whether it made an error is not a reliable check.", s => {
+  const k = T.check, a = h("span", { class: "mk mk-err" }, k.cmpA), b = h("span", { class: "mk mk-err" }, k.cmpB);
+  s.append(plain(k.polishWords), h("p", { style: "margin:.4em 0" }, k.polishText), badge());
+  s.append(h("div", { class: "cols c2", style: "margin-top:.4em" },
+    step(h("div", { class: "card" }, a), () => requestAnimationFrame(() => a.classList.add("on"))),
+    step(h("div", { class: "card" }, b), () => requestAnimationFrame(() => b.classList.add("on")))));
+  s.append(h("div", { style: "margin-top:.5em" }, step(verdict("err", k.polishRight))), step(h("p", { class: "big", style: "margin-top:.4em;color:var(--wu-green)" }, k.polishSay)));
+  s.append(h("div", { class: "cols c3", style: "margin-top:.6em" }, k.habitSteps.map((st, i) => step(h("div", { class: "card", style: "border-color:var(--wu-green)" }, h("h3", { class: "s row", style: "margin:0" }, h("span", { class: "num" }, String(i + 1)), st.h), h("p", {}, st.t))))));
+  s.append(h("div", { style: "margin-top:.5em" }, step(copyBlock(k.factPrompt, "Fact-check prompt"))), step(h("p", { style: "margin-top:.4em;font-weight:700" }, k.factTeach + " " + k.factWarn)));
 });
-addSlide(4, "The fact-check habit", "Three steps: Ask, Check, Fix. Stress that the AI's list is a set of leads, and that asking it whether it made an error is not a reliable check.", s => {
-  const k = T.check;
-  s.append(h("div", { class: "cols c3" }, k.habitSteps.map((st, i) => step(h("div", { class: "card", style: "border-color:var(--wu-green)" }, h("h3", { class: "s row" }, h("span", { class: "num" }, String(i + 1)), st.h), h("p", {}, st.t))))));
-  s.append(h("h3", { class: "s", style: "margin-top:.7em" }, "A prompt to copy"), step(copyBlock(k.factPrompt, "Fact-check prompt")));
-  s.append(h("div", { class: "stack", style: "margin-top:.7em" }, step(h("p", { class: "lead", style: "font-weight:700" }, k.factTeach)), step(verdict("chk", k.factWarn))));
-});
-addSlide(4, "A file is code", "Walk the path from request to file. Then the test list. The only files to open are the ones made in your own AI chat.", s => {
+addSlide(4, "A file is code", "Walk the path from request to file. Then the test list. The only files to open are the ones made in your own AI chat. Close with the five words.", s => {
   const k = T.check, nodes = [];
   k.path.forEach((p, i) => { nodes.push(step(h("div", { class: "node" }, h("span", { class: "num" }, String(i + 1)), p))); if (i < k.path.length - 1) nodes.push(step(h("span", { class: "arrow", "aria-hidden": "true" }, "→"))); });
   s.append(plain(k.codeWords), h("p", { style: "margin:.5em 0" }, k.codeText), h("div", { class: "path", role: "list", "aria-label": "From request to file" }, nodes));
-  s.append(h("h3", { class: "s", style: "margin-top:.7em" }, "Your test list"), h("ul", { style: "list-style:none;margin:0;padding:0" }, k.tests.map(t => step(h("li", { class: "row", style: "margin-bottom:.2em" }, h("span", { class: "num" }, icon("check")), t)))));
-});
-addSlide(4, "The habit", "Say each word as it appears. Under Make it yours, add the line about your voice and what only you know about your students.", s => {
-  const k = T.check;
-  s.append(h("div", { class: "stack" }, k.habitWords.map((w, i) => step(h("div", { class: "word5" + (i === 4 ? " last" : "") }, h("span", { class: "num" }, String(i + 1)), w)))));
-  s.append(h("p", { class: "lead", style: "margin-top:.7em" }, step(h("span", {}, k.makeYours))));
+  s.append(h("h3", { class: "s", style: "margin-top:.6em" }, "Your test list"), h("ul", { style: "list-style:none;margin:0;padding:0" }, k.tests.map(t => step(h("li", { class: "row", style: "margin-bottom:.2em" }, h("span", { class: "num" }, icon("check")), t)))));
+  s.append(h("div", { class: "row", style: "margin-top:.6em" }, k.habitWords.map((w, i) => step(h("span", { class: "word5" + (i === 4 ? " last" : ""), style: "font-size:1.2em" }, w)))), step(h("p", { class: "lead" }, k.makeYours)));
 });
 
-/* Keep human */
-addSlide(5, "What to keep human", "Read each card, then reveal where it goes. Ask: what is the reason? The reason is about the learner or the learning goal.", s => {
-  const cols = T.keep.cols.map(([k, name]) => { const c = h("div", { class: "stack" }, h("div", { class: "colhead" }, tag(k === "human" ? "good" : "chk"), name)); KEEP.filter(x => x.a === k).forEach(x => c.append(step(h("div", { class: "card " + (k === "human" ? "g" : "c") }, h("p", {}, "“" + x.t + "”"), h("p", { style: "font-size:.85em;font-weight:700" }, x.why))))); return c; });
-  s.append(badge(), h("div", { class: "cols c3", style: "margin-top:.4em" }, cols));
-});
-addSlide(5, "Good reasons and weak reasons", "Show the weak reason first. Then the two strong ones. The test: is the reason about your learners or your learning goal, or only about the tool? Mention the discussion post.", s => {
+/* ===== Chapter 5: Keep human ===== */
+addSlide(5, "What to keep human", "Read each card, then reveal where it goes. Ask for the reason. Then the strong and weak reasons. The reason is about the learner or the learning goal, not about the tool. Mention the discussion post.", s => {
   const k = T.keep;
-  s.append(badge(), h("div", { class: "cols c2", style: "margin-top:.4em" },
+  const cols = k.cols.map(([key, name]) => { const c = h("div", { class: "stack" }, h("div", { class: "colhead" }, tag(key === "human" ? "good" : "chk"), name)); KEEP.filter(x => x.a === key).forEach(x => c.append(step(h("div", { class: "card " + (key === "human" ? "g" : "c") }, h("p", {}, "“" + x.t + "”"), h("p", { style: "font-size:.85em;font-weight:700" }, x.why))))); return c; });
+  s.append(badge(), h("div", { class: "cols c3", style: "margin-top:.4em" }, cols));
+  s.append(h("div", { class: "cols c2", style: "margin-top:.7em" },
     step(h("div", { class: "verdict v-chk" }, h("p", { class: "v-h" }, icon("mag"), "Check this: a weak reason"), h("p", {}, "“" + k.weak + "”"))),
-    h("div", { class: "stack" }, h("p", { class: "v-h", style: "color:var(--good)" }, icon("check"), "Good: strong reasons"), k.strong.map(t => step(h("div", { class: "verdict v-good" }, h("p", {}, "“" + t + "”")))))));
-  s.append(step(h("p", { class: "big", style: "margin-top:.7em;color:var(--wu-green)" }, k.reasonTeach)), step(h("p", { style: "margin-top:.5em" }, k.discuss)));
+    step(h("div", { class: "verdict v-good" }, h("p", { class: "v-h" }, icon("check"), "Good: strong reasons"), k.strong.map(t => h("p", {}, "“" + t + "”"))))));
+  s.append(step(h("p", { class: "big", style: "margin-top:.6em;color:var(--wu-green)" }, k.reasonTeach)), step(h("p", { style: "margin-top:.3em" }, k.discuss)));
 });
 
-/* Privacy */
+/* ===== Chapter 6: Privacy ===== */
 addSlide(6, "Privacy", "Read the card aloud. This one matters. Then the line for people who are not yet teaching.", s => {
   const p = T.privacy;
   s.append(step(h("div", { class: "verdict v-chk", style: "border-width:3px;padding:.8em 1em" }, h("p", { class: "v-h" }, icon("mag"), "Check this"), h("p", { class: "lead" }, p.card))), h("p", { style: "margin-top:.8em;font-weight:700" }, step(h("span", {}, p.extra))));
 });
 
-/* Wrap-up */
+/* ===== Chapter 7: Wrap-up ===== */
 addSlide(7, "Big ideas", "One idea per click. Let each one sit for a breath before you move on.", s => {
-  s.append(h("ol", { style: "list-style:none;margin:0;padding:0" }, IDEAS.map((t, i) => step(h("li", { class: "card row", style: "margin-bottom:.5em;border-color:var(--wu-green)" }, h("span", { class: "num" }, String(i + 1)), h("strong", {}, t))))));
+  s.append(h("ol", { style: "list-style:none;margin:0;padding:0" }, IDEAS.map((t, i) => step(h("li", { class: "card row", style: "margin-bottom:.4em;border-color:var(--wu-green)" }, h("span", { class: "num" }, String(i + 1)), h("strong", {}, t))))));
 });
 addSlide(7, "Your week at a glance", "Times are approximate. Point to this lecture, then walk down the list. Share the CAST link if students want to read more.", s => {
   const max = Math.max(...WEEK.map(w => w.hi));
