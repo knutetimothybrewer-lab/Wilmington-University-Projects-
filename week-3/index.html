@@ -914,7 +914,7 @@ addScreen(1, "How AI writes", box => {
     bt.addEventListener("click", () => { typed.firstChild.textContent = s.autoStart.replace("...", w); announce("The sentence now reads: " + s.autoStart.replace("...", w)); });
     return bt;
   });
-  sugg.append(chips);
+  sugg.append(...chips);
   phone.append(h("div", { style: "margin-bottom:.5rem" }, badge()), typed, sugg);
   box.append(phone);
   box.append(h("p", { class: "note", style: "text-align:center" }, s.autoHint));
@@ -977,7 +977,7 @@ addScreen(1, "Grounding helps, but it does not fix everything", box => {
   const c = chatBox("AI output: quiz “using only the attached lesson”");
   const flagSlot = h("div", { class: "slot", role: "status" });
   const lines = s.quiz.map((q, i) => h("div", { class: "line", style: "margin-bottom:.4rem;opacity:0;transition:opacity .5s" }, q));
-  c.body.append(lines);
+  c.body.append(...lines);
   box.append(h("div", { style: "margin-top:1rem" }, c.el), flagSlot);
   lines.forEach((l, i) => later(() => { l.style.opacity = "1"; }, RM() ? 0 : 400 + i * 700));
   later(() => {

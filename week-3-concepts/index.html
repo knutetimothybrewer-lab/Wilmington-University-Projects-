@@ -490,7 +490,7 @@ addSlide(1, "What is grounding?", "Compare the two sides. Then show the prompt. 
 addSlide(1, "Grounding helps, but it does not fix everything", "Read the quiz aloud, then reveal the highlight. Point out that the fact may sound fine. The notes never said it. Close on Ground it, then check it, and name the lab.", s => {
   const g = T.grounding, c = chatBox("AI output: quiz “using only the attached lesson”");
   const lines = g.quiz.map((q, i) => h("div", { style: "margin-bottom:.3em" }, i === 2 ? h("span", { class: "mk mk-chk" }, q) : q));
-  c.body.append(lines);
+  c.body.append(...lines);
   s.append(h("div", { class: "cols c2" }, h("div", { class: "stack" }, badge(), docBox(g.notesTitle + " (attached)", [h("p", {}, g.notes)])), step(c.el)));
   s.append(h("div", { style: "margin-top:.7em" }, markStep(verdict("chk", g.quizFlag), lines[2].firstChild)));
   s.append(step(h("p", { class: "big", style: "margin-top:.7em;color:var(--wu-green)" }, g.limitMessage)), step(h("div", { class: "sticky", style: "margin-top:.7em;display:inline-block" }, g.bridge)));
