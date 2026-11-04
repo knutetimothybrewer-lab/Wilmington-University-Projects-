@@ -1,0 +1,1469 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Week 3: Designing Lessons with AI That Work for Every Learner</title>
+<link rel="icon" href="data:,">
+<style>
+/* ===== Colors: edit here. Light is the default. Dark is an optional toggle. ===== */
+:root{
+  --bg:#fbf8f3; --surface:#ffffff; --surface2:#f3efe7; --text:#1d2733; --muted:#475260; --line:#cfc7b8;
+  --primary:#1f5f7a; --on-primary:#ffffff; --primary-ink:#1f5f7a; --primary-soft:#e2eff4;
+  --accent:#9c4511; --on-accent:#ffffff; --accent-soft:#fdeadb;
+  --good:#17623a; --good-soft:#e2f4e8; --err:#a31d1d; --err-soft:#fbe5e5; --chk:#744400; --chk-soft:#fff1cf;
+  --focus:#0b57d0; --shadow:0 2px 10px rgba(30,40,50,.10);
+}
+html[data-theme="dark"]{
+  --bg:#101921; --surface:#1a2631; --surface2:#223140; --text:#eaf0f5; --muted:#b9c6d2; --line:#3b4d5e;
+  --primary:#7cc4de; --on-primary:#0b1a22; --primary-ink:#8fd0e8; --primary-soft:#1d3947;
+  --accent:#f0a06a; --on-accent:#1f1006; --accent-soft:#3a2514;
+  --good:#8fe0ae; --good-soft:#173a29; --err:#ffa3a3; --err-soft:#411f1f; --chk:#ffd780; --chk-soft:#3b2f10;
+  --focus:#9bbcff; --shadow:0 2px 10px rgba(0,0,0,.4);
+}
+*{box-sizing:border-box}
+html{font-size:18px}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.55;overflow-x:hidden}
+h1,h2,h3,p{margin:0}
+p+p{margin-top:.6rem}
+:focus-visible{outline:3px solid var(--focus);outline-offset:3px;border-radius:6px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.skip{position:absolute;left:8px;top:-80px;background:var(--primary);color:var(--on-primary);padding:.7rem 1rem;border-radius:8px;z-index:50;font-weight:700}
+.skip:focus{top:8px}
+svg.i{width:1.15em;height:1.15em;flex:none;vertical-align:-.2em}
+
+/* header */
+.top{max-width:60rem;margin:0 auto;padding:.7rem 16px .3rem}
+.brandrow{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem .8rem;justify-content:space-between}
+.brand{font-size:.9rem;font-weight:700;color:var(--primary-ink);letter-spacing:.01em}
+.ctrls{display:flex;flex-wrap:wrap;gap:.4rem}
+button,.btn,a.btn{font:inherit;min-height:44px;min-width:44px;cursor:pointer}
+.tool{background:var(--surface);color:var(--text);border:2px solid var(--line);border-radius:12px;padding:.25rem .7rem;font-size:.85rem;font-weight:600;display:inline-flex;align-items:center;gap:.4rem;justify-content:center}
+.tool[aria-pressed="true"],.tool[aria-expanded="true"]{background:var(--primary-soft);border-color:var(--primary-ink)}
+.tool:disabled{opacity:.55;cursor:not-allowed}
+#menu{max-width:60rem;margin:.4rem auto 0;background:var(--surface);border:2px solid var(--line);border-radius:16px;padding:.6rem;box-shadow:var(--shadow)}
+#menu[hidden]{display:none}
+#menu ol{list-style:none;margin:0;padding:0;display:grid;gap:.3rem}
+#menu button{width:100%;text-align:left;background:transparent;border:2px solid transparent;border-radius:12px;padding:.4rem .7rem;color:var(--text);display:flex;justify-content:space-between;gap:.6rem;align-items:center;font-size:.9rem}
+#menu button:hover{background:var(--surface2)}
+#menu button[aria-current="step"]{border-color:var(--primary-ink);background:var(--primary-soft);font-weight:700}
+.mins{white-space:nowrap;color:var(--muted);font-size:.85rem}
+.menu-total{font-size:.85rem;color:var(--muted);padding:.4rem .7rem 0}
+
+/* main */
+main{max-width:60rem;margin:0 auto;padding:.6rem 16px 7rem}
+.screen{background:var(--surface);border:2px solid var(--line);border-radius:22px;padding:1.2rem 1.1rem 1.4rem;box-shadow:var(--shadow);position:relative}
+@media(min-width:700px){.screen{padding:1.8rem 2rem 2rem}}
+.screen.enter{animation:inR .38s ease-out both}
+.screen.enter.back{animation-name:inL}
+@keyframes inR{from{opacity:0;transform:translateX(34px)}to{opacity:1;transform:none}}
+@keyframes inL{from{opacity:0;transform:translateX(-34px)}to{opacity:1;transform:none}}
+.kicker{display:flex;flex-wrap:wrap;gap:.4rem .7rem;align-items:center;font-size:.85rem;color:var(--muted);font-weight:600;margin-bottom:.5rem}
+.about{background:var(--surface2);border-radius:999px;padding:.1rem .7rem}
+.screen h2{font-size:1.65rem;line-height:1.2;color:var(--primary-ink);margin-bottom:.8rem;outline:none}
+.screen h3{font-size:1.15rem;margin:1.1rem 0 .4rem}
+.lead{font-size:1.1rem}
+.learn,.remember{border-radius:14px;padding:.7rem .95rem;margin:0 0 1rem;display:flex;gap:.6rem;align-items:flex-start}
+.learn{background:var(--primary-soft);border:2px solid var(--primary-ink)}
+.remember{background:var(--accent-soft);border:2px solid var(--accent);margin:1.4rem 0 0}
+.learn b,.remember b{white-space:nowrap}
+.stack>*+*{margin-top:1rem}
+.row{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center}
+.grid2{display:grid;gap:1rem}.grid3{display:grid;gap:1rem}
+@media(min-width:760px){.grid2{grid-template-columns:1fr 1fr}.grid3{grid-template-columns:repeat(3,1fr)}}
+.muted{color:var(--muted)}
+.small{font-size:.9rem}
+.big-quote{font-size:1.5rem;line-height:1.35;font-weight:700}
+
+/* components */
+.badge{display:inline-flex;align-items:center;gap:.35rem;background:var(--accent-soft);color:var(--text);border:1.5px dashed var(--accent);border-radius:999px;font-size:.8rem;font-weight:700;padding:.05rem .6rem;white-space:nowrap}
+.plain{background:var(--primary-soft);border-left:6px solid var(--primary-ink);border-radius:12px;padding:.6rem .95rem;font-size:.95rem}
+.plain-h{font-weight:800;text-transform:uppercase;letter-spacing:.05em;font-size:.78rem;color:var(--primary-ink);margin-bottom:.2rem}
+.plain p+p{margin-top:.35rem}
+.chat{border:2px solid var(--line);border-radius:18px;background:var(--surface2);overflow:hidden}
+.chat-head{display:flex;gap:.5rem;align-items:center;padding:.4rem .9rem;font-size:.82rem;font-weight:700;color:var(--muted);border-bottom:2px solid var(--line)}
+.chat-body{padding:.8rem .95rem}
+.chat-body .bubble{background:var(--surface);border:2px solid var(--line);border-radius:4px 16px 16px 16px;padding:.7rem .9rem;min-height:3rem}
+.doc{margin:0;background:var(--surface);border:2px solid var(--line);border-top:8px solid var(--primary-ink);border-radius:8px;box-shadow:var(--shadow)}
+.doc figcaption{display:flex;gap:.5rem;align-items:center;padding:.4rem .9rem;font-weight:800;font-size:.85rem;color:var(--primary-ink);border-bottom:1px solid var(--line)}
+.doc-body{padding:.7rem .95rem}
+.verdict{border-radius:12px;padding:.6rem .9rem;border:2px solid;animation:pop .35s ease-out both}
+.verdict p+p{margin-top:.3rem}
+.v-h{display:flex;gap:.45rem;align-items:center;font-weight:800}
+.v-good{background:var(--good-soft);border-color:var(--good);color:var(--text)}.v-good .v-h{color:var(--good)}
+.v-err{background:var(--err-soft);border-color:var(--err);color:var(--text)}.v-err .v-h{color:var(--err)}
+.v-chk{background:var(--chk-soft);border-color:var(--chk);color:var(--text)}.v-chk .v-h{color:var(--chk)}
+@keyframes pop{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:none}}
+.slot:empty{display:none}
+.slot{margin-top:.6rem}
+.btn{background:var(--primary);color:var(--on-primary);border:2px solid var(--primary);border-radius:999px;padding:.4rem 1.3rem;font-weight:700;display:inline-flex;align-items:center;gap:.5rem;justify-content:center}
+.btn.alt{background:transparent;color:var(--primary-ink);border-color:var(--primary-ink)}
+.btn.warm{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.nudge{animation:nudge 1.8s ease-in-out 3}
+@keyframes nudge{0%,100%{transform:none}30%{transform:translateY(-4px) scale(1.05)}60%{transform:none}}
+.prompt{background:var(--surface2);border:2px dashed var(--primary-ink);border-radius:12px;padding:.7rem .9rem;font-family:ui-monospace,Consolas,Menlo,monospace;font-size:.88rem;overflow-wrap:anywhere;white-space:pre-wrap}
+.copyrow{display:grid;gap:.5rem}
+
+/* typed text & sweeps */
+.line{position:relative;isolation:isolate;border-radius:10px;padding:.35rem .6rem;display:block;width:100%;text-align:left;background:transparent;border:2px solid transparent;color:var(--text);font:inherit;overflow-wrap:anywhere}
+button.line{border-color:var(--line);background:var(--surface);min-height:48px}
+.line::before{content:"";position:absolute;inset:0;border-radius:8px;transform:scaleX(0);transform-origin:left;z-index:-1;transition:transform .7s ease-out;background:var(--sweep,transparent)}
+.line.sw::before{transform:scaleX(1)}
+.sw-good{--sweep:var(--good-soft);border-color:var(--good)!important}
+.sw-err{--sweep:var(--err-soft);border-color:var(--err)!important}
+.sw-chk{--sweep:var(--chk-soft);border-color:var(--chk)!important}
+.lines{list-style:none;margin:0;padding:0;display:grid;gap:.7rem}
+.lines>li.in{animation:pop .4s ease-out both}
+.tag{display:inline-flex;gap:.3rem;align-items:center;font-size:.8rem;font-weight:800;border-radius:999px;padding:0 .55rem;border:1.5px solid currentColor}
+.tag-good{color:var(--good)}.tag-chk{color:var(--chk)}.tag-err{color:var(--err)}.tag-plain{color:var(--primary-ink)}
+
+/* choices & chips */
+.choices{display:flex;flex-wrap:wrap;gap:.5rem}
+.choice{background:var(--surface);color:var(--text);border:2px solid var(--primary-ink);border-radius:12px;padding:.35rem .9rem;font-weight:700;font-size:.9rem}
+.choice:hover:not(:disabled){background:var(--primary-soft)}
+.choice[aria-pressed="true"]{background:var(--primary);color:var(--on-primary)}
+.choice:disabled:not([aria-pressed="true"]){opacity:.5;cursor:default}
+.sortlist{list-style:none;margin:0;padding:0;display:grid;gap:.9rem}
+.sortcard{border:2px solid var(--line);border-radius:14px;padding:.8rem .95rem;background:var(--surface)}
+.sortcard>p{margin-bottom:.5rem}
+.counter{display:inline-flex;gap:.5rem;align-items:center;background:var(--surface2);border-radius:999px;padding:.15rem .9rem;font-weight:700;font-size:.9rem}
+.note{font-size:.9rem;color:var(--muted);font-style:italic}
+
+/* toggle */
+.seg{display:inline-flex;border:2px solid var(--primary-ink);border-radius:999px;overflow:hidden}
+.seg button{background:var(--surface);color:var(--text);border:0;padding:.3rem 1.1rem;font-weight:700}
+.seg button[aria-pressed="true"]{background:var(--primary);color:var(--on-primary)}
+.pane.enter{animation:inR .35s ease-out both}
+
+/* flip */
+.flip{display:grid;perspective:1000px}
+.flip .inner{display:grid;transition:transform .6s;transform-style:preserve-3d}
+.flip .face{grid-area:1/1;backface-visibility:hidden;-webkit-backface-visibility:hidden;border:2px solid var(--primary-ink);border-radius:18px;padding:1rem;background:var(--surface);display:flex;flex-direction:column;gap:.7rem;justify-content:space-between}
+.flip .front{background:var(--primary-soft)}
+.flip .back{transform:rotateY(180deg)}
+.flip.flipped .inner{transform:rotateY(180deg)}
+.flip h3{margin:0;font-size:1.3rem;color:var(--primary-ink)}
+.flip .why{font-weight:800;font-size:1.6rem;color:var(--accent)}
+.flip .face[inert]{pointer-events:none}
+
+/* learner scene */
+.learner{border:2px solid var(--line);border-radius:16px;padding:.9rem;background:var(--surface);animation:pop .45s ease-out both}
+.scene{position:relative;height:56px;margin:.7rem 0;border-bottom:4px solid var(--line)}
+.dot{position:absolute;left:0;bottom:0;width:40px;height:40px;border-radius:50%;background:var(--primary);color:var(--on-primary);display:grid;place-items:center;font-weight:800;transform:translateX(var(--x,0px));transition:transform .9s ease-in-out}
+.wall{position:absolute;left:62%;bottom:0;width:16px;height:52px;background:var(--err);border-radius:4px;transition:transform .7s,opacity .7s}
+.wall.hit{animation:shake .5s 2}
+@keyframes shake{0%,100%{transform:none}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.opened .wall{transform:translateY(-70px);opacity:0}
+.flagp{position:absolute;right:4px;bottom:0;font-size:1.5rem;line-height:1}
+.optlist{margin:.4rem 0 0;padding-left:1.2rem}
+
+/* slides */
+.slidebox{border:2px solid var(--line);border-radius:14px;overflow:hidden;background:var(--surface)}
+.slide{aspect-ratio:16/9;min-height:11rem;background:linear-gradient(135deg,#1f5f7a,#2f86a6);color:#fff;padding:1rem 1.2rem;display:flex;flex-direction:column;justify-content:center;gap:.4rem}
+.slide .sn{font-size:.8rem;opacity:.95;font-weight:700}
+.slide h3{margin:0;font-size:1.5rem;color:#fff}
+.slide ul{margin:.2rem 0 0;padding-left:1.1rem;font-size:.95rem}
+.slidebar{display:flex;justify-content:space-between;align-items:center;padding:.4rem .6rem;gap:.5rem;flex-wrap:wrap}
+.cmpcard{background:var(--surface);color:var(--text);border:2px solid var(--line);border-radius:14px;padding:.8rem 1rem;font-weight:700;text-align:left;font-size:1rem}
+.cmpcard:hover{border-color:var(--primary-ink)}
+
+/* steps / path */
+.path{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center}
+.node{background:var(--primary-soft);border:2px solid var(--primary-ink);border-radius:14px;padding:.5rem .8rem;font-weight:700;opacity:0;transform:translateY(12px);transition:opacity .5s,transform .5s;display:flex;gap:.45rem;align-items:center}
+.arrow{opacity:0;transition:opacity .5s;color:var(--primary-ink);font-weight:800}
+.show{opacity:1!important;transform:none!important}
+.steps3{display:grid;gap:.8rem}
+@media(min-width:700px){.steps3{grid-template-columns:repeat(3,1fr)}}
+.stepc{border:2px solid var(--line);border-radius:14px;padding:.8rem;opacity:.45;transform:scale(.97);transition:opacity .5s,transform .5s,border-color .5s}
+.stepc.show{border-color:var(--primary-ink);background:var(--primary-soft)}
+.stepc h3{margin:0 0 .3rem;display:flex;gap:.5rem;align-items:center}
+.num{display:inline-grid;place-items:center;width:2rem;height:2rem;border-radius:50%;background:var(--primary);color:var(--on-primary);font-weight:800;font-size:.95rem}
+.checklist{list-style:none;margin:0;padding:0;display:grid;gap:.6rem}
+.checklist li{display:flex;gap:.7rem;align-items:flex-start;opacity:0;transform:translateX(-16px);animation:inItem .5s ease-out forwards;animation-delay:var(--d,0s)}
+.checklist .ck{flex:none;width:1.8rem;height:1.8rem;border-radius:50%;background:var(--good);color:var(--bg);display:grid;place-items:center;transform:scale(0);animation:ckpop .4s ease-out forwards;animation-delay:calc(var(--d,0s) + .35s)}
+html[data-theme="dark"] .checklist .ck{color:#0b1a12}
+.checklist .ck svg{width:1.1rem;height:1.1rem}
+@keyframes inItem{to{opacity:1;transform:none}}
+@keyframes ckpop{0%{transform:scale(0)}70%{transform:scale(1.2)}100%{transform:scale(1)}}
+.tick{background:var(--surface);color:var(--text);border:2px solid var(--line);border-radius:12px;padding:.4rem .8rem;width:100%;text-align:left;display:flex;gap:.7rem;align-items:center;font-size:1rem}
+.tick .box{flex:none;width:1.7rem;height:1.7rem;border:2px solid var(--primary-ink);border-radius:6px;display:grid;place-items:center;color:var(--on-primary)}
+.tick[aria-pressed="true"] .box{background:var(--primary)}
+.tick .box svg{transform:scale(0);transition:transform .25s}
+.tick[aria-pressed="true"] .box svg{transform:scale(1)}
+.words5{display:grid;gap:.5rem;margin:0;padding:0;list-style:none}
+.words5 li{font-size:1.5rem;font-weight:800;color:var(--primary-ink);opacity:0;transform:translateY(14px);transition:opacity .5s,transform .5s}
+.words5 li.show{opacity:1;transform:none}
+.words5 li.last{color:var(--accent)}
+.bigwords span{display:inline-block;opacity:0;transform:translateY(12px);animation:inItem .5s ease-out forwards;animation-delay:var(--d,0s);margin-right:.3em}
+
+/* idea & week */
+.ideas{list-style:none;margin:0;padding:0;display:grid;gap:.7rem;counter-reset:id}
+.ideas li{display:flex;gap:.8rem;align-items:center;background:var(--primary-soft);border-radius:14px;padding:.7rem .9rem;font-weight:600;opacity:0;transform:translateY(14px);transition:opacity .5s,transform .5s}
+.ideas li.show{opacity:1;transform:none}
+.weeklist{list-style:none;margin:0;padding:0;display:grid;gap:.8rem}
+.weeklist li{border:2px solid var(--line);border-radius:14px;padding:.6rem .9rem}
+.weeklist li.here{border-color:var(--accent);background:var(--accent-soft)}
+.wbar{height:12px;border-radius:6px;background:var(--surface2);margin-top:.4rem;overflow:hidden}
+.wbar i{display:block;height:100%;width:100%;background:var(--primary);border-radius:6px;transform-origin:left;transform:scaleX(0);transition:transform .9s ease-out}
+.weeklist li.here .wbar i{background:var(--accent)}
+.bar{height:16px;border-radius:8px;background:var(--surface2);overflow:hidden;border:1.5px solid var(--line)}
+.bar i{display:block;height:100%;width:100%;transform-origin:left;transform:scaleX(0);transition:transform 1s ease-out;background:var(--primary)}
+.cmp{list-style:none;margin:0;padding:0;display:grid;gap:.8rem}
+.cmp li{background:var(--surface2);border-radius:12px;padding:.8rem .9rem}
+.qbox{border:0;margin:0;padding:0}
+.qbox legend{font-weight:800;font-size:1.15rem;margin-bottom:.7rem;padding:0}
+.opt{display:flex;gap:.7rem;align-items:flex-start;border:2px solid var(--line);border-radius:12px;padding:.6rem .8rem;margin-bottom:.55rem;min-height:48px;cursor:pointer;background:var(--surface)}
+.opt input{width:1.4rem;height:1.4rem;margin-top:.15rem;flex:none;accent-color:var(--primary)}
+.opt:has(input:checked){border-color:var(--primary-ink);background:var(--primary-soft)}
+.opt.best{border-color:var(--good);background:var(--good-soft)}
+.opt.mine{border-color:var(--chk);background:var(--chk-soft)}
+
+/* footer */
+.foot{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:2px solid var(--line);z-index:20;padding-bottom:env(safe-area-inset-bottom)}
+.progress{height:8px;background:var(--surface2)}
+.progress i{display:block;height:100%;background:var(--accent);transform-origin:left;transform:scaleX(0);transition:transform .5s ease-out;width:100%}
+.footrow{max-width:60rem;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:.5rem;padding:.4rem 16px}
+.foot .btn{padding:.4rem .9rem;white-space:nowrap}
+.where{font-size:.85rem;font-weight:700;text-align:center;color:var(--muted)}
+#cel{position:fixed;left:50%;top:5.5rem;transform:translateX(-50%);z-index:40;pointer-events:none;width:min(92vw,26rem);text-align:center}
+#cel .msg{background:var(--accent);color:var(--on-accent);font-weight:800;border-radius:999px;padding:.5rem 1.2rem;animation:pop .4s ease-out both}
+#cel .p{position:absolute;left:50%;top:1rem;width:10px;height:10px;border-radius:3px;background:var(--c);animation:burst 1.2s ease-out forwards}
+@keyframes burst{from{opacity:1;transform:translate(0,0) rotate(0)}to{opacity:0;transform:translate(var(--dx),var(--dy)) rotate(var(--r))}}
+.cursor::after{content:"";display:inline-block;width:2px;height:1em;background:var(--muted);margin-left:2px;vertical-align:-.12em}
+
+/* reduced motion: everything becomes instant */
+html.rm *,html.rm *::before,html.rm *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+html.rm .checklist li,html.rm .bigwords span{opacity:1;transform:none}
+html.rm .checklist .ck{transform:none}
+html.rm .node,html.rm .arrow,html.rm .words5 li,html.rm .ideas li{opacity:1;transform:none}
+html.rm .stepc{opacity:1;transform:none}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the lesson</a>
+<header class="top">
+  <div class="brandrow">
+    <h1 class="brand">AI Literacy for Educators &middot; Week 3 microlecture</h1>
+    <div class="ctrls" role="group" aria-label="Page controls">
+      <button class="tool" id="bMenu" type="button" aria-expanded="false" aria-controls="menu">Sections</button>
+      <button class="tool" id="bSmall" type="button" aria-label="Smaller text">A&minus;</button>
+      <button class="tool" id="bBig" type="button" aria-label="Bigger text">A+</button>
+      <button class="tool" id="bRM" type="button" aria-pressed="false">Reduce motion</button>
+      <button class="tool" id="bTheme" type="button" aria-pressed="false">Dark theme</button>
+      <button class="tool" id="bReset" type="button">Start over</button>
+    </div>
+  </div>
+  <nav id="menu" aria-label="Lecture sections" hidden></nav>
+</header>
+<main id="main" tabindex="-1"></main>
+<div id="cel" aria-hidden="true"></div>
+<div class="sr" id="live" role="status" aria-live="polite" aria-atomic="true"></div>
+<footer class="foot">
+  <div class="progress" role="progressbar" aria-label="Lecture progress" id="pbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i id="pfill"></i></div>
+  <div class="footrow">
+    <button class="btn alt" id="bBack" type="button">&larr; Back</button>
+    <div class="where" id="where"></div>
+    <button class="btn" id="bNext" type="button">Next &rarr;</button>
+  </div>
+</footer>
+
+<script>
+"use strict";
+/* =====================================================================
+   HOW TO EDIT THE WORDS
+   Everything teachers read is in the data objects in this first block:
+     COURSE      page title bits and storage key
+     SECTIONS    the 9 sections: title, minutes, "What you will learn", "Remember"
+     OUTCOMES    the four goals on the welcome screen
+     TOUR        the control tour on the welcome screen
+     T           the words on each screen (T.s1 = section 1, and so on)
+     SORT_*      the cards for the click-to-sort activities
+     UDL_CARDS   the eight "real option or label" cards
+     QUIZ        the 12 final questions (the key CORRECT:true marks the answer key)
+     BIG_IDEAS   the five big ideas
+     WEEK        the "week at a glance" list (change order and times here)
+   The code (logic) starts at the line that says "ENGINE".
+   ===================================================================== */
+
+/* ---------- COURSE ---------- */
+const COURSE = {
+  title: "Week 3: Designing Lessons with AI That Work for Every Learner",
+  storageKey: "ail-week3-microlecture-v1",
+  caseThreshold: 0.75 /* share of a concept's questions answered right to show "You've got this" */
+};
+
+/* ---------- SECTIONS: id, title, minutes, learn line, remember line ---------- */
+const SECTIONS = [
+  { id: 0, title: "Welcome and how to use this page", short: "Welcome", mins: 1,
+    learn: "You will see what this page does and how to move through it.",
+    remember: "Being new to this is normal. Go at your own pace." },
+  { id: 1, title: "Grounding: why AI makes things up, and how your own material helps", short: "Grounding", mins: 5,
+    learn: "You will learn why AI can make things up, and how your own material and a quick check help.",
+    remember: "Ground it, then check it." },
+  { id: 2, title: "Human-centered design: start with your learners", short: "Human-centered design", mins: 2,
+    learn: "You will learn to start with your learners and not with the tool.",
+    remember: "Start with the learner, not the tool." },
+  { id: 3, title: "UDL: real options versus labels", short: "UDL", mins: 8,
+    learn: "You will learn to tell a real UDL option from a label, and to check an AI review of your lesson.",
+    remember: "Ask what a student actually does differently, then check the AI's claims yourself." },
+  { id: 4, title: "Checking and testing what you generate", short: "Checking output", mins: 4,
+    learn: "You will learn to check and test what you generate, including slide decks and web pages.",
+    remember: "Polished is not proof. Test what you generate." },
+  { id: 5, title: "What to keep human", short: "Keep it human", mins: 3,
+    learn: "You will learn which parts of a lesson to keep human, and how to give a good reason.",
+    remember: "Keep human what depends on relationships, judgment, or the struggle that is the learning." },
+  { id: 6, title: "Privacy: what never goes into an AI tool", short: "Privacy", mins: 1,
+    learn: "You will learn what never goes into an AI tool.",
+    remember: "Use invented or general information only." },
+  { id: 7, title: "Big ideas and your week at a glance", short: "Big ideas", mins: 1,
+    learn: "You will review the five big ideas and see how your week fits together.",
+    remember: "Five ideas, one week, one step at a time." },
+  { id: 8, title: "Final check for understanding (not graded)", short: "Final check", mins: 5,
+    learn: "You will practice with 12 questions to see what to revisit.",
+    remember: "Practice shows you what to revisit. It is not a grade." }
+];
+
+/* ---------- WELCOME ---------- */
+const OUTCOMES = [
+  "Explain grounding, and show how attaching your own material changes what AI invents.",
+  "Tell a real UDL option from a label, and ask the AI to review a lesson for UDL, then verify the answer.",
+  "Check and test what you generate before you trust it, including files such as slide decks and web pages.",
+  "Decide which parts of a lesson to keep human, and give a reason about learners or the learning goal."
+];
+const TOUR = [
+  ["Next and Back", "Move one screen at a time. The menu called Sections shows how long each part takes."],
+  ["Arrow keys", "The left and right arrow keys also move between screens."],
+  ["A− and A+", "Make the text smaller or bigger."],
+  ["Reduce motion", "Turns animation off. Everything still works."],
+  ["Start over", "Clears your place and begins again."]
+];
+
+const T = {
+  welcome: {
+    title: COURSE.title,
+    intro: "You are going to learn four things. Watch the list fill in.",
+    reassure: "You do not need any tech skills. Nothing here is graded. Your place is remembered only in your own browser.",
+    banner: "Nothing here is graded. Nothing you do is sent anywhere.",
+    words: [
+      ["AI", "short for artificial intelligence. Here it means tools like ChatGPT and Claude that generate text and files when you type a request."],
+      ["Grounding", "giving the AI your own trusted material to work from. You will practice it in section 1."],
+      ["UDL", "short for Universal Design for Learning. It is a way to plan lessons with options built in. You will practice it in section 3."]
+    ],
+    startBtn: "Begin section 1"
+  },
+
+  s1: {
+    hookHead: "AI can sound very sure and still be wrong.",
+    hookOutput: "Grade 4 Science: The Water Cycle. Standard ES.4.7. Evaporation happens only when water reaches the boiling point of 100 degrees Celsius. According to a 2022 report by the National Water Learning Council, students learn the water cycle best by copying the diagram three times.",
+    hookAfter: "It reads smoothly. It sounds confident. Some of it is wrong or made up. You will find out which parts in a minute.",
+    hookWords: [
+      ["Output", "what an AI tool produces after you type a request. We also call it a draft."],
+      ["Standard", "a learning goal that your state sets for a grade and subject. It has a code, like a label."],
+      ["Hallucination", "when AI writes something that sounds right but is made up. The word is used in the field. In this lesson we mostly say “made-up content.”"]
+    ],
+    howHead: "How AI writes",
+    howWords: [["Autocomplete", "the phone feature that suggests the next word while you type."]],
+    howText: "AI tools like ChatGPT and Claude generate text by choosing words that are likely to come next, based on patterns in the writing they learned from. They do not look facts up the way a search does.",
+    autoStart: "The cat sat on the ...",
+    autoChoices: ["mat", "couch", "roof"],
+    autoHint: "Tap a word to fill the blank. Each one is likely. None is looked up.",
+    autoCaption: "Bigger and smarter, but the same idea: it generates likely words, so it can generate wrong words that sound right.",
+    findHead: "Find the made-up parts",
+    findIntro: "Here is the sample output again, split into four lines. Click each line to see what to do about it.",
+    lines: [
+      { text: "Evaporation happens only when water reaches the boiling point of 100 degrees Celsius.", kind: "err",
+        note: "Water evaporates at many temperatures, well below boiling. Boiling is a faster change at a higher temperature." },
+      { text: "Most of Earth's water is in the oceans.", kind: "good",
+        note: "This is accurate and quick to confirm with a trusted source." },
+      { text: "According to a 2022 report by the National Water Learning Council, students learn the water cycle best by copying the diagram three times.", kind: "chk",
+        note: "The council and the report are invented for this lesson. If AI names a source, search for it before you use it." },
+      { text: "Standard ES.4.7", kind: "chk",
+        note: "This code is invented for this lesson. Compare any code AI supplies with your state's standards list." }
+    ],
+    findSummary: "Three kinds of problems teachers will meet: wrong facts, made-up sources, and wrong standard codes.",
+    groundHead: "What is grounding?",
+    groundWords: [
+      ["Grounding", "giving the AI your own trusted material and telling it to use only that material."],
+      ["Prompt", "the message you type to tell an AI tool what to do."]
+    ],
+    toggleNo: "No source", toggleYes: "With your source",
+    notesTitle: "Your unit notes",
+    notes: "Evaporation is when liquid water changes into water vapor. It can happen at many temperatures and happens faster when the water is warmer.",
+    groundedOutput: "Evaporation is when liquid water changes into water vapor. It can happen at many temperatures, and it happens faster when the water is warmer. I could not find a standard code in your notes, so I am not sure which one applies. Please tell me.",
+    groundPrompt: "Use only the attached material. Mark anything you are not sure of, and ask me instead of guessing.",
+    groundCaption: "See the difference? With your notes attached, the output stays close to them and says what it is missing.",
+    limitHead: "Grounding helps, but it does not fix everything",
+    limitIntro: "You attached your lesson and asked for a quiz “using only the attached lesson.” This is the output:",
+    quiz: [
+      "1. What is evaporation? Answer: liquid water changing into water vapor.",
+      "2. Does water evaporate faster when it is warmer? Answer: yes.",
+      "3. In which layer of the atmosphere do most clouds form? Answer: the troposphere."
+    ],
+    quizFlagIndex: 2,
+    quizFlag: "This question uses a fact that is not in the attached lesson. It may sound fine, but your notes never said it, so you would have to check it.",
+    limitMessage: "Grounding lowers the chance of made-up content. It does not remove it. Ground it, then check it.",
+    bridge: "In this week's lab you will run the same lesson prompt twice, once with no source and once with your own material, and compare."
+  },
+
+  s2: {
+    plain: [["Human-centered design", "starting with your learners (their needs, cultures, and relationships) and not with what the tool can do."]],
+    intro: "Read each plan below. Does it start with the learner or with the tool?",
+    optA: "Starts with the learner", optB: "Starts with the tool",
+    close: "AI can draft materials. It cannot build relationships or know your students. That part is yours."
+  },
+
+  s3: {
+    whyIntro: "Here is one lesson. Watch what happens for three different learners.",
+    lessonLine: "The lesson: read a four-page passage alone, then answer the questions in writing.",
+    udlWords: [["Universal Design for Learning (UDL)", "a way of planning lessons with options built in from the start, so more learners can succeed without special fixes later."]],
+    disclaim: "These three learners are made up. They show different needs in one lesson. They are not labels or learning styles.",
+    learners: [
+      { name: "Learner 1", trait: "Reads slowly and tires with long passages.",
+        wall: "Four pages take so long that the energy is gone before the questions start.",
+        options: ["Listen to the passage read aloud.", "Read it in short parts with a stop after each part."] },
+      { name: "Learner 2", trait: "Loses focus on long single tasks.",
+        wall: "One long task with no stopping point makes it hard to keep going.",
+        options: ["Break the work into short steps with a check-in after each.", "Pick which step to start with."] },
+      { name: "Learner 3", trait: "Does well when talking things through.",
+        wall: "Writing answers alone gives no chance to say ideas out loud first.",
+        options: ["Talk it through with a partner first.", "Record a one-minute explanation instead of writing."] }
+    ],
+    flipHead: "The three UDL principles",
+    flipIntro: "Click a card to flip it. Each one answers a question.",
+    flipPlain: [["Principle", "a big idea that guides planning."]],
+    principles: [
+      { name: "Engagement", q: "The WHY", plain: "What gets learners interested and keeps them going.",
+        ex: "Students pick one of three local water questions to investigate (a puddle, a pond, or a rain barrel), then use the same lab steps." },
+      { name: "Representation", q: "The WHAT", plain: "How information is shown.",
+        ex: "Students can read the text, listen to it read aloud, or study a labeled diagram." },
+      { name: "Action and expression", q: "The HOW", plain: "How learners show what they know.",
+        ex: "Students choose a poster, a one-minute recorded explanation, or a written paragraph. All three are scored with the same four-point checklist." }
+    ],
+    flipNote: "The examples are for a Grade 4 water cycle lesson.",
+    cast: "CAST released its Guidelines 3.0 in 2024.",
+    realHead: "Real option or just a label?",
+    realWords: [
+      ["Real option", "keeps the same learning goal and the same criteria, but offers different ways to meet them."],
+      ["Label", "a name with no option behind it. AI often writes things like “multiple means of expression” without any real option behind them."],
+      ["Graphic organizer", "a page with boxes or shapes that helps students sort their ideas."]
+    ],
+    realTest: "The test is one question: What does a student actually do differently?",
+    practice: "Just for practice",
+    realHelper: "Not sure? Ask: could two students do this differently and still meet the same goal?",
+    reviewHead: "Do not take the AI's word for it",
+    reviewIntro: "Teachers can ask an AI tool to review a lesson for UDL. Here is a prompt you can copy.",
+    excerptTitle: "Lesson excerpt",
+    excerpt: "Slides have captions that can be turned on or off. Every student completes the same worksheet. Students work in pairs for the lab.",
+    udlPrompt: "Review the lesson plan. For each of engagement, representation, and action and expression, list the specific choices a student has. If a choice is only a label, say so, and propose a real option that keeps the same learning goal and the same criteria.",
+    reviewLabel: "AI review (invented)",
+    reviewTask: "Click each claim to check it against the lesson excerpt.",
+    claims: [
+      { text: "Action and expression: students choose how to show their learning.", kind: "chk",
+        note: "The excerpt says every student completes the same worksheet, so this is not supported." },
+      { text: "Representation: slides can be viewed with captions.", kind: "good",
+        note: "The excerpt supports this." },
+      { text: "This lesson offers multiple means of engagement.", kind: "chk",
+        note: "The excerpt names no engagement option." }
+    ],
+    reviewTeach: "AI can mislabel its own work. Keep the lesson in front of you and check each claim.",
+    fixHead: "Fix a label",
+    fixStart: "Students choose how to show their learning. Everyone completes the same worksheet.",
+    fixAsk: "Which fix makes this a real option?",
+    fixes: [
+      { t: "Rename it “differentiated.”", ok: false,
+        sense: "Naming it is a fair first thought, since the words do matter.",
+        why: "Renaming changes the label, not what a student can choose." },
+      { t: "Offer a choice of three tasks that are all scored with the same checklist.", ok: true,
+        sense: "You found it.",
+        why: "Students now choose different tasks, and the goal and criteria stay the same. That is a real option." },
+      { t: "Add more pages to the worksheet.", ok: false,
+        sense: "More practice can feel like more support.",
+        why: "More pages change the amount of work, not what a student can choose." }
+    ],
+    askHead: "Ask this every time",
+    askQuestion: "Would this still work for a learner with a reading disability, ADHD, a visual or hearing impairment, or complex communication needs? What would you add?",
+    askWords: [
+      ["ADHD", "a condition that can make focus and planning harder."],
+      ["IEP", "a written plan for a student who gets special education services."]
+    ],
+    chipsIntro: "Some starting ideas. Click one to add it to your list.",
+    chips: ["Read-aloud", "Short steps", "Captions", "Picture descriptions", "More than one way to respond"],
+    listEmpty: "Your list is empty. Click an idea above.",
+    privacyNote: "Never put a real student's diagnosis or IEP details into an AI tool. Describe needs in general terms.",
+    learnMore: "Learn more: CAST UDL Guidelines",
+    learnMoreNote: "This link opens in a new tab. This page itself sends nothing anywhere."
+  },
+
+  s4: {
+    polishHead: "Polished is not proof",
+    polishWords: [["Slide deck", "a set of slides, like a presentation."]],
+    polishText: "People tend to trust output that looks polished. Here are three slides from an invented AI-generated deck.",
+    slides: [
+      { n: 1, h: "The Water Cycle", bullets: ["Grade 4 Science"] },
+      { n: 3, h: "Three Big Steps", bullets: ["Evaporation: liquid water becomes vapor", "Condensation: vapor becomes tiny drops", "Precipitation: water falls as rain or snow"] },
+      { n: 6, h: "Activity: Water Cycle in a Bag", bullets: ["Time: 15 minutes"] }
+    ],
+    cmpA: "Slide 6: Activity, 15 minutes",
+    cmpB: "Teaching guide: Activity, 20 minutes",
+    polishAsk: "Click the problem.",
+    polishNone: "Nothing looks wrong",
+    polishRight: "You looked at both documents together, which is exactly the right habit. The two documents disagree about how long the activity takes. A polished look does not make them right.",
+    polishWrong: "The slides do look clean and professional, and that is why this is easy to miss. But look at the two cards: the activity is 15 minutes in one and 20 in the other. The two documents disagree.",
+    polishSay: "If it looks nice, slow down and check.",
+    habitHead: "The fact-check habit",
+    habitSteps: [
+      { h: "Ask", t: "Ask the AI to list every fact, date, quote, source, and answer in a table." },
+      { h: "Check", t: "Check each item against your own source." },
+      { h: "Fix", t: "Fix what is wrong. Then check again." }
+    ],
+    factPrompt: "List every fact, date, quote, source, and answer in this material in a table, and mark any you are not certain of, so I can verify each one.",
+    factTeach: "The AI's list is a set of leads, not proof. You check each item against your own source.",
+    factWarn: "Asking the AI whether it made an error is not a reliable check on its own.",
+    codeHead: "A file is code",
+    codeWords: [["Code", "text written in a special way. A tool reads it and builds the slide deck or web page file from it."]],
+    codeText: "When AI makes a slide deck or a web page as a file, it writes text, called code, and a tool turns that text into the file. You do not need to read code. You need to open the file and test it.",
+    path: ["Your request", "AI writes text", "A tool builds the file", "You open it"],
+    testHead: "Your test list",
+    tests: ["Click every button.", "Type in every box.", "Refresh the page and see whether anything was saved.", "Only open files made in your own AI chat."],
+    habitWordsHead: "The habit",
+    habitWords: ["Ground it.", "Generate it.", "Check it.", "Test it.", "Make it yours."],
+    makeYours: "Edit it in your voice and add what only you know about your students."
+  },
+
+  s5: {
+    intro: "Where does each task belong? Choose one for each card.",
+    opts: [["draft", "Good to draft with AI"], ["together", "Do it together"], ["human", "Keep it human"]],
+    reasonsHead: "Good reasons and weak reasons",
+    weakHead: "Weak reason", weak: "AI is not good enough at this.",
+    strongHead: "Strong reasons",
+    strong: ["My students need to hear this from me because they trust me.", "The struggle is the learning goal here."],
+    reasonTeach: "A strong reason is about your learners or your learning goal, not about the tool.",
+    discuss: "In your discussion post you will say where the AI's output worked well and where it needed your input."
+  },
+
+  s6: {
+    head: "Privacy",
+    card: "Use invented or general information only. Never enter student names, IDs, IEP details, disability status, or evaluation results into a general AI tool. Describe students in general terms, such as “a mix of reading levels and a few English learners.”",
+    extra: "If you are not yet employed as a teacher, use the free versions of AI tools with invented information only."
+  },
+
+  s7: {
+    bigHead: "Big ideas",
+    weekHead: "Your week at a glance",
+    weekNote: "Times are approximate. Your own pace may differ.",
+    endNote: "Next, your week: reading, lab, build, concept check, and discussion."
+  },
+
+  s8: {
+    head: "Final check for understanding",
+    notGraded: "This is not graded. Nothing is saved or sent. It is just for you.",
+    howTo: "Choose one answer for each question, then press Check my answer. Use Tab and the up and down arrow keys to choose.",
+    begin: "Begin the 12 questions",
+    pickFirst: "Pick an answer first. Any answer is fine.",
+    resultsHead: "Your results",
+    resultsLine: "You answered {X} of 12 correctly. This is only for you.",
+    gotIt: "You've got this", again: "Worth another look",
+    recapHead: "Five big ideas to carry with you"
+  }
+};
+
+/* ---------- SORT CARDS: section 2 ---------- */
+const SORT_LEARNER = [
+  { t: "Three of my students struggle with long reading passages, so I want a shorter version with pictures.", a: "learner",
+    why: "It starts with students who struggle and asks for a shorter version with pictures to help them.",
+    sense: "A shorter version with pictures sounds like a tool feature, so it is fair to wonder." },
+  { t: "This app has a quiz feature, so I will make a quiz.", a: "tool",
+    why: "It starts with a feature of the app, not with a need your students have.",
+    sense: "Quizzes can help students, so it makes sense to see a learner side here." },
+  { t: "Several students in my class are learning English, so I will ask for key words with simple definitions.", a: "learner",
+    why: "It starts with students who are learning English and asks for what helps them.",
+    sense: "Asking for key words uses a tool, so this one is easy to mix up." },
+  { t: "The AI can make 20 slides, so I will use all 20.", a: "tool",
+    why: "It starts with what the AI can make, not with what students need.",
+    sense: "Slides can help learners, so this feels reasonable at first." },
+  { t: "My students love basketball, so I will set the math problems in a game.", a: "learner",
+    why: "It starts with what your students love and builds the math around it.",
+    sense: "A game is a kind of tool, so it is easy to mix up." },
+  { t: "Everyone else is using this tool.", a: "tool",
+    why: "It starts with what other people do, not with your learners.",
+    sense: "Keeping up with colleagues is a normal worry." }
+];
+
+/* ---------- SORT CARDS: section 5 ---------- */
+const SORT_HUMAN = [
+  { t: "A first draft of a vocabulary list from my own unit.", a: "draft",
+    why: "A first draft from your own unit is a good fit for AI. You still check it.",
+    sense: "Checking is a big part of this one, so you are thinking like a careful teacher." },
+  { t: "Three versions of a reading at different levels.", a: "together",
+    why: "The AI drafts, you check and adjust.",
+    sense: "A first draft is something AI can make, so that choice makes sense." },
+  { t: "Adding examples from my students' community to a lesson.", a: "together",
+    why: "You know the community and the AI does not.",
+    sense: "Examples are text AI can draft, which is why this looks like a draft task." },
+  { t: "A conversation with a student about their own goals.", a: "human",
+    why: "It depends on a relationship.",
+    sense: "AI can suggest questions to ask, so a shared role is easy to picture. The conversation itself is yours." },
+  { t: "Deciding a student's grade, placement, or eligibility.", a: "human",
+    why: "AI never makes these decisions.",
+    sense: "Decisions about students feel big, and wanting help is natural. The decision stays with you." },
+  { t: "Checking facts against my source.", a: "human",
+    why: "This is your professional judgment.",
+    sense: "AI can list facts to check, so sharing this task seems logical. The list is a lead. The check is yours." }
+];
+
+/* ---------- UDL CARDS: section 3.3 (a: "real" or "label") ---------- */
+const UDL_CARDS = [
+  { t: "Students choose how they want to show their learning.", note: "Note: every student completes the same worksheet.", a: "label",
+    why: "The option is named, but everyone does the same task.",
+    sense: "The sentence does name a choice, so it is easy to trust." },
+  { t: "Students may listen to the text read aloud or read it themselves.", a: "real", p: "Representation",
+    why: "What a student does differently is how they take in the text.",
+    sense: "It is short, so it can look like a label. But it names two things a student can really do." },
+  { t: "Students choose a poster, a one-minute recording, or a written paragraph. All are scored with the same four-point checklist.", a: "real", p: "Action and expression",
+    why: "Students pick different ways to show what they know, and the goal and criteria stay the same.",
+    sense: "Long lists can look like labels, but this one names three things a student can do." },
+  { t: "This lesson includes multiple means of engagement.", note: "Note: no details are given.", a: "label",
+    why: "With no details, we cannot say what any student would do differently.",
+    sense: "It sounds official, which is why it is easy to accept." },
+  { t: "Students pick one of three local water questions to investigate, then use the same lab steps.", a: "real", p: "Engagement",
+    why: "Students pick their question, and the goal and lab steps stay the same.",
+    sense: "It names a topic choice and the same lab steps, which is a real choice." },
+  { t: "Students can use a graphic organizer if they want one.", a: "real", p: "a support for Action and expression",
+    why: "A student who chooses the organizer uses it. Others do not. The learning goal is the same.",
+    sense: "“If they want one” can sound loose, but a student really can use it or not." },
+  { t: "The slide deck has captions that students can turn on or off.", a: "real", p: "Representation",
+    why: "Students choose how they take in the information.",
+    sense: "Captions are common, so they can seem like a default. Turning them on or off is a real choice." },
+  { t: "Students will be engaged because the topic is interesting.", a: "label",
+    why: "This is a hope, not an option. No student does anything differently.",
+    sense: "Interest is a good thing to plan for, so it is easy to count it as an option." }
+];
+
+/* ---------- BIG IDEAS ---------- */
+const BIG_IDEAS = [
+  "AI generates likely words. It does not look facts up.",
+  "Ground it, then check it.",
+  "Start with the learner, not the tool.",
+  "Ask what a student actually does differently. A real option beats a label.",
+  "Polished is not proof. Test what you generate, and keep human what matters most."
+];
+
+/* ---------- WEEK AT A GLANCE: edit the order and times here ---------- */
+const WEEK = [
+  { name: "Reading: Teaching with AI, Chapters 7 and 4", lo: 45, hi: 60 },
+  { name: "This lecture", lo: 30, hi: 30, here: true },
+  { name: "Concept check", lo: 20, hi: 20, about: true },
+  { name: "Lab", lo: 40, hi: 50 },
+  { name: "Build", lo: 70, hi: 90 },
+  { name: "Discussion", lo: 20, hi: 25 }
+];
+
+/* ---------- QUIZ: CORRECT:true marks the answer key. It is never shown on screen. ---------- */
+const QUIZ = [
+  { c: "Grounding", sec: 1, q: "What is grounding?", opts: [
+      { t: "Giving the AI your own trusted material and telling it to use only that material.", CORRECT: true },
+      { t: "Asking the AI to double-check its own answer." },
+      { t: "Turning on a safety setting in the AI tool." },
+      { t: "Using the newest AI tool available." }],
+    why: "Grounding means giving the AI your trusted material to work from." },
+  { c: "Grounding", sec: 1, inv: true, q: "You attach your lesson and ask for a quiz “using only the attached lesson.” The quiz still contains a fact that is not in the lesson. What does this show?", opts: [
+      { t: "Grounding makes AI output always correct." },
+      { t: "Grounding lowers made-up content but does not remove it, so you check every item.", CORRECT: true },
+      { t: "The AI tool is broken." },
+      { t: "You attached the wrong file." }],
+    why: "Ground it, then check it." },
+  { c: "Human-centered design", sec: 2, q: "Which one starts with the learner?", opts: [
+      { t: "“This app has a quiz feature, so I will make a quiz.”" },
+      { t: "“The AI can make 20 slides, so I will use all 20.”" },
+      { t: "“Several of my students are learning English, so I will ask for key words with simple definitions.”", CORRECT: true },
+      { t: "“Everyone else is using this tool.”" }],
+    why: "It begins with what the learners need.", inv: true },
+  { c: "UDL", sec: 3, inv: true, q: "A lesson says it offers “multiple means of expression,” but every student submits the same written paragraph. What is this?", opts: [
+      { t: "A real option." },
+      { t: "A label with no option behind it.", CORRECT: true },
+      { t: "Good UDL, because it is named." },
+      { t: "Not related to UDL." }],
+    why: "The name is there, but students do the same thing." },
+  { c: "UDL", sec: 3, inv: true, q: "Which is a real action and expression option?", opts: [
+      { t: "“Students choose how they want to show their learning,” and everyone completes the same worksheet." },
+      { t: "A choice of a poster, a one-minute recording, or a written paragraph, all scored with the same checklist.", CORRECT: true },
+      { t: "“Multiple means of expression are included.”" },
+      { t: "“Students will be motivated because the topic is interesting.”" }],
+    why: "The goal and criteria stay the same, but students have different ways to meet them." },
+  { c: "UDL", sec: 3, inv: true, q: "“Students can listen to the text read aloud or read it themselves.” Which principle is this?", opts: [
+      { t: "Engagement" },
+      { t: "Representation", CORRECT: true },
+      { t: "Action and expression" },
+      { t: "None of them" }],
+    why: "It changes how information is shown." },
+  { c: "UDL", sec: 3, inv: true, q: "The AI's UDL review says your lesson offers “multiple means of engagement.” What is the best next step?", opts: [
+      { t: "Accept it, because the AI reviewed it." },
+      { t: "Find the specific engagement option in your lesson and check what a student actually does differently.", CORRECT: true },
+      { t: "Ask again until the AI says yes." },
+      { t: "Delete the lesson." }],
+    why: "AI can mislabel its own work, so you verify." },
+  { c: "UDL", sec: 3, q: "Which question best tests whether a UDL choice is real?", opts: [
+      { t: "Does the lesson use the word UDL?" },
+      { t: "What does a student actually do differently?", CORRECT: true },
+      { t: "Is it on a slide?" },
+      { t: "Did the AI say it was UDL?" }],
+    why: "A real option changes what a student can do." },
+  { c: "Checking output", sec: 4, inv: true, q: "An AI-generated slide deck looks polished. What is the best next move?", opts: [
+      { t: "Use it as it is." },
+      { t: "Read every slide and note for errors.", CORRECT: true },
+      { t: "Ask the AI whether it is accurate." },
+      { t: "Trust it because the formatting is professional." }],
+    why: "Polished is not proof." },
+  { c: "Checking output", sec: 4, inv: true, q: "The AI makes you an HTML file. Before you share it with students, what should you do?", opts: [
+      { t: "Open it, click every button, type in every box, and see what it does.", CORRECT: true },
+      { t: "Assume it is safe." },
+      { t: "Send it right away." },
+      { t: "Wait for a student to find a problem." }],
+    why: "A file is code, so you test it." },
+  { c: "Keep it human", sec: 5, q: "Which task is the best one to keep human?", opts: [
+      { t: "A first draft of a vocabulary list." },
+      { t: "A conversation with a student about their own goals.", CORRECT: true },
+      { t: "Making three reading levels of a passage." },
+      { t: "Formatting a handout." }],
+    why: "It depends on a relationship." },
+  { c: "Privacy", sec: 6, q: "Which belongs in an AI chat?", opts: [
+      { t: "A student's name and IEP goals." },
+      { t: "A description such as “a class with a mix of reading levels and a few English learners.”", CORRECT: true },
+      { t: "A student's ID number." },
+      { t: "A student's evaluation results." }],
+    why: "Use general or invented information only." }
+];
+const CONCEPTS = ["Grounding", "Human-centered design", "UDL", "Checking output", "Keep it human", "Privacy"];
+
+/* =====================================================================
+   ENGINE: logic starts here. You should not need to edit below this line.
+   ===================================================================== */
+const $ = (s, r) => (r || document).querySelector(s);
+const root = document.documentElement;
+const main = $("#main"), live = $("#live");
+let TOK = 0, uidN = 0, timers = [];
+const uid = p => p + (++uidN);
+
+function h(tag, attrs) {
+  const e = document.createElement(tag);
+  const a = attrs || {};
+  for (const k in a) {
+    const v = a[k];
+    if (v == null || v === false) continue;
+    if (k === "class") e.className = v;
+    else if (k.slice(0, 2) === "on") e.addEventListener(k.slice(2), v);
+    else e.setAttribute(k, v === true ? "" : v);
+  }
+  for (let i = 2; i < arguments.length; i++) {
+    const c = arguments[i];
+    (Array.isArray(c) ? c : [c]).forEach(x => { if (x != null && x !== false) e.append(x.nodeType ? x : document.createTextNode(x)); });
+  }
+  return e;
+}
+function svgEl(inner, vb) { const d = document.createElement("span"); d.innerHTML = '<svg class="i" aria-hidden="true" focusable="false" viewBox="' + (vb || "0 0 24 24") + '" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">' + inner + "</svg>"; return d.firstChild; }
+const ICONS = {
+  check: '<path d="M4 12.5l5 5L20 6.5"/>',
+  cross: '<path d="M6 6l12 12M18 6L6 18"/>',
+  mag: '<circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/>',
+  flask: '<path d="M9 3h6M10 3v6L4.5 19a1.5 1.5 0 001.3 2.2h12.4a1.5 1.5 0 001.3-2.2L14 9V3"/>',
+  doc: '<path d="M6 3h8l4 4v14H6z"/><path d="M9 12h6M9 16h6"/>',
+  bot: '<rect x="4" y="8" width="16" height="11" rx="3"/><path d="M12 4v4M9 13h.01M15 13h.01"/>',
+  star: '<path d="M12 3l2.7 5.6 6.1.8-4.5 4.2 1.1 6-5.4-3-5.4 3 1.1-6L3.2 9.4l6.1-.8z"/>'
+};
+const icon = k => svgEl(ICONS[k]);
+const announce = m => { live.textContent = ""; setTimeout(() => { live.textContent = m; }, 60); };
+const RM = () => root.classList.contains("rm");
+const later = (fn, ms) => { const my = TOK; const id = setTimeout(() => { if (my === TOK) fn(); }, ms); timers.push(id); return id; };
+function shuffle(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+
+/* ---------- shared components ---------- */
+const badge = () => h("span", { class: "badge" }, icon("flask"), "Example (invented)");
+function plain(items) {
+  return h("aside", { class: "plain", "aria-label": "In plain words" },
+    h("p", { class: "plain-h" }, "In plain words"),
+    items.map(([t, d]) => h("p", {}, t ? h("strong", {}, t + ": ") : null, d)));
+}
+const VK = { good: ["Good", "check", "v-good"], err: ["Error", "cross", "v-err"], chk: ["Check this", "mag", "v-chk"] };
+function verdict(kind, text, lead) {
+  const k = VK[kind];
+  return h("div", { class: "verdict " + k[2] },
+    h("p", { class: "v-h" }, icon(k[1]), h("span", {}, k[0])),
+    lead ? h("p", {}, lead + " " + text) : h("p", {}, text));
+}
+function docBox(title, kids) { return h("figure", { class: "doc" }, h("figcaption", {}, icon("doc"), title), h("div", { class: "doc-body" }, kids)); }
+function chatBox(label) {
+  const body = h("div", { class: "chat-body" });
+  return { body, el: h("div", { class: "chat", role: "group", "aria-label": label || "AI output" },
+    h("div", { class: "chat-head" }, icon("bot"), label || "AI output (a draft to check)"), body) };
+}
+function typeWords(el, text, speed) {
+  if (RM()) { el.textContent = text; return Promise.resolve(); }
+  const words = text.split(" "), my = TOK; let k = 0; el.textContent = "";
+  return new Promise(res => {
+    (function step() {
+      if (my !== TOK) return res();
+      if (k >= words.length) { el.classList.remove("cursor"); return res(); }
+      el.classList.add("cursor");
+      el.textContent += (k ? " " : "") + words[k++];
+      const id = setTimeout(step, speed || 60); timers.push(id);
+    })();
+  });
+}
+function bubble(text, typed) {
+  const vis = h("span", { "aria-hidden": "true" });
+  const b = h("div", { class: "bubble" }, vis, h("span", { class: "sr" }, text));
+  b.run = () => typed === false ? (vis.textContent = text, Promise.resolve()) : typeWords(vis, text);
+  return b;
+}
+function stagger(nodes, step, startDelay) {
+  nodes.forEach((n, i) => later(() => n.classList.add("show"), RM() ? 0 : (startDelay || 0) + i * step));
+}
+function fillSlot(slot, node) { slot.replaceChildren(node); }
+function selectNode(node) { try { const r = document.createRange(); r.selectNodeContents(node); const s = getSelection(); s.removeAllRanges(); s.addRange(r); } catch (e) { /* ignore */ } }
+
+function copyBlock(text, label) {
+  const box = h("div", { class: "prompt", tabindex: "0", role: "textbox", "aria-readonly": "true", "aria-label": label || "Prompt to copy" }, text);
+  const status = h("p", { class: "small muted", role: "status" });
+  const btn = h("button", { class: "btn", type: "button" }, "Copy prompt");
+  btn.addEventListener("click", async () => {
+    let ok = false;
+    try { if (navigator.clipboard && navigator.clipboard.writeText) { await navigator.clipboard.writeText(text); ok = true; } } catch (e) { ok = false; }
+    if (!ok) {
+      try {
+        const ta = h("textarea", { "aria-hidden": "true", tabindex: "-1", style: "position:fixed;top:0;left:0;opacity:0;width:1px;height:1px" });
+        ta.value = text; document.body.append(ta); ta.select(); ok = document.execCommand("copy"); ta.remove();
+      } catch (e) { ok = false; }
+    }
+    if (ok) { btn.textContent = "Copied"; status.textContent = "Copied. Now paste it into your AI chat."; setTimeout(() => { btn.textContent = "Copy prompt"; }, 2500); }
+    else { selectNode(box); status.textContent = "Your browser blocked copying. The prompt is selected. Press Ctrl+C (Command+C on a Mac) to copy it."; }
+    btn.focus();
+  });
+  return h("div", { class: "copyrow" }, box, h("div", { class: "row" }, btn, status));
+}
+
+/* generic click-to-sort. cards: [{t,a,why,sense}], opts: [[value,label]] */
+function sortActivity(cards, opts, closeText, onClose) {
+  let done = 0;
+  const closeSlot = h("div", { class: "slot", role: "status" });
+  const list = h("ol", { class: "sortlist" }, cards.map((c, i) => {
+    const slot = h("div", { class: "slot", role: "status" });
+    const gid = uid("g");
+    const btns = opts.map(([v, lab]) => h("button", { class: "choice", type: "button", "aria-pressed": "false" }, lab));
+    btns.forEach((b, bi) => b.addEventListener("click", () => {
+      const val = opts[bi][0], right = val === c.a;
+      btns.forEach(x => { x.disabled = true; });
+      b.setAttribute("aria-pressed", "true");
+      const rightLab = opts.find(o => o[0] === c.a)[1];
+      fillSlot(slot, right ? verdict("good", c.why, "That is right: " + rightLab + ".")
+                           : verdict("chk", "This one is " + rightLab + ". " + c.why, c.sense));
+      done++;
+      if (done === cards.length) { fillSlot(closeSlot, h("div", { class: "verdict v-good" }, h("p", { class: "v-h" }, icon("check"), h("span", {}, "All done")), h("p", {}, closeText))); if (onClose) onClose(); }
+    }));
+    return h("li", { class: "sortcard" }, h("p", { id: gid }, i + 1 + ". ", c.t), h("div", { class: "choices", role: "group", "aria-labelledby": gid }, btns), slot);
+  }));
+  return h("div", { class: "stack" }, list, closeSlot);
+}
+
+/* ---------- screens ---------- */
+const SCREENS = [];
+const addScreen = (sec, title, render) => SCREENS.push({ sec, title, render });
+
+/* Section 0 */
+addScreen(0, "Welcome", box => {
+  const w = T.welcome;
+  box.append(h("p", { class: "big-quote", style: "color:var(--primary-ink)" }, w.title));
+  box.append(h("p", { class: "verdict v-good", style: "margin:.6rem 0;font-weight:700;display:flex;gap:.5rem;align-items:flex-start" }, icon("check"), w.banner));
+  box.append(h("h3", {}, "What you will be able to do"));
+  box.append(h("p", { class: "muted" }, w.intro));
+  const ul = h("ul", { class: "checklist" }, OUTCOMES.map((o, i) =>
+    h("li", { style: "--d:" + (0.5 + i * 0.9) + "s" }, h("span", { class: "ck" }, icon("check")), h("span", {}, o))));
+  box.append(ul);
+  box.append(h("div", { style: "margin-top:1rem" }, plain(w.words)));
+  box.append(h("h3", {}, "A quick tour of the controls"));
+  box.append(h("ul", {}, TOUR.map(([a, b]) => h("li", {}, h("strong", {}, a + ": "), b))));
+  box.append(h("p", { style: "margin-top:.8rem;font-weight:700" }, w.reassure));
+  const go = h("button", { class: "btn warm", type: "button", style: "margin-top:1rem" }, w.startBtn + " →");
+  go.addEventListener("click", () => goto(1));
+  box.append(go);
+  later(() => go.classList.add("nudge"), 5000);
+});
+
+/* Section 1 */
+addScreen(1, "AI can sound sure and still be wrong", box => {
+  const s = T.s1;
+  box.append(h("p", { class: "big-quote" }, s.hookHead));
+  const c = chatBox("AI output (a draft to check)");
+  const b = bubble(s.hookOutput);
+  c.body.append(h("div", { style: "margin-bottom:.5rem" }, badge()), b);
+  box.append(h("div", { style: "margin-top:1rem" }, c.el));
+  const after = h("div", { class: "stack", style: "margin-top:1rem" });
+  box.append(after);
+  b.run().then(() => { after.append(h("p", {}, s.hookAfter), plain(s.hookWords)); });
+});
+
+addScreen(1, "How AI writes", box => {
+  const s = T.s1;
+  box.append(h("p", { class: "lead" }, s.howText));
+  box.append(h("div", { style: "margin-top:.8rem" }, plain(s.howWords)));
+  const phone = h("div", { style: "max-width:22rem;margin:1.2rem auto;border:3px solid var(--text);border-radius:26px;padding:1rem;background:var(--surface2)" });
+  const typed = h("p", { class: "big-quote", style: "min-height:2.6rem" }, h("span", {}, s.autoStart));
+  const sugg = h("div", { class: "choices", role: "group", "aria-label": "Likely next words" });
+  const chips = s.autoChoices.map(w => {
+    const bt = h("button", { class: "choice node", type: "button" }, w);
+    bt.addEventListener("click", () => { typed.firstChild.textContent = s.autoStart.replace("...", w); announce("The sentence now reads: " + s.autoStart.replace("...", w)); });
+    return bt;
+  });
+  sugg.append(chips);
+  phone.append(h("div", { style: "margin-bottom:.5rem" }, badge()), typed, sugg);
+  box.append(phone);
+  box.append(h("p", { class: "note", style: "text-align:center" }, s.autoHint));
+  stagger(chips, 600, 500);
+  box.append(h("p", { class: "lead", style: "margin-top:1rem;font-weight:700" }, s.autoCaption));
+});
+
+addScreen(1, "Find the made-up parts", box => {
+  const s = T.s1;
+  box.append(h("p", {}, s.findIntro), h("div", { style: "margin:.6rem 0" }, badge()));
+  let opened = 0;
+  const sum = h("div", { class: "slot", role: "status" });
+  const ul = h("ul", { class: "lines" }, s.lines.map((ln, i) => {
+    const slot = h("div", { class: "slot", role: "status" });
+    const bt = h("button", { class: "line", type: "button", "aria-expanded": "false" }, h("strong", {}, (i + 1) + ". "), ln.text);
+    bt.addEventListener("click", () => {
+      if (bt.getAttribute("aria-expanded") === "true") return;
+      bt.setAttribute("aria-expanded", "true");
+      bt.classList.add("sw-" + ln.kind);
+      requestAnimationFrame(() => bt.classList.add("sw"));
+      fillSlot(slot, verdict(ln.kind, ln.note));
+      if (++opened === s.lines.length) fillSlot(sum, h("div", { class: "verdict v-good" }, h("p", { class: "v-h" }, icon("star"), h("span", {}, "All four checked")), h("p", {}, s.findSummary)));
+    });
+    return h("li", { class: "in", style: "animation-delay:" + (RM() ? 0 : i * 0.15) + "s" }, bt, slot);
+  }));
+  box.append(ul, sum);
+});
+
+addScreen(1, "What is grounding?", box => {
+  const s = T.s1;
+  box.append(plain(s.groundWords));
+  const pane = h("div", { class: "pane", style: "margin-top:1rem" });
+  const bNo = h("button", { type: "button", "aria-pressed": "true" }, s.toggleNo);
+  const bYes = h("button", { type: "button", "aria-pressed": "false" }, s.toggleYes);
+  const seg = h("div", { class: "seg", role: "group", "aria-label": "Compare the output" }, bNo, bYes);
+  box.append(h("div", { style: "margin-top:1rem" }, seg), pane);
+  const prm = h("div", { style: "margin-top:1rem" }, h("h3", {}, "The prompt that made the difference"), copyBlock(s.groundPrompt, "Grounding prompt"));
+  function show(yes) {
+    TOK++; // cancel previous typing, then re-register timers safely
+    bNo.setAttribute("aria-pressed", String(!yes)); bYes.setAttribute("aria-pressed", String(yes));
+    pane.replaceChildren(); pane.className = "pane enter";
+    const c = chatBox(yes ? "AI output, grounded on your notes" : "AI output, no source");
+    const bb = bubble(yes ? s.groundedOutput : s.hookOutput);
+    c.body.append(h("div", { style: "margin-bottom:.5rem" }, badge()), bb);
+    if (yes) pane.append(h("div", { class: "grid2" }, h("div", {}, docBox(s.notesTitle, [h("div", { style: "margin-bottom:.4rem" }, badge()), h("p", {}, s.notes)])), c.el), h("p", { class: "lead", style: "margin-top:.8rem;font-weight:700" }, s.groundCaption));
+    else pane.append(c.el, h("p", { class: "note", style: "margin-top:.6rem" }, "This is the same output from the first screen. Parts of it are wrong or made up."));
+    bb.run();
+    announce("Showing: " + (yes ? s.toggleYes : s.toggleNo));
+  }
+  bNo.addEventListener("click", () => show(false));
+  bYes.addEventListener("click", () => show(true));
+  show(false);
+  box.append(prm);
+});
+
+addScreen(1, "Grounding helps, but it does not fix everything", box => {
+  const s = T.s1;
+  box.append(h("p", {}, s.limitIntro), h("div", { style: "margin:.6rem 0" }, badge()));
+  box.append(docBox(s.notesTitle + " (attached)", [h("p", {}, s.notes)]));
+  const c = chatBox("AI output: quiz “using only the attached lesson”");
+  const flagSlot = h("div", { class: "slot", role: "status" });
+  const lines = s.quiz.map((q, i) => h("div", { class: "line", style: "margin-bottom:.4rem;opacity:0;transition:opacity .5s" }, q));
+  c.body.append(lines);
+  box.append(h("div", { style: "margin-top:1rem" }, c.el), flagSlot);
+  lines.forEach((l, i) => later(() => { l.style.opacity = "1"; }, RM() ? 0 : 400 + i * 700));
+  later(() => {
+    const f = lines[s.quizFlagIndex]; f.classList.add("sw-chk"); requestAnimationFrame(() => f.classList.add("sw"));
+    fillSlot(flagSlot, verdict("chk", s.quizFlag));
+  }, RM() ? 0 : 400 + lines.length * 700 + 300);
+  box.append(h("p", { class: "big-quote", style: "margin-top:1.2rem;color:var(--primary-ink)" }, s.limitMessage));
+  box.append(h("div", { class: "plain", style: "margin-top:1rem;border-left-color:var(--accent)" }, h("p", { class: "plain-h", style: "color:var(--accent)" }, "Coming up in the lab"), h("p", {}, s.bridge)));
+});
+
+/* Section 2 */
+addScreen(2, "Start with your learners", box => {
+  const s = T.s2;
+  box.append(plain(s.plain), h("p", { style: "margin:1rem 0 .6rem" }, s.intro), h("div", { style: "margin-bottom:.8rem" }, badge()));
+  box.append(sortActivity(SORT_LEARNER, [["learner", s.optA], ["tool", s.optB]], s.close));
+});
+
+/* Section 3 */
+addScreen(3, "Why UDL", box => {
+  const s = T.s3;
+  box.append(plain(s.udlWords), h("p", { style: "margin-top:1rem" }, s.whyIntro));
+  box.append(h("p", { class: "note", style: "margin:.4rem 0" }, s.lessonLine));
+  const holder = h("div", { class: "stack", style: "margin-top:1rem" });
+  const next = h("button", { class: "btn", type: "button" }, "Meet the first learner");
+  let shown = 0;
+  box.append(holder, h("div", { style: "margin-top:1rem" }, next), h("p", { class: "note", style: "margin-top:.8rem" }, s.disclaim));
+  next.addEventListener("click", () => {
+    const L = s.learners[shown];
+    const scene = h("div", { class: "scene" }, h("div", { class: "dot", "aria-hidden": "true" }, String(shown + 1)), h("div", { class: "wall", "aria-hidden": "true" }), h("div", { class: "flagp", "aria-hidden": "true" }, "⚑"));
+    const stateT = h("div", { class: "slot", role: "status" });
+    const step = h("button", { class: "btn alt", type: "button" }, "Try the lesson");
+    const card = h("div", { class: "learner" },
+      h("div", { class: "row" }, badge(), h("strong", {}, L.name)), h("p", {}, L.trait), scene, stateT, h("div", { style: "margin-top:.6rem" }, step));
+    holder.append(card);
+    const dot = $(".dot", scene), wall = $(".wall", scene);
+    let st = 0;
+    step.addEventListener("click", () => {
+      const W = scene.clientWidth;
+      if (st === 0) {
+        st = 1; dot.style.setProperty("--x", Math.max(0, W * 0.62 - 48) + "px");
+        later(() => wall.classList.add("hit"), RM() ? 0 : 900);
+        fillSlot(stateT, verdict("err", L.wall, "The lesson hits a wall."));
+        step.textContent = "Add options";
+      } else if (st === 1) {
+        st = 2; scene.classList.add("opened"); wall.classList.remove("hit");
+        dot.style.setProperty("--x", Math.max(0, W - 56) + "px");
+        fillSlot(stateT, h("div", { class: "verdict v-good" }, h("p", { class: "v-h" }, icon("check"), h("span", {}, "A path opens")),
+          h("p", {}, "With options built in from the start:"), h("ul", { class: "optlist" }, L.options.map(o => h("li", {}, o)))));
+        step.remove();
+      }
+    });
+    shown++;
+    if (shown < s.learners.length) next.textContent = "Meet the next learner"; else next.remove();
+    step.focus();
+  });
+  later(() => next.classList.add("nudge"), 4000);
+});
+
+addScreen(3, "The three principles", box => {
+  const s = T.s3;
+  box.append(plain(s.flipPlain), h("p", { style: "margin-top:.8rem" }, s.flipIntro), h("div", { style: "margin:.4rem 0 .8rem" }, badge()));
+  const grid = h("div", { class: "grid3" }, s.principles.map(p => {
+    const fid = uid("f");
+    const flipBtn = h("button", { class: "btn alt", type: "button", "aria-describedby": fid }, "Flip to see an example");
+    const backBtn = h("button", { class: "btn alt", type: "button" }, "Flip back");
+    const front = h("div", { class: "face front" }, h("div", {}, h("h3", { id: fid }, p.name), h("p", { class: "why" }, p.q)), flipBtn);
+    const back = h("div", { class: "face back", inert: "" }, h("div", {}, h("p", { style: "font-weight:800" }, p.name + ": " + p.plain), h("div", { style: "margin:.4rem 0" }, badge()), h("p", { class: "small" }, p.ex)), backBtn);
+    const card = h("div", { class: "flip" }, h("div", { class: "inner" }, front, back));
+    const set = f => {
+      card.classList.toggle("flipped", f);
+      if (f) { front.setAttribute("inert", ""); back.removeAttribute("inert"); backBtn.focus(); } else { back.setAttribute("inert", ""); front.removeAttribute("inert"); flipBtn.focus(); }
+      announce(f ? p.name + ": example shown." : p.name + ": question shown.");
+    };
+    flipBtn.addEventListener("click", () => set(true)); backBtn.addEventListener("click", () => set(false));
+    return card;
+  }));
+  box.append(grid, h("p", { class: "note", style: "margin-top:.8rem" }, s.flipNote + " " + s.cast));
+});
+
+addScreen(3, "Real option or just a label?", box => {
+  const s = T.s3;
+  box.append(plain(s.realWords), h("p", { class: "lead", style: "margin-top:.8rem;font-weight:700" }, s.realTest));
+  const counter = h("span", { class: "counter", role: "status" });
+  const area = h("div", { style: "margin-top:1rem" });
+  let idx = 0, right = 0;
+  const upd = () => { counter.textContent = "Practice: " + right + " of " + idx + " (" + s.practice + ")"; };
+  upd();
+  box.append(h("div", { class: "row" }, counter, badge()), area);
+  function card() {
+    if (idx >= UDL_CARDS.length) {
+      area.replaceChildren(h("div", { class: "verdict v-good" }, h("p", { class: "v-h" }, icon("star"), h("span", {}, "All eight done")),
+        h("p", {}, "You looked at " + UDL_CARDS.length + " cards. This count is " + right + " of " + UDL_CARDS.length + ", just for practice."), h("p", { style: "font-weight:700" }, s.realHelper)));
+      return;
+    }
+    const c = UDL_CARDS[idx];
+    const slot = h("div", { class: "slot", role: "status" });
+    const bR = h("button", { class: "choice", type: "button", "aria-pressed": "false" }, "Real option");
+    const bL = h("button", { class: "choice", type: "button", "aria-pressed": "false" }, "Just a label");
+    const nx = h("button", { class: "btn", type: "button", style: "margin-top:.7rem" }, idx === UDL_CARDS.length - 1 ? "Finish" : "Next card");
+    nx.hidden = true;
+    const wrap = h("div", { class: "sortcard pane enter" },
+      h("p", { class: "note" }, "Card " + (idx + 1) + " of " + UDL_CARDS.length),
+      h("p", { class: "lead", style: "font-weight:700" }, "“" + c.t + "”"),
+      c.note ? h("p", { class: "note" }, c.note) : null,
+      h("div", { class: "choices", role: "group", "aria-label": "Your choice", style: "margin-top:.6rem" }, bR, bL), slot, nx);
+    [[bR, "real"], [bL, "label"]].forEach(([b, v]) => b.addEventListener("click", () => {
+      bR.disabled = bL.disabled = true; b.setAttribute("aria-pressed", "true");
+      const ok = v === c.a; if (ok) right++; idx++; upd();
+      const name = c.a === "real" ? "a real option (" + c.p + ")" : "just a label";
+      fillSlot(slot, ok ? verdict("good", c.why, "That is right. This is " + name + ".") : verdict("chk", "This is " + name + ". " + c.why, c.sense));
+      nx.hidden = false; nx.focus();
+    }));
+    nx.addEventListener("click", card);
+    area.replaceChildren(wrap);
+  }
+  card();
+  box.append(h("p", { class: "note", style: "margin-top:1rem" }, s.realHelper));
+});
+
+addScreen(3, "Do not take the AI's word for it", box => {
+  const s = T.s3;
+  box.append(h("p", {}, s.reviewIntro), h("div", { style: "margin:.8rem 0" }, copyBlock(s.udlPrompt, "UDL review prompt")));
+  box.append(docBox(s.excerptTitle, [h("div", { style: "margin-bottom:.4rem" }, badge()), h("p", {}, s.excerpt)]));
+  const c = chatBox(s.reviewLabel);
+  let n = 0;
+  const sum = h("div", { class: "slot", role: "status" });
+  const ul = h("ul", { class: "lines" }, s.claims.map((cl, i) => {
+    const slot = h("div", { class: "slot", role: "status" });
+    const bt = h("button", { class: "line", type: "button", "aria-expanded": "false" }, h("strong", {}, "Claim " + (i + 1) + ". "), cl.text);
+    bt.addEventListener("click", () => {
+      if (bt.getAttribute("aria-expanded") === "true") return;
+      bt.setAttribute("aria-expanded", "true"); bt.classList.add("sw-" + cl.kind); requestAnimationFrame(() => bt.classList.add("sw"));
+      fillSlot(slot, verdict(cl.kind, cl.note));
+      if (++n === s.claims.length) fillSlot(sum, h("div", { class: "verdict v-good" }, h("p", { class: "v-h" }, icon("star"), h("span", {}, "What to remember")), h("p", {}, s.reviewTeach)));
+    });
+    return h("li", {}, bt, slot);
+  }));
+  c.body.append(h("div", { style: "margin-bottom:.6rem" }, badge()), ul);
+  box.append(h("p", { style: "margin:1rem 0 .4rem;font-weight:700" }, s.reviewTask), c.el, sum);
+});
+
+addScreen(3, "Fix a label", box => {
+  const s = T.s3;
+  box.append(h("div", { style: "margin-bottom:.6rem" }, badge()), docBox("Lesson line", [h("p", {}, s.fixStart)]));
+  box.append(h("p", { class: "lead", style: "margin:1rem 0 .6rem;font-weight:700" }, s.fixAsk));
+  const slot = h("div", { class: "slot", role: "status" });
+  const btns = s.fixes.map((f, i) => h("button", { class: "choice", type: "button", style: "text-align:left;width:100%;font-size:1rem", "aria-pressed": "false" }, "(" + "abc"[i] + ") " + f.t));
+  btns.forEach((b, i) => b.addEventListener("click", () => {
+    const f = s.fixes[i];
+    b.setAttribute("aria-pressed", "true");
+    if (f.ok) btns.forEach(x => { x.disabled = true; });
+    fillSlot(slot, f.ok ? verdict("good", f.why, f.sense) : verdict("chk", f.why + " Try another one.", f.sense));
+  }));
+  box.append(h("div", { class: "stack", role: "group", "aria-label": "Possible fixes" }, btns), slot);
+});
+
+addScreen(3, "Ask this every time", box => {
+  const s = T.s3;
+  const words = s.askQuestion.split(" ");
+  box.append(h("p", { class: "big-quote bigwords", "aria-label": s.askQuestion }, words.map((w, i) => h("span", { "aria-hidden": "true", style: "--d:" + (i * 0.12) + "s" }, w))));
+  box.append(h("div", { style: "margin-top:1rem" }, plain(s.askWords)));
+  box.append(h("p", { style: "margin:1rem 0 .5rem" }, s.chipsIntro));
+  const list = h("ul", { class: "optlist", "aria-live": "polite" });
+  const empty = h("p", { class: "note" }, s.listEmpty);
+  const chosen = new Set();
+  const chips = s.chips.map(c => {
+    const b = h("button", { class: "choice", type: "button", "aria-pressed": "false" }, c);
+    b.addEventListener("click", () => {
+      const on = !chosen.has(c); on ? chosen.add(c) : chosen.delete(c);
+      b.setAttribute("aria-pressed", String(on));
+      list.replaceChildren(...[...chosen].map(x => h("li", {}, x)));
+      empty.hidden = chosen.size > 0;
+      announce(c + (on ? " added to your list." : " removed from your list."));
+    });
+    return b;
+  });
+  box.append(h("div", { class: "choices", role: "group", "aria-label": "Starting ideas" }, chips),
+    h("div", { class: "doc", style: "margin-top:.8rem;padding:.6rem .9rem" }, h("p", { style: "font-weight:800" }, "Your list"), empty, list));
+  box.append(h("div", { class: "verdict v-chk", style: "margin-top:1rem" }, h("p", { class: "v-h" }, icon("mag"), h("span", {}, "Check this")), h("p", {}, s.privacyNote)));
+  box.append(h("p", { style: "margin-top:1rem" }, h("a", { href: "https://udlguidelines.cast.org", target: "_blank", rel: "noopener noreferrer", style: "color:var(--primary-ink);font-weight:700" }, s.learnMore, " (opens in a new tab)")));
+  box.append(h("p", { class: "note" }, s.cast + " " + s.learnMoreNote));
+});
+
+/* Section 4 */
+addScreen(4, "Polished is not proof", box => {
+  const s = T.s4;
+  box.append(plain(s.polishWords), h("p", { style: "margin:.8rem 0" }, s.polishText), badge());
+  let k = 0;
+  const sl = s.slides;
+  const view = h("div", { class: "slide pane enter", role: "group", "aria-roledescription": "slide" });
+  const label = h("span", { class: "small", "aria-live": "polite" });
+  const prev = h("button", { class: "tool", type: "button" }, "← Previous slide"), nxt = h("button", { class: "tool", type: "button" }, "Next slide →");
+  function draw() {
+    const x = sl[k];
+    view.replaceChildren(h("p", { class: "sn" }, "Slide " + x.n), h("h3", {}, x.h), h("ul", {}, x.bullets.map(b => h("li", {}, b))));
+    view.className = "slide pane" + (RM() ? "" : " enter"); void view.offsetWidth;
+    label.textContent = "Slide " + (k + 1) + " of " + sl.length + " shown";
+    prev.disabled = k === 0; nxt.disabled = k === sl.length - 1;
+  }
+  prev.addEventListener("click", () => { k--; draw(); }); nxt.addEventListener("click", () => { k++; draw(); });
+  draw();
+  box.append(h("div", { class: "slidebox", style: "margin-top:.6rem" }, view, h("div", { class: "slidebar" }, prev, label, nxt)));
+  box.append(h("p", { class: "lead", style: "margin:1rem 0 .5rem;font-weight:700" }, s.polishAsk));
+  const slot = h("div", { class: "slot", role: "status" });
+  const a = h("button", { class: "cmpcard", type: "button" }, s.cmpA), b = h("button", { class: "cmpcard", type: "button" }, s.cmpB);
+  const none = h("button", { class: "choice", type: "button" }, s.polishNone);
+  [a, b].forEach(x => x.addEventListener("click", () => fillSlot(slot, verdict("good", s.polishRight))));
+  none.addEventListener("click", () => fillSlot(slot, verdict("chk", s.polishWrong)));
+  box.append(h("div", { class: "grid2" }, a, b), h("div", { style: "margin-top:.6rem" }, none), slot);
+  box.append(h("p", { class: "big-quote", style: "margin-top:1rem;color:var(--primary-ink)" }, s.polishSay));
+});
+
+addScreen(4, "The fact-check habit", box => {
+  const s = T.s4;
+  const cards = s.habitSteps.map((st, i) => h("div", { class: "stepc" }, h("h3", {}, h("span", { class: "num" }, String(i + 1)), st.h), h("p", {}, st.t)));
+  box.append(h("div", { class: "steps3" }, cards));
+  const replay = h("button", { class: "btn alt", type: "button", style: "margin-top:.8rem" }, "Replay");
+  const play = () => { cards.forEach(c => c.classList.remove("show")); stagger(cards, 900, 300); };
+  replay.addEventListener("click", play); box.append(replay); play();
+  box.append(h("h3", {}, "A prompt to copy"), copyBlock(s.factPrompt, "Fact-check prompt"));
+  box.append(h("div", { class: "stack", style: "margin-top:1rem" },
+    h("p", { class: "lead", style: "font-weight:700" }, s.factTeach),
+    h("div", { class: "verdict v-chk" }, h("p", { class: "v-h" }, icon("mag"), h("span", {}, "Check this")), h("p", {}, s.factWarn))));
+});
+
+addScreen(4, "A file is code", box => {
+  const s = T.s4;
+  box.append(plain(s.codeWords), h("p", { style: "margin:.8rem 0" }, s.codeText));
+  const nodes = [];
+  const path = h("div", { class: "path", role: "list", "aria-label": "From request to file" });
+  s.path.forEach((p, i) => {
+    const n = h("div", { class: "node", role: "listitem" }, h("span", { class: "num" }, String(i + 1)), p); nodes.push(n); path.append(n);
+    if (i < s.path.length - 1) { const ar = h("span", { class: "arrow", "aria-hidden": "true" }, "→"); nodes.push(ar); path.append(ar); }
+  });
+  const replay = h("button", { class: "btn alt", type: "button", style: "margin-top:.8rem" }, "Replay");
+  const play = () => { nodes.forEach(n => n.classList.remove("show")); stagger(nodes, 600, 200); };
+  replay.addEventListener("click", play);
+  box.append(path, replay); play();
+  box.append(h("h3", {}, s.testHead), h("p", { class: "note" }, "Click each item as you read it."));
+  const count = h("p", { class: "small", role: "status" });
+  const done = new Set();
+  box.append(h("ul", { class: "lines" }, s.tests.map((t, i) => {
+    const b = h("button", { class: "tick", type: "button", "aria-pressed": "false" }, h("span", { class: "box" }, icon("check")), t);
+    b.addEventListener("click", () => {
+      const on = b.getAttribute("aria-pressed") !== "true"; b.setAttribute("aria-pressed", String(on)); on ? done.add(i) : done.delete(i);
+      count.textContent = done.size + " of " + s.tests.length + " checked" + (done.size === s.tests.length ? ". That is the full test list." : ".");
+    });
+    return h("li", {}, b);
+  })), count);
+});
+
+addScreen(4, "The habit", box => {
+  const s = T.s4;
+  const items = s.habitWords.map((w, i) => h("li", { class: i === 4 ? "last" : "" }, h("span", { class: "num", style: "margin-right:.6rem" }, String(i + 1)), w));
+  box.append(h("ol", { class: "words5", style: "list-style:none" }, items));
+  stagger(items, 800, 200);
+  const mk = h("p", { class: "lead", style: "margin-top:1rem;opacity:0;transition:opacity .6s" }, s.makeYours);
+  box.append(mk); later(() => { mk.style.opacity = "1"; }, RM() ? 0 : 200 + 5 * 800);
+});
+
+/* Section 5 */
+addScreen(5, "What to keep human", box => {
+  const s = T.s5;
+  box.append(h("p", { style: "margin-bottom:.6rem" }, s.intro), h("div", { style: "margin-bottom:.8rem" }, badge()));
+  box.append(sortActivity(SORT_HUMAN, s.opts, "Nice sorting. Drafting is quick. Judgment and relationships take you."));
+});
+
+addScreen(5, "Good reasons and weak reasons", box => {
+  const s = T.s5;
+  box.append(h("div", { style: "margin-bottom:.8rem" }, badge()));
+  box.append(h("div", { class: "grid2" },
+    h("div", { class: "verdict v-chk" }, h("p", { class: "v-h" }, icon("mag"), h("span", {}, "Check this: " + s.weakHead)), h("p", {}, "“" + s.weak + "”")),
+    h("div", { class: "stack" }, h("p", { class: "v-h", style: "color:var(--good)" }, icon("check"), "Good: " + s.strongHead), s.strong.map(t => h("div", { class: "verdict v-good" }, h("p", {}, "“" + t + "”"))))));
+  box.append(h("p", { class: "big-quote", style: "margin-top:1.2rem;color:var(--primary-ink)" }, s.reasonTeach), h("p", { style: "margin-top:.8rem" }, s.discuss));
+});
+
+/* Section 6 */
+addScreen(6, "Privacy", box => {
+  const s = T.s6;
+  box.append(h("div", { class: "verdict v-chk", style: "border-width:3px;padding:1rem 1.2rem" },
+    h("p", { class: "v-h" }, icon("mag"), h("span", {}, "Check this")), h("p", { class: "lead" }, s.card)));
+  box.append(h("p", { style: "margin-top:1rem;font-weight:700" }, s.extra));
+});
+
+/* Section 7 */
+addScreen(7, "Big ideas", box => {
+  const items = BIG_IDEAS.map((t, i) => h("li", {}, h("span", { class: "num" }, String(i + 1)), t));
+  box.append(h("ol", { class: "ideas" }, items)); stagger(items, 1100, 300);
+});
+addScreen(7, "Your week at a glance", box => {
+  const s = T.s7;
+  box.append(h("p", { class: "note" }, s.weekNote));
+  const maxv = Math.max(...WEEK.map(w => w.hi));
+  const bars = [];
+  box.append(h("ol", { class: "weeklist", style: "margin-top:.6rem" }, WEEK.map((w, i) => {
+    const t = w.lo === w.hi ? (w.about ? "about " + w.lo : "about " + w.lo) : w.lo + " to " + w.hi;
+    const bar = h("i", {}); bars.push([bar, w.hi / maxv]);
+    return h("li", { class: w.here ? "here" : "" }, h("div", { class: "row", style: "justify-content:space-between" }, h("strong", {}, (i + 1) + ". " + w.name), h("span", {}, t + " minutes (approximate)")), h("div", { class: "wbar", "aria-hidden": "true" }, bar));
+  })));
+  bars.forEach(([b, f], i) => later(() => { b.style.transform = "scaleX(" + f + ")"; }, RM() ? 0 : 200 + i * 150));
+  box.append(h("p", { style: "margin-top:1rem;font-weight:700" }, s.endNote));
+});
+
+/* Section 8: quiz */
+let QZ = null;
+function quizReset() { QZ = { phase: "intro", queue: [], pos: 0, ans: {}, retry: false }; }
+quizReset();
+const firstOf = sec => SCREENS.findIndex(s => s.sec === sec);
+addScreen(8, "Final check for understanding", box => {
+  const s = T.s8;
+  const stage = h("div", {});
+  box.append(stage);
+  const sel = () => {
+    stage.replaceChildren();
+    if (QZ.phase === "intro") intro(); else if (QZ.phase === "q") question(); else results();
+  };
+  function intro() {
+    stage.append(h("div", { class: "verdict v-good" }, h("p", { class: "v-h" }, icon("check"), h("span", {}, "Practice only")), h("p", { class: "lead" }, s.notGraded)),
+      h("p", { style: "margin:1rem 0" }, s.howTo));
+    const b = h("button", { class: "btn warm", type: "button" }, s.begin + " →");
+    b.addEventListener("click", () => { QZ.queue = QUIZ.map((_, i) => i); QZ.pos = 0; QZ.phase = "q"; QZ.retry = false; sel(); focusTop(); });
+    stage.append(b); later(() => b.classList.add("nudge"), 5000);
+  }
+  function focusTop() { const hd = $("#qtop"); if (hd) hd.focus(); }
+  function question() {
+    const qi = QZ.queue[QZ.pos], Q = QUIZ[qi];
+    const opts = shuffle(Q.opts), name = uid("q");
+    const slot = h("div", { class: "slot", role: "status" });
+    const check = h("button", { class: "btn", type: "button" }, "Check my answer");
+    const nx = h("button", { class: "btn warm", type: "button" }, QZ.pos === QZ.queue.length - 1 ? "See my results" : "Next question");
+    nx.hidden = true;
+    const labels = opts.map((o, i) => h("label", { class: "opt" }, h("input", { type: "radio", name, value: String(i) }), h("span", {}, o.t)));
+    stage.append(
+      h("p", { id: "qtop", tabindex: "-1", class: "small", style: "font-weight:800;outline:none" }, "Question " + (QZ.pos + 1) + " of " + QZ.queue.length + (QZ.retry ? " (trying the missed ones again)" : "")),
+      h("div", { class: "row", style: "margin:.3rem 0 .8rem" }, h("span", { class: "tag tag-plain" }, Q.c), h("span", { class: "tag tag-plain" }, "Section " + Q.sec), Q.inv ? badge() : null),
+      h("fieldset", { class: "qbox" }, h("legend", {}, Q.q), labels),
+      h("div", { class: "row" }, check, nx), slot);
+    check.addEventListener("click", () => {
+      const pick = labels.findIndex(l => $("input", l).checked);
+      if (pick < 0) { fillSlot(slot, verdict("chk", s.pickFirst)); return; }
+      const ok = !!opts[pick].CORRECT;
+      QZ.ans[qi] = ok;
+      labels.forEach((l, i) => {
+        $("input", l).disabled = true;
+        if (opts[i].CORRECT) { l.classList.add("best"); l.append(h("span", { class: "tag tag-good" }, icon("check"), "Best answer")); }
+        else if (i === pick) { l.classList.add("mine"); l.append(h("span", { class: "tag tag-chk" }, icon("mag"), "Your choice")); }
+      });
+      const best = opts.find(o => o.CORRECT).t;
+      fillSlot(slot, ok ? verdict("good", "Why: " + Q.why, "You picked the best answer.")
+        : verdict("chk", "The best answer is: " + best + " Why: " + Q.why, "That choice is a common one, and it is easy to see why it looked right."));
+      check.hidden = true; nx.hidden = false; nx.focus();
+    });
+    nx.addEventListener("click", () => {
+      if (QZ.pos < QZ.queue.length - 1) { QZ.pos++; sel(); focusTop(); }
+      else { QZ.phase = "results"; sel(); celebrate("Final check finished. Nice work."); const r = $("#rtop"); if (r) r.focus(); }
+    });
+  }
+  function results() {
+    const right = Object.values(QZ.ans).filter(Boolean).length;
+    stage.append(h("p", { id: "rtop", tabindex: "-1", style: "outline:none" }),
+      h("h3", { style: "margin-top:0", tabindex: "-1" }, s.resultsHead),
+      h("p", { class: "lead", style: "font-weight:700", role: "status" }, s.resultsLine.replace("{X}", right)));
+    const bars = [];
+    stage.append(h("div", { class: "stack", style: "margin-top:1rem" }, CONCEPTS.map(c => {
+      const qs = QUIZ.map((q, i) => [q, i]).filter(([q]) => q.c === c);
+      const ok = qs.filter(([, i]) => QZ.ans[i]).length, good = ok / qs.length >= COURSE.caseThreshold;
+      const fill = h("i", { style: "background:" + (good ? "var(--good)" : "var(--chk)") });
+      bars.push([fill, ok / qs.length]);
+      return h("div", {}, h("div", { class: "row", style: "justify-content:space-between" }, h("strong", {}, c + ": " + ok + " of " + qs.length),
+        h("span", { class: "tag " + (good ? "tag-good" : "tag-chk") }, icon(good ? "check" : "mag"), good ? s.gotIt : s.again)),
+        h("div", { class: "bar", role: "img", "aria-label": c + ": " + ok + " of " + qs.length }, fill));
+    })));
+    bars.forEach(([f, p], i) => later(() => { f.style.transform = "scaleX(" + p + ")"; }, RM() ? 0 : 200 + i * 150));
+    const missed = QUIZ.map((q, i) => i).filter(i => !QZ.ans[i]);
+    if (missed.length) {
+      stage.append(h("h3", {}, "Questions to revisit"), h("div", { class: "stack" }, missed.map(i => {
+        const Q = QUIZ[i], best = Q.opts.find(o => o.CORRECT).t;
+        const rv = h("button", { class: "btn alt", type: "button" }, "Review section " + Q.sec);
+        rv.addEventListener("click", () => goto(firstOf(Q.sec)));
+        return h("div", { class: "verdict v-chk" }, h("p", { class: "v-h" }, icon("mag"), h("span", {}, "Check this: " + Q.c)),
+          h("p", {}, h("strong", {}, "Question: "), Q.q), h("p", {}, h("strong", {}, "Best answer: "), best), h("p", {}, h("strong", {}, "Why: "), Q.why), h("div", { style: "margin-top:.5rem" }, rv));
+      })));
+    } else stage.append(h("div", { class: "verdict v-good", style: "margin-top:1rem" }, h("p", { class: "v-h" }, icon("check"), h("span", {}, "Good")), h("p", {}, "You answered every question well. Your own checking habits are what matter most from here.")));
+    stage.append(h("h3", {}, s.recapHead), h("ol", { class: "ideas" }, BIG_IDEAS.map((t, i) => h("li", { class: "show" }, h("span", { class: "num" }, String(i + 1)), t))));
+    const row = h("div", { class: "row", style: "margin-top:1rem" });
+    if (missed.length) { const r = h("button", { class: "btn", type: "button" }, "Try the missed questions again"); r.addEventListener("click", () => { QZ.queue = missed; QZ.pos = 0; QZ.phase = "q"; QZ.retry = true; sel(); focusTop(); }); row.append(r); }
+    const wl = h("button", { class: "btn alt", type: "button" }, "Review the whole lecture"); wl.addEventListener("click", () => goto(0));
+    const so = h("button", { class: "btn alt", type: "button" }, "Start over"); so.addEventListener("click", () => startOver());
+    row.append(wl, so); stage.append(row);
+    const wk = SCREENS.findIndex(x => x.title === "Your week at a glance");
+    const lk = h("button", { class: "btn warm", type: "button" }, "See your week at a glance →"); lk.addEventListener("click", () => goto(wk));
+    stage.append(h("p", { style: "margin-top:1.2rem;font-weight:700" }, T.s7.endNote), h("div", { style: "margin-top:.5rem" }, lk));
+  }
+  sel();
+});
+
+/* ---------- state, navigation ---------- */
+const S = { i: 0, size: 0, rm: false, theme: "light", done: {} };
+const SIZES = [18, 20, 22, 24];
+function load() {
+  try { const j = JSON.parse(localStorage.getItem(COURSE.storageKey) || "null"); if (j) { Object.assign(S, j); } else S.rm = !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches); }
+  catch (e) { S.rm = !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches); }
+  if (!(S.i >= 0 && S.i < SCREENS.length)) S.i = 0;
+  if (!(S.size >= 0 && S.size < SIZES.length)) S.size = 0;
+  if (typeof S.done !== "object" || !S.done) S.done = {};
+}
+function save() { try { localStorage.setItem(COURSE.storageKey, JSON.stringify({ i: S.i, size: S.size, rm: S.rm, theme: S.theme, done: S.done })); } catch (e) { /* storage blocked: page still works */ } }
+function applyPrefs() {
+  root.style.fontSize = SIZES[S.size] + "px";
+  root.classList.toggle("rm", S.rm); root.setAttribute("data-theme", S.theme);
+  $("#bRM").setAttribute("aria-pressed", String(S.rm)); $("#bTheme").setAttribute("aria-pressed", String(S.theme === "dark"));
+  $("#bSmall").disabled = S.size === 0; $("#bBig").disabled = S.size === SIZES.length - 1;
+}
+let dir = 1, firstPaint = true;
+function render() {
+  TOK++; timers.forEach(clearTimeout); timers = [];
+  const sc = SCREENS[S.i], sec = SECTIONS[sc.sec];
+  const first = SCREENS.findIndex(x => x.sec === sc.sec) === S.i;
+  const last = SCREENS.map(x => x.sec).lastIndexOf(sc.sec) === S.i;
+  const box = h("section", { class: "screen enter" + (dir < 0 ? " back" : ""), "aria-labelledby": "ttl" });
+  if (RM()) box.classList.remove("enter");
+  box.append(h("div", { class: "kicker" }, h("span", {}, "Section " + sec.id + ": " + sec.short), h("span", { class: "about" }, "About " + sec.mins + (sec.mins === 1 ? " minute" : " minutes"))),
+    h("h2", { id: "ttl", tabindex: "-1" }, sc.title));
+  if (first) box.append(h("p", { class: "learn" }, icon("star"), h("span", {}, h("b", {}, "What you will learn: "), sec.learn)));
+  const content = h("div", {}); box.append(content);
+  sc.render(content);
+  if (last) box.append(h("p", { class: "remember" }, icon("check"), h("span", {}, h("b", {}, "Remember: "), sec.remember)));
+  main.replaceChildren(box);
+  if (!firstPaint) { $("#ttl").focus({ preventScroll: true }); window.scrollTo(0, 0); }
+  firstPaint = false;
+  document.title = sc.title + " · Week 3 · AI Literacy for Educators";
+  const total = SCREENS.length, pct = Math.round((S.i + 1) / total * 100);
+  $("#pfill").style.transform = "scaleX(" + (S.i + 1) / total + ")"; $("#pbar").setAttribute("aria-valuenow", String(pct));
+  $("#where").textContent = "Screen " + (S.i + 1) + " of " + total;
+  $("#bBack").disabled = S.i === 0; $("#bNext").hidden = S.i === total - 1;
+  $("#bNext").classList.remove("nudge");
+  later(() => $("#bNext").classList.add("nudge"), 9000);
+  buildMenu(); save();
+}
+function goto(i, d) { if (i < 0 || i >= SCREENS.length) return; dir = d || (i >= S.i ? 1 : -1); S.i = i; closeMenu(); render(); }
+function next() {
+  const sc = SCREENS[S.i], nx = SCREENS[S.i + 1];
+  if (nx && nx.sec !== sc.sec) { S.done[sc.sec] = true; celebrate("Section " + sc.sec + " finished. Nice work."); }
+  goto(S.i + 1, 1);
+}
+function back() { goto(S.i - 1, -1); }
+function startOver() {
+  if (!confirm("Start over? This clears your place and your text settings on this page.")) return;
+  S.i = 0; S.done = {}; S.size = 0; quizReset(); dir = 1; applyPrefs(); closeMenu(); render(); announce("Starting over from the welcome screen.");
+}
+function celebrate(msg) {
+  const el = $("#cel"); el.replaceChildren(); announce(msg);
+  const m = h("div", { class: "msg" }, msg); el.append(m);
+  if (!RM()) {
+    const cols = ["#b4531a", "#1f5f7a", "#17623a", "#d99a2b", "#7a5fb0"];
+    for (let i = 0; i < 18; i++) { const a = Math.PI * (0.1 + 0.8 * i / 17); const p = h("span", { class: "p", style: "--c:" + cols[i % 5] + ";--dx:" + Math.round(Math.cos(a + Math.PI) * 120 + (i % 2 ? 30 : -30)) + "px;--dy:" + Math.round(80 + (i % 4) * 25) + "px;--r:" + (i * 47) + "deg" }); el.append(p); }
+  }
+  setTimeout(() => el.replaceChildren(), RM() ? 2500 : 2600);
+}
+function buildMenu() {
+  const m = $("#menu"); const cur = SCREENS[S.i].sec;
+  m.replaceChildren(h("ol", {}, SECTIONS.map(sec => {
+    const b = h("button", { type: "button" }, h("span", {}, sec.id + ". " + sec.short + (S.done[sec.id] ? " ✓ Done" : "")), h("span", { class: "mins" }, "about " + sec.mins + " min"));
+    if (sec.id === cur) b.setAttribute("aria-current", "step");
+    b.addEventListener("click", () => goto(firstOf(sec.id)));
+    return h("li", {}, b);
+  })), h("p", { class: "menu-total" }, "Total: about " + SECTIONS.reduce((a, s) => a + s.mins, 0) + " minutes."));
+}
+function closeMenu() { $("#menu").hidden = true; $("#bMenu").setAttribute("aria-expanded", "false"); }
+
+$("#bMenu").addEventListener("click", () => { const m = $("#menu"); const open = m.hidden; m.hidden = !open; $("#bMenu").setAttribute("aria-expanded", String(open)); if (open) { const c = $("[aria-current]", m); if (c) c.focus(); } });
+$("#bSmall").addEventListener("click", () => { S.size = Math.max(0, S.size - 1); applyPrefs(); save(); announce("Text size " + SIZES[S.size] + " pixels."); });
+$("#bBig").addEventListener("click", () => { S.size = Math.min(SIZES.length - 1, S.size + 1); applyPrefs(); save(); announce("Text size " + SIZES[S.size] + " pixels."); });
+$("#bRM").addEventListener("click", () => { S.rm = !S.rm; applyPrefs(); save(); announce("Reduce motion is " + (S.rm ? "on." : "off.")); });
+$("#bTheme").addEventListener("click", () => { S.theme = S.theme === "dark" ? "light" : "dark"; applyPrefs(); save(); announce(S.theme === "dark" ? "Dark theme on." : "Light theme on."); });
+$("#bReset").addEventListener("click", startOver);
+$("#bNext").addEventListener("click", next); $("#bBack").addEventListener("click", back);
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape" && !$("#menu").hidden) { closeMenu(); $("#bMenu").focus(); return; }
+  if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+  const t = e.target; if (t && (/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName) || t.isContentEditable)) return;
+  if (e.key === "ArrowRight") { if (S.i < SCREENS.length - 1) next(); } else if (e.key === "ArrowLeft") back();
+});
+document.addEventListener("click", e => { const m = $("#menu"); if (!m.hidden && !m.contains(e.target) && e.target !== $("#bMenu")) closeMenu(); });
+
+load(); applyPrefs(); render();
+</script>
+</body>
+</html>
