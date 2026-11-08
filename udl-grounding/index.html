@@ -1,0 +1,1554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UDL and Grounding Microlecture</title>
+<meta name="description" content="A microlecture on Universal Design for Learning 3.0 and grounding in AI prompting, for K-12 educators.">
+<style>
+/* =====================================================================
+   DESIGN TOKENS  (WilmU design-system colors + semantic additions)
+   ===================================================================== */
+:root{
+  /* WilmU palette (wilmu.edu/design-system/color.aspx) */
+  --primary:#00843D;   --primary-1:#F5FAF7; --primary-2:#DCF0DD; --primary-3:#73B474; --primary-4:#014E25;
+  --accent:#F9C22B;    --accent-1:#FDF2D2;  --accent-2:#E4CC87;  --accent-3:#E2AE3D;
+  --white:#FFFFFF;     --neutral:#EEEEEE;   --neutral-1:#D1D1D1; --neutral-2:#949494;
+  --neutral-3:#605F60; --neutral-4:#2A2926;
+  /* Semantic additions (contrast verified in the report) */
+  --amber-text:#8A5A00;  /* NOT GROUNDED label text */
+  --danger:#B3261E;      /* Problem found */
+  --focus:#1A4FB8;       /* keyboard focus ring */
+  /* Roles */
+  --bg:var(--primary-1); --surface:var(--white); --text:var(--neutral-4); --muted:var(--neutral-3);
+  --heading:var(--primary-4); --line:var(--neutral-3);
+  --shadow:0 2px 12px rgba(42,41,38,.13);
+}
+/* High-contrast mode: tokens are re-pointed, everything else follows */
+html.hc{
+  --primary:#005F2B; --primary-1:#FFFFFF; --primary-2:#FFFFFF; --accent-1:#FFFFFF;
+  --neutral-3:#000000; --neutral-4:#000000; --primary-4:#000000; --amber-text:#000000; --danger:#8A0000;
+  --focus:#0000EE; --shadow:none;
+}
+html.hc .card,html.hc .panel,html.hc .btn,html.hc .cell,html.hc .pcard{border-width:3px!important;border-color:#000!important}
+
+/* =====================================================================
+   BASE
+   ===================================================================== */
+*{box-sizing:border-box}
+html{font-size:clamp(16px,min(calc(100vw * 22 / 1920),calc(100vh * 22 / 1080)),30px)}   /* = 22px at 1920x1080, scales down to phones */
+html.lg{font-size:clamp(19px,min(calc(100vw * 27 / 1920),calc(100vh * 27 / 1080)),36px)}
+body{margin:0;height:100vh;height:100dvh;overflow:hidden;background:var(--bg);color:var(--text);
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif;line-height:1.4;font-size:1rem}
+body.dark{--bg:var(--primary-4);--text:#fff;--heading:#fff;--muted:var(--primary-2);--surface:var(--primary-4)}
+h1,h2,h3,h4{color:var(--heading);line-height:1.15;margin:0}
+h2{font-size:2.05rem;font-weight:800}
+h3{font-size:1.2rem;font-weight:700}
+p{margin:.4rem 0}
+b,strong{font-weight:700}
+.sr-only{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0;padding:0;margin:-1px}
+:focus-visible{outline:3px solid var(--focus);outline-offset:3px;box-shadow:0 0 0 6px #fff}
+body.dark :focus-visible{outline-color:var(--accent);box-shadow:0 0 0 6px var(--primary-4)}
+.ico{width:1.15em;height:1.15em;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:-.2em;flex:none}
+
+/* =====================================================================
+   APP FRAME: header / stage / notes / footer
+   ===================================================================== */
+#app{display:grid;grid-template-rows:auto 1fr auto auto;height:100vh;height:100dvh;position:relative}
+#progress{position:absolute;top:0;left:0;height:6px;width:0;background:var(--primary);transition:width .4s ease;z-index:20}
+body.dark #progress{background:var(--accent)}
+header.top{display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:.7rem clamp(1rem,3vw,3rem) .3rem;font-size:.8rem;color:var(--muted)}
+.wordmark{font-weight:800;letter-spacing:.03em;color:var(--heading);font-size:.95rem}
+.partlabel{color:var(--muted)}
+.slidenum{font-variant-numeric:tabular-nums;font-weight:700;color:var(--heading)}
+#stage{position:relative;overflow-x:hidden;overflow-y:auto;padding:0 clamp(1rem,3vw,3rem) 1rem}
+.slide{display:none;width:min(100%,86rem);margin:0 auto;min-height:100%}
+.slide.active{display:flex;flex-direction:column;gap:.9rem;animation:slideInF .5s ease both}
+.slide.active[data-dir="back"]{animation-name:slideInB}
+@keyframes slideInF{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:none}}
+@keyframes slideInB{from{opacity:0;transform:translateX(-40px)}to{opacity:1;transform:none}}
+@keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+.slide.active .a{animation:rise .45s ease both;animation-delay:calc(var(--i,0)*90ms + 120ms)}
+.kicker{font-size:.8rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--primary-4)}
+.lede{font-size:1.15rem;max-width:60rem}
+/* build steps (click to reveal) */
+[data-build]{transition:opacity .45s ease,transform .45s ease,visibility .45s}
+[data-build]:not(.on){opacity:0;visibility:hidden;transform:translateY(14px)}
+html.allb [data-build]{opacity:1!important;visibility:visible!important;transform:none!important}
+/* notes */
+#notes{background:var(--surface);border-top:3px solid var(--primary);padding:.7rem clamp(1rem,3vw,3rem);max-height:26vh;overflow:auto;font-size:.95rem}
+body.dark #notes{background:var(--primary-4);border-top-color:var(--accent)}
+#notes h2{font-size:.85rem;letter-spacing:.08em;text-transform:uppercase;margin-bottom:.2rem}
+#notes[hidden]{display:none}
+/* footer controls */
+footer.controls{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:.6rem;padding:.6rem clamp(1rem,3vw,3rem) .8rem;border-top:1px solid var(--neutral-1)}
+body.dark footer.controls{border-top-color:var(--primary)}
+.ctl-group{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center}
+.hint{font-size:.8rem;color:var(--muted)}
+
+/* =====================================================================
+   BUTTONS
+   ===================================================================== */
+.btn{font:inherit;font-weight:700;font-size:.95rem;display:inline-flex;align-items:center;gap:.45rem;padding:.55rem 1.1rem;border-radius:999px;
+  border:2px solid var(--neutral-3);background:var(--white);color:var(--neutral-4);cursor:pointer;transition:transform .12s ease,box-shadow .2s ease,background .2s}
+.btn:hover{box-shadow:0 3px 10px rgba(42,41,38,.2);transform:translateY(-1px)}
+.btn:active{transform:translateY(1px) scale(.97);box-shadow:none}
+.btn[disabled]{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
+.btn-accent{background:var(--accent);border-color:var(--amber-text);color:var(--neutral-4)}
+.btn-accent:hover{background:var(--accent-3)}
+body.dark .btn:not(.btn-accent){background:transparent;color:#fff;border-color:#fff}
+.seg{display:inline-flex;border:2px solid var(--neutral-3);border-radius:999px;overflow:hidden;background:var(--white)}
+.seg button{font:inherit;font-weight:700;font-size:.9rem;border:0;background:var(--white);color:var(--neutral-4);padding:.4rem 1rem;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--primary-4);color:#fff}
+.seg button:not([aria-pressed="true"]):hover{background:var(--primary-2)}
+
+/* =====================================================================
+   SHARED COMPONENTS
+   ===================================================================== */
+.card{background:var(--white);color:var(--neutral-4);border-radius:1rem;box-shadow:var(--shadow);padding:1rem 1.25rem;border:1px solid var(--neutral-1)}
+.card h3{color:var(--primary-4)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+.badge-ill{display:inline-block;font-size:.8rem;font-weight:700;color:var(--neutral-3);background:var(--white);border:1px solid var(--neutral-3);border-radius:.4rem;padding:.1rem .5rem}
+.quote{background:var(--white);border-left:6px solid var(--primary);border-radius:.6rem;padding:.6rem 1rem;color:var(--neutral-4)}
+
+/* ---- Grounded / Not grounded / Problem found semantics (color + icon + label + border style) ---- */
+.st-g{border:3px solid var(--primary);background:var(--primary-2);color:var(--neutral-4)}
+.st-u{border:3px dashed var(--neutral-3);background:var(--accent-1);color:var(--neutral-4)}
+.pill{display:inline-flex;align-items:center;gap:.4rem;font-weight:800;letter-spacing:.06em;font-size:.9rem;padding:.25rem .8rem;border-radius:999px}
+.pill-g{background:var(--primary-4);color:#fff;border:2px solid var(--primary-4)}
+.pill-u{background:var(--white);color:var(--amber-text);border:2px dashed var(--amber-text)}
+.pill-p{background:var(--white);color:var(--danger);border:2px solid var(--danger)}
+.chip{display:inline-flex;align-items:center;gap:.25rem;font-size:.82rem;font-weight:700;border-radius:.5rem;padding:0 .45rem;margin-left:.3rem;white-space:nowrap;vertical-align:.1em;line-height:1.5}
+.chip-u{background:var(--white);color:var(--amber-text);border:1.5px dashed var(--amber-text)}
+.chip-g{background:var(--primary-4);color:#fff;border:1.5px solid var(--primary-4);cursor:pointer;font-family:inherit}
+.chip-ok{background:var(--white);color:var(--primary-4);border:1.5px solid var(--primary-4)}
+.chip-p{background:var(--white);color:var(--danger);border:1.5px solid var(--danger)}
+.claim{font:inherit;color:inherit;background:none;border:0;padding:0 .1rem;cursor:pointer;text-align:left;border-radius:.3rem}
+.claim.u{text-decoration:underline wavy var(--amber-text);text-underline-offset:.25em}
+.claim.g{text-decoration:underline solid var(--primary);text-decoration-thickness:2px;text-underline-offset:.25em}
+.claim:hover,.claim.sel{background:rgba(255,255,255,.85)}
+.inspect{min-height:2.9em;margin:.5rem 0 0;padding:.4rem .7rem;background:var(--white);border-radius:.6rem;font-size:.95rem;color:var(--neutral-4)}
+.notether{font-size:.85rem;color:var(--amber-text);display:flex;align-items:center;gap:.4rem;margin:.3rem 0 0}
+.notether svg{width:3rem;height:.9rem}
+.panel{border-radius:1rem;padding:.9rem 1.1rem;position:relative;transition:opacity .5s,visibility .5s}
+.panel header{display:flex;justify-content:space-between;align-items:center;gap:.5rem;flex-wrap:wrap;margin-bottom:.4rem}
+.panel .ans{font-size:1.05rem;margin:.3rem 0}
+.hl{background:var(--accent-1)!important;outline:3px solid var(--primary);outline-offset:2px;border-radius:.4rem;animation:glow 1.2s ease-in-out 2}
+@keyframes glow{50%{box-shadow:0 0 0 .5rem rgba(0,132,61,.28)}}
+@keyframes shake{20%,60%{transform:translateX(-7px)}40%,80%{transform:translateX(7px)}}
+.shake{animation:shake .5s ease}
+/* tether layer (SVG drawn over a relatively positioned container) */
+.tl{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible;z-index:6}
+.tl path{fill:none;stroke:var(--primary);stroke-width:4;stroke-linecap:round}
+.tl circle{fill:var(--primary-4)}
+/* source card */
+.src{background:var(--white);color:var(--neutral-4);border:2px solid var(--neutral-3);border-radius:.9rem;padding:.5rem .9rem;transition:opacity .5s,border-color .4s}
+.src-head{display:flex;justify-content:space-between;align-items:center;gap:.6rem;flex-wrap:wrap}
+.src-head b{color:var(--primary-4)}
+.src-body{display:grid;grid-template-rows:1fr;transition:grid-template-rows .4s ease}
+.src.closed .src-body{grid-template-rows:0fr}
+.src-body>div{overflow:hidden}
+.src ol{list-style:none;margin:.3rem 0 0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:.4rem .9rem;font-size:.95rem}
+.src li{padding:.15rem .4rem;border-radius:.4rem}
+.src li b{color:var(--primary-4);margin-right:.3rem}
+.src.dim{opacity:.5}
+.src.attached{border-color:var(--primary);border-style:solid}
+
+/* =====================================================================
+   SLIDE-SPECIFIC
+   ===================================================================== */
+/* S1 title */
+#s1{justify-content:center;position:relative}
+#s1 h1{color:#fff;font-size:3.1rem;font-weight:800;max-width:50rem}
+#s1 .sub{font-size:1.5rem;color:var(--primary-2)}
+#s1 .meta{margin-top:1.5rem;color:#fff;font-size:1.1rem;line-height:1.7}
+.blobs{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+.blobs i{position:absolute;border-radius:50%;background:var(--primary);opacity:.35;animation:drift 22s ease-in-out infinite alternate}
+.blobs i:nth-child(1){width:28rem;height:28rem;right:-6rem;top:-5rem}
+.blobs i:nth-child(2){width:20rem;height:20rem;right:12rem;bottom:-6rem;background:var(--primary-3);opacity:.22;animation-duration:28s;animation-delay:-8s}
+.blobs i:nth-child(3){width:14rem;height:14rem;right:30rem;top:6rem;opacity:.25;animation-duration:19s;animation-delay:-3s}
+@keyframes drift{from{transform:translate(0,0) scale(1)}to{transform:translate(-4rem,3rem) scale(1.15)}}
+#s1>*:not(.blobs){position:relative;z-index:1}
+/* S2 roadmap */
+.road svg{width:100%;height:auto;max-height:10rem}
+.road .path{fill:none;stroke:var(--primary);stroke-width:5;stroke-dasharray:8 10;stroke-linecap:round}
+.slide.active .road .path{animation:flow 1.6s linear infinite}
+@keyframes flow{to{stroke-dashoffset:-36}}
+.road .stop{fill:var(--primary-4)}
+.road text{fill:#fff;font-weight:800;font-size:26px;text-anchor:middle}
+.slide.active .road .stopg{transform-box:fill-box;transform-origin:center;animation:pop .5s cubic-bezier(.3,1.6,.5,1) both;animation-delay:calc(var(--d)*.5s + .3s)}
+@keyframes pop{from{transform:scale(0)}to{transform:scale(1)}}
+.stops{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;text-align:center}
+.stops h3{font-size:1.35rem}
+.outcomes{padding-left:1.4rem;margin:.3rem 0 0}
+.outcomes li{margin:.3rem 0}
+/* S3 hook */
+.chat{display:flex;flex-direction:column;gap:.8rem;max-width:52rem}
+.bubble{border-radius:1.2rem;padding:.8rem 1.2rem;max-width:44rem;position:relative}
+.bubble.me{align-self:flex-end;background:var(--primary-4);color:#fff}
+.bubble.ai{align-self:flex-start;background:var(--white);border:2px solid var(--neutral-3);color:var(--neutral-4);font-size:1.15rem;min-height:7rem}
+.caret{display:inline-block;width:.12em;height:1em;background:var(--neutral-4);vertical-align:-.12em;animation:blink 1.1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.stamp{display:inline-block;transform:rotate(-4deg);border:4px solid var(--amber-text);color:var(--amber-text);background:var(--accent-1);font-weight:800;font-size:1.6rem;padding:.4rem 1.2rem;border-radius:.6rem}
+.stamp.on{animation:stamp .5s cubic-bezier(.3,1.6,.5,1) both}
+@keyframes stamp{from{transform:rotate(-4deg) scale(2.2);opacity:0}to{transform:rotate(-4deg) scale(1);opacity:1}}
+.big{font-size:2rem;font-weight:800;color:var(--primary-4)}
+/* S4 doors */
+.doors{display:grid;grid-template-columns:1fr 1fr;gap:1rem;align-items:end}
+.doors svg{width:100%;height:auto;max-height:40vh}
+.doors figure{margin:0}
+.doors figcaption{text-align:center;font-weight:700;margin-top:.3rem}
+.wall{fill:var(--neutral);stroke:var(--neutral-3);stroke-width:2}
+.door{fill:var(--white);stroke:var(--neutral-4);stroke-width:3}
+.stoop{fill:var(--neutral-1);stroke:var(--neutral-4);stroke-width:3}
+.ramp{fill:var(--primary-2);stroke:var(--primary-4);stroke-width:3;stroke-dasharray:600;stroke-dashoffset:600}
+.slide.b1 .ramp{stroke-dashoffset:0;transition:stroke-dashoffset 1.4s ease}
+.ground{stroke:var(--neutral-4);stroke-width:3}
+.person *{fill:none;stroke:var(--neutral-4);stroke-width:4;stroke-linecap:round}
+.person .fill{fill:var(--neutral-4)}
+.opener{fill:var(--primary-4)}
+.slide.active .pulse{animation:pulse 2.4s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+@keyframes pulse{50%{opacity:.35;transform:scale(1.5)}}
+.slide.active .walk{animation:walk 4s ease-in-out infinite alternate}
+@keyframes walk{from{transform:translate(0,0)}to{transform:translate(95px,-48px)}}
+/* S5 principle cards */
+.pcards{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;align-items:start}
+.pcard{background:var(--white);border:2px solid var(--primary);border-top-width:8px;border-radius:1rem;box-shadow:var(--shadow);overflow:hidden}
+.pcard>button{width:100%;font:inherit;text-align:left;background:none;border:0;padding:.9rem 1.1rem;cursor:pointer;display:block;color:var(--neutral-4)}
+.pcard>button:hover{background:var(--primary-1)}
+.pcard h3{font-size:1.5rem}
+.pcard .why{color:var(--neutral-3);font-weight:700}
+.pcard .q{font-weight:700;margin-top:.5rem}
+.pcard .more{display:grid;grid-template-rows:0fr;transition:grid-template-rows .45s ease}
+.pcard.open .more{grid-template-rows:1fr}
+.pcard .more>div{overflow:hidden}
+.pcard ul{margin:.2rem 0 .8rem;padding:0 1.1rem 0 2.2rem}
+.pcard li{margin:.35rem 0}
+.chev{float:right;transition:transform .3s}
+.pcard.open .chev{transform:rotate(180deg)}
+/* S6 explorer */
+.explore{display:grid;grid-template-columns:minmax(0,1.9fr) minmax(0,1fr);gap:1rem;align-items:start}
+.gridwrap{display:grid;grid-template-columns:5.5rem repeat(3,1fr);gap:.5rem}
+.colh{font-weight:800;color:var(--primary-4);text-align:center;font-size:1rem;align-self:end}
+.rowh{font-size:.8rem;font-weight:800;color:var(--neutral-3);text-transform:uppercase;letter-spacing:.05em;align-self:center}
+.cell{font:inherit;font-size:.95rem;font-weight:700;text-align:left;background:var(--white);color:var(--neutral-4);border:2px solid var(--primary);border-radius:.8rem;padding:.6rem .7rem;cursor:pointer;min-height:5.2rem;transition:transform .15s,background .2s,box-shadow .2s}
+.cell .n{display:block;font-size:.8rem;color:var(--neutral-3);font-weight:800}
+.cell:hover{transform:translateY(-3px);box-shadow:var(--shadow);background:var(--primary-2)}
+.cell[aria-pressed="true"]{background:var(--primary-4);color:#fff;border-color:var(--primary-4)}
+.cell[aria-pressed="true"] .n{color:var(--primary-2)}
+.side{position:sticky;top:0;min-height:15rem;border-left:8px solid var(--primary)}
+.small{font-size:.85rem;color:var(--neutral-3)}
+/* S7 sort */
+.sortwrap{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:1rem}
+.pool{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;align-content:start}
+.scard{background:var(--white);border:2px solid var(--neutral-3);border-radius:.8rem;padding:.55rem .75rem;font-size:.95rem;box-shadow:var(--shadow);cursor:grab}
+.scard.dragging{opacity:.4}
+.scard .acts{display:flex;gap:.4rem;margin-top:.4rem;flex-wrap:wrap}
+.scard .acts button{font:inherit;font-size:.8rem;font-weight:700;border:2px solid var(--primary-4);background:var(--white);color:var(--primary-4);border-radius:999px;padding:.1rem .7rem;cursor:pointer}
+.scard .acts button:hover{background:var(--primary-2)}
+.bins{display:grid;gap:.7rem;align-content:start}
+.bin{border-radius:1rem;padding:.6rem .8rem;min-height:8rem;transition:box-shadow .2s}
+.bin.over{box-shadow:0 0 0 4px var(--primary-3)}
+.bin h3{font-size:1rem;display:flex;align-items:center;gap:.4rem}
+.bin.real{border:3px solid var(--primary);background:var(--primary-2)}
+.bin.label{border:3px dashed var(--neutral-3);background:var(--accent-1)}
+.placed{background:var(--white);border-radius:.6rem;padding:.3rem .6rem;margin:.4rem 0 0;font-size:.85rem;animation:rise .4s ease both}
+.placed b.ok{color:var(--primary-4)} .placed b.no{color:var(--danger)}
+/* S8 timeline */
+.tl8{display:flex;align-items:flex-start;gap:0;position:relative;margin:.4rem 0 1rem}
+.tl8::before{content:"";position:absolute;left:5%;right:5%;top:.9rem;height:5px;background:var(--primary-3);transform-origin:left;animation:grow 1.6s ease both}
+@keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.tl8 div{flex:1;text-align:center;position:relative}
+.tl8 i{display:block;width:1.8rem;height:1.8rem;border-radius:50%;background:var(--white);border:5px solid var(--primary);margin:0 auto .3rem}
+.tl8 .now i{background:var(--accent);border-color:var(--primary-4)}
+.tl8 b{display:block;color:var(--primary-4)}
+.new{border-top:8px solid var(--primary)}
+.new h3{margin-bottom:.3rem}
+.new ul{margin:.2rem 0;padding-left:1.2rem}
+.tip{background:var(--accent-1);border:2px solid var(--amber-text);border-radius:.8rem;padding:.5rem 1rem;color:var(--neutral-4)}
+/* S9 tokens */
+.model{display:grid;grid-template-columns:1.1fr 1fr;gap:1rem;align-items:start}
+.sentence{font-size:1.5rem;font-weight:700;min-height:2.4rem}
+.sentence span{display:inline-block;margin-right:.35em;animation:rise .35s ease both}
+.cands{display:grid;gap:.4rem}
+.cand{display:grid;grid-template-columns:7rem 1fr 3rem;gap:.5rem;align-items:center;font-size:.95rem}
+.cand .bar{height:1rem;background:var(--neutral);border-radius:.5rem;overflow:hidden}
+.cand .bar i{display:block;height:100%;width:0;background:var(--neutral-3);transition:width .7s ease}
+.cand.pick{font-weight:800}
+.cand.pick .bar i{background:var(--primary-4)}
+.dos li{margin:.35rem 0}
+/* S10 grounding diagram */
+.gdiagram{position:relative}
+.gframe{border-radius:1rem;padding:.6rem;transition:all .6s}
+.gframe svg{width:100%;height:auto;display:block;max-height:15rem}
+.balloon-pos{transform:translate(250px,105px);transition:transform 1.1s cubic-bezier(.3,1.3,.5,1)}
+.slide.b1 .balloon-pos{transform:translate(250px,165px)}
+.slide.active .balloon-drift{animation:bob 4.5s ease-in-out infinite}
+.slide.b1 .balloon-drift{animation:none}
+@keyframes bob{0%,100%{transform:translate(0,0)}33%{transform:translate(16px,-14px)}66%{transform:translate(-14px,8px)}}
+.balloon{fill:var(--accent-1);stroke:var(--neutral-3);stroke-width:4;stroke-dasharray:10 8;transition:all .6s}
+.slide.b1 .balloon{fill:var(--primary-2);stroke:var(--primary);stroke-dasharray:none}
+.docg{transform:translateX(280px);opacity:0;transition:transform .9s ease,opacity .6s}
+.slide.b1 .docg{transform:none;opacity:1}
+.docg rect.sheet{fill:var(--white);stroke:var(--primary-4);stroke-width:3}
+.docg line{stroke:var(--neutral-2);stroke-width:4;stroke-linecap:round}
+.svgt{fill:var(--neutral-4);font-weight:800;font-size:22px;text-anchor:middle}
+.tether{fill:none;stroke:var(--primary);stroke-width:5;stroke-linecap:round;stroke-dasharray:260;stroke-dashoffset:260}
+.slide.b1 .tether{stroke-dashoffset:0;transition:stroke-dashoffset .9s ease .9s}
+.slide.b1 .only-b0,.slide:not(.b1) .only-b1{display:none}
+.slide.b1 .gframe{border:3px solid var(--primary);background:var(--primary-2)}
+.slide:not(.b1) .gframe{border:3px dashed var(--neutral-3);background:var(--accent-1)}
+/* S11-13 demos */
+.demo{position:relative;display:flex;flex-direction:column;gap:.7rem}
+.qbar{display:flex;flex-wrap:wrap;gap:.7rem;align-items:center;justify-content:space-between}
+.demo>.q{background:var(--primary-4);color:#fff;border-radius:1rem;padding:.5rem 1rem}
+.qbar .q{background:var(--primary-4);color:#fff;border-radius:1rem;padding:.5rem 1rem;font-size:1.02rem;flex:1 1 24rem}
+.panels{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.demo[data-view="toggle"] .panels{grid-template-columns:1fr}
+.demo[data-view="toggle"] .panels>.panel{grid-area:1/1}
+.demo[data-view="toggle"][data-attached="false"] #p-g{opacity:0;visibility:hidden}
+.demo[data-view="toggle"][data-attached="true"] #p-u{opacity:0;visibility:hidden}
+.attach{display:none;align-items:center;gap:.8rem}
+.demo[data-view="toggle"] .attach{display:flex}
+.switch{font:inherit;font-weight:800;font-size:1.05rem;display:inline-flex;align-items:center;gap:.8rem;background:var(--white);color:var(--neutral-4);border:3px solid var(--neutral-3);border-radius:999px;padding:.4rem 1.1rem .4rem .5rem;cursor:pointer}
+.switch .knob{width:3.4rem;height:1.8rem;border-radius:999px;background:var(--neutral-1);border:2px solid var(--neutral-3);position:relative;transition:background .3s}
+.switch .knob::after{content:"";position:absolute;top:.1rem;left:.15rem;width:1.35rem;height:1.35rem;border-radius:50%;background:var(--white);border:2px solid var(--neutral-4);transition:transform .3s}
+.switch[aria-checked="true"]{border-color:var(--primary);border-style:solid}
+.switch[aria-checked="true"] .knob{background:var(--primary);border-color:var(--primary-4)}
+.switch[aria-checked="true"] .knob::after{transform:translateX(1.5rem)}
+.exit-call{background:var(--white);border:2px solid var(--primary);border-radius:.6rem;padding:.4rem .7rem;font-size:.95rem;margin-top:.4rem}
+.scan li.scanning{background:var(--primary-2);outline:2px solid var(--primary-4)}
+.scanres{font-weight:800}
+/* S13 claims */
+.claims{list-style:none;padding:0;margin:.3rem 0;display:grid;gap:.4rem}
+.claims .claim{display:block;width:100%;background:var(--white);border:2px solid var(--primary);border-radius:.7rem;padding:.35rem .8rem;font-size:1.02rem;text-decoration:none}
+.claims .claim:hover,.claims .claim.sel{background:var(--primary-1)}
+.claims .claim.bad{border-color:var(--danger);border-style:dashed}
+.claims .num{font-weight:800;color:var(--primary-4);margin-right:.4rem}
+.msg{margin:.25rem 0 0 .4rem;font-size:.95rem;color:var(--neutral-4)}
+.msg:empty{display:none}
+.msg.bad{color:var(--danger);font-weight:700}
+.fix{border:3px solid var(--primary);background:var(--white);border-radius:.8rem;padding:.6rem 1rem;color:var(--neutral-4)}
+.prob{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;color:var(--neutral-4)}
+/* S14 builder */
+.builder{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:1rem;align-items:start}
+.sw-list{display:grid;gap:.45rem}
+.part{font:inherit;text-align:left;display:flex;align-items:center;gap:.7rem;background:var(--white);color:var(--neutral-4);border:2px solid var(--neutral-3);border-radius:.8rem;padding:.45rem .8rem;cursor:pointer;font-size:.98rem;transition:all .2s}
+.part:hover{box-shadow:var(--shadow)}
+.part .knob{width:2.6rem;height:1.4rem;border-radius:999px;background:var(--neutral-1);border:2px solid var(--neutral-3);position:relative;flex:none}
+.part .knob::after{content:"";position:absolute;top:.05rem;left:.1rem;width:1rem;height:1rem;border-radius:50%;background:var(--white);border:2px solid var(--neutral-4);transition:transform .25s}
+.part[aria-checked="true"]{border-color:var(--primary);background:var(--primary-2)}
+.part[aria-checked="true"] .knob{background:var(--primary);border-color:var(--primary-4)}
+.part[aria-checked="true"] .knob::after{transform:translateX(1.15rem)}
+.part small{display:block;color:var(--neutral-3);font-size:.8rem}
+.meter{display:flex;gap:.3rem;margin:.3rem 0}
+.meter i{flex:1;height:1.3rem;border-radius:.4rem;border:2px solid var(--primary-4);background:var(--white);transition:background .35s}
+.meter i.f{background:var(--primary)}
+pre.prompt{margin:0;white-space:pre-wrap;word-break:break-word;font:inherit;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.88rem;background:var(--neutral-4);color:#fff;border-radius:.8rem;padding:.7rem 1rem;min-height:5.5rem}
+.pline{display:none;margin:.15rem 0}
+.pline.on{display:block;animation:rise .35s ease both}
+.prev{margin-top:.6rem;border-radius:.8rem;padding:.5rem .9rem}
+.prev ul{list-style:none;margin:.3rem 0;padding:0}
+.prev li{margin:.25rem 0;font-size:.95rem}
+/* S15 */
+.vs{display:grid;grid-template-columns:1fr auto 1fr;gap:.8rem;align-items:center}
+.vs .arrow{font-size:2rem;color:var(--primary-4);font-weight:800}
+.chips{display:flex;gap:.6rem;flex-wrap:wrap}
+.term{font:inherit;font-weight:800;font-size:1rem;background:var(--white);color:var(--primary-4);border:2px solid var(--primary-4);border-radius:999px;padding:.3rem 1.1rem;cursor:pointer}
+.term:hover,.term[aria-pressed="true"]{background:var(--primary-4);color:#fff}
+/* S16 loop */
+.loop{position:relative;width:min(100%,108vh);aspect-ratio:800/430;margin:0 auto}
+.loop svg{position:absolute;inset:0;width:100%;height:100%}
+.loop .arr{fill:none;stroke:var(--primary);stroke-width:5;stroke-dasharray:12 10;stroke-linecap:round}
+.slide.active .loop .arr{animation:flow 1.4s linear infinite}
+.node{position:absolute;width:29%;font:inherit;text-align:left;background:var(--white);color:var(--neutral-4);border:3px solid var(--primary);border-radius:1rem;padding:.6rem .8rem;cursor:pointer;box-shadow:var(--shadow);transition:transform .2s,background .2s}
+.node:hover,.node[aria-pressed="true"]{background:var(--primary-2);transform:scale(1.05)}
+.node b{display:block;color:var(--primary-4);font-size:1.05rem}
+.node span{font-size:.85rem;color:var(--neutral-3)}
+.node.n1{left:1%;top:2%}.node.n2{right:1%;top:2%}.node.n3{right:1%;bottom:2%}.node.n4{left:1%;bottom:2%}
+.loopc{position:absolute;left:33%;right:33%;top:30%;bottom:30%;display:flex;align-items:center;justify-content:center;text-align:center;font-size:.98rem}
+/* S17 */
+.src17{background:var(--white);border:2px solid var(--neutral-3);border-radius:.9rem;padding:.5rem 1rem;color:var(--neutral-4)}
+.cards17{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+.c17{border-top:8px solid var(--primary);display:flex;flex-direction:column;gap:.35rem;font-size:.92rem}
+.c17 h3{font-size:1.05rem}
+.c17 .pr{font-style:italic;color:var(--neutral-3)}
+.c17 .out{border:3px solid var(--primary);background:var(--primary-2);border-radius:.7rem;padding:.4rem .7rem;color:var(--neutral-4)}
+.gcheck{display:inline-flex;align-items:center;gap:.35rem;font-weight:800;font-size:.85rem;border-radius:999px;padding:.1rem .7rem;background:var(--white);color:var(--neutral-4);border:2px dashed var(--neutral-3)}
+.gcheck.done{border:2px solid var(--primary-4);color:var(--primary-4);background:var(--white)}
+.mini{font-size:.85rem;color:var(--neutral-4)}
+/* S18 */
+.human{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.human ul{margin:.3rem 0;padding-left:1.2rem}
+.hsort{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+.hitem{background:var(--white);border:2px solid var(--neutral-3);border-radius:.8rem;padding:.5rem .8rem;font-size:.95rem;color:var(--neutral-4)}
+.hitem .acts{display:flex;gap:.5rem;margin-top:.35rem;flex-wrap:wrap}
+.hitem .fb{margin-top:.3rem;font-size:.88rem;min-height:1.2em}
+.hitem.done{border-color:var(--primary);background:var(--primary-1)}
+/* S19 */
+.rule{border:4px solid var(--danger);background:var(--white);border-radius:1.2rem;padding:1rem 1.5rem;color:var(--neutral-4);display:grid;gap:.8rem}
+.rule ul{margin:0;padding:0;list-style:none;display:grid;gap:.7rem;font-size:1.15rem}
+.rule li{display:flex;gap:.7rem;align-items:flex-start}
+.rule li .ico{color:var(--danger);margin-top:.2rem}
+.safe{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.safe>div{border-radius:.9rem;padding:.6rem 1rem;color:var(--neutral-4)}
+/* S20 quiz */
+.quiz{max-width:56rem}
+.opts{display:grid;gap:.6rem;margin:.6rem 0}
+.opt{font:inherit;text-align:left;background:var(--white);color:var(--neutral-4);border:2px solid var(--neutral-3);border-radius:.8rem;padding:.6rem 1rem;cursor:pointer;display:flex;gap:.7rem;align-items:flex-start;transition:all .2s}
+.opt:hover:not([disabled]){background:var(--primary-2);transform:translateX(4px)}
+.opt .k{font-weight:800;color:var(--primary-4)}
+.opt.right{border:3px solid var(--primary);background:var(--primary-2)}
+.opt.wrong{border:3px dashed var(--danger);background:var(--white)}
+.fbk{border-radius:.8rem;padding:.6rem 1rem;background:var(--white);border:2px solid var(--neutral-3);min-height:3rem;color:var(--neutral-4)}
+.qprog{display:flex;gap:.4rem}
+.qprog i{width:2.2rem;height:.6rem;border-radius:.3rem;background:var(--neutral-1)}
+.qprog i.cur{background:var(--primary-4)} .qprog i.ok{background:var(--primary)} .qprog i.no{background:var(--danger)}
+/* S21 */
+.take{display:grid;gap:.8rem}
+.take .card{display:flex;gap:1rem;align-items:center;font-size:1.2rem}
+.take svg.chk{width:3rem;height:3rem;flex:none}
+.take svg.chk circle{fill:var(--primary-4)}
+.take svg.chk path{fill:none;stroke:#fff;stroke-width:5;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:40;stroke-dashoffset:40}
+.slide.active .take svg.chk path{animation:draw .6s ease forwards;animation-delay:calc(var(--d)*.6s + .5s)}
+@keyframes draw{to{stroke-dashoffset:0}}
+details.srcs{background:var(--white);border:2px solid var(--neutral-3);border-radius:.8rem;padding:.5rem 1rem;color:var(--neutral-4)}
+details.srcs summary{cursor:pointer;font-weight:800;color:var(--primary-4)}
+
+/* =====================================================================
+   OVERLAYS: menu + accessibility popover
+   ===================================================================== */
+#menu{position:fixed;inset:0;background:rgba(1,78,37,.85);z-index:50;display:flex;align-items:center;justify-content:center;padding:1rem}
+#menu[hidden]{display:none}
+#menu .box{background:var(--white);color:var(--neutral-4);border-radius:1.2rem;padding:1rem 1.4rem;width:min(60rem,100%);max-height:90vh;overflow:auto;animation:rise .3s ease both}
+#menu h2{font-size:1.4rem;margin-bottom:.5rem}
+#menu .grp{font-size:.8rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--primary-4);margin:.6rem 0 .2rem}
+#menu ol{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(17rem,1fr));gap:.3rem}
+#menu li button{font:inherit;font-size:.95rem;width:100%;text-align:left;background:var(--white);color:var(--neutral-4);border:2px solid var(--neutral-1);border-radius:.6rem;padding:.35rem .7rem;cursor:pointer}
+#menu li button:hover{background:var(--primary-2);border-color:var(--primary)}
+#menu li button[aria-current="true"]{border-color:var(--primary-4);background:var(--primary-2);font-weight:800}
+#a11y{position:fixed;right:clamp(1rem,3vw,3rem);bottom:4.6rem;z-index:40;background:var(--white);color:var(--neutral-4);border:3px solid var(--primary-4);border-radius:1rem;padding:.8rem 1.1rem;box-shadow:0 8px 30px rgba(0,0,0,.3);animation:rise .25s ease both}
+#a11y[hidden]{display:none}
+#a11y h2{font-size:1rem;margin-bottom:.4rem;color:var(--primary-4)}
+#a11y label{display:flex;gap:.6rem;align-items:center;padding:.3rem 0;font-size:.98rem;cursor:pointer}
+#a11y input{width:1.3rem;height:1.3rem;accent-color:var(--primary-4)}
+
+/* =====================================================================
+   REDUCED MOTION (user setting OR in-app toggle) + RESPONSIVE
+   ===================================================================== */
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+}
+html.rm *,html.rm *::before,html.rm *::after{animation:none!important;transition:none!important}
+html.rm .ramp,html.rm .tether{stroke-dashoffset:0!important}
+html.rm .docg{transform:none!important;opacity:1!important}
+html.rm .slide:not(.b1) .docg{opacity:0!important}
+html.rm .road .stopg{transform:none}
+html.rm .take svg.chk path{stroke-dashoffset:0}
+@media (max-width:900px){
+  .grid2,.grid3,.pcards,.explore,.sortwrap,.model,.panels,.builder,.vs,.cards17,.human,.hsort,.safe,.stops,.doors{grid-template-columns:1fr}
+  .vs .arrow{transform:rotate(90deg);text-align:center}
+  .src ol{grid-template-columns:1fr}
+  .pool{grid-template-columns:1fr}
+  .gridwrap{grid-template-columns:3.6rem repeat(3,1fr);gap:.3rem}
+  .cell{padding:.4rem;font-size:.8rem;min-height:4.4rem}
+  .colh{font-size:.8rem}
+  h2{font-size:1.6rem}
+  #s1 h1{font-size:2.1rem}
+  .loop{aspect-ratio:auto;max-height:none;display:grid;gap:.6rem}
+  .loop svg{display:none}
+  .node{position:static;width:auto}
+  .loopc{position:static}
+  .hint{display:none}
+  .qbar .q{flex-basis:100%}
+  .side{position:static}
+  .slide.active .walk{animation-name:walkS}
+}
+@keyframes walkS{from{transform:translate(0,0)}to{transform:translate(95px,-48px)}}
+@media print{#app>header,footer,#notes{display:none}.slide{display:block!important}}
+</style>
+</head>
+<body>
+<!-- Icon sprite: decorative (aria-hidden); every icon is paired with a text label -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 2.5 4.5 5.5v6c0 4.6 3.1 8.2 7.5 10 4.4-1.8 7.5-5.4 7.5-10v-6z"/><path d="M8.5 12.2l2.5 2.5 4.6-5"/></symbol>
+  <symbol id="i-cloud" viewBox="0 0 24 24"><path d="M7 17.5h10.5a4 4 0 0 0 .6-7.95A6 6 0 0 0 6.6 8.7 4.4 4.4 0 0 0 7 17.5z"/><path d="M9 21h1.5M13.5 21H15" /></symbol>
+  <symbol id="i-flag" viewBox="0 0 24 24"><path d="M6 21V4M6 4h11l-2.5 4 2.5 4H6"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+  <symbol id="i-doc" viewBox="0 0 24 24"><path d="M7 3h7l4 4v14H7zM14 3v4h4M9.5 12h6M9.5 16h6"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></symbol>
+</svg>
+
+<div id="app">
+  <div id="progress" role="progressbar" aria-label="Presentation progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div>
+
+  <header class="top">
+    <span class="wordmark">Wilmington University</span>
+    <span class="partlabel" id="partlabel"></span>
+    <span class="slidenum" id="slidenum" aria-label="Slide number"></span>
+  </header>
+
+  <main id="stage" tabindex="-1">
+
+<!-- ====================== 1. TITLE ====================== -->
+<section class="slide" id="s1" data-title="Title" data-part="Opening" data-theme="dark">
+  <div class="blobs" aria-hidden="true"><i></i><i></i><i></i></div>
+  <p class="kicker a" style="color:var(--primary-2)">Graduate educator-AI course</p>
+  <h1 class="a">Designing for every learner, grounding every answer: UDL and AI</h1>
+  <p class="sub a">A microlecture for educators</p>
+  <p class="meta a"><span data-cfg="PRESENTER_NAME"></span><br><span data-cfg="COURSE_NAME"></span><br><span data-cfg="DATE"></span></p>
+</section>
+
+<!-- ====================== 2. WHERE WE'RE GOING ====================== -->
+<section class="slide" id="s2" data-title="Where we're going" data-part="Opening">
+  <h2 class="a">Where we're going</h2>
+  <div class="road a">
+    <svg viewBox="0 0 900 110" role="img" aria-label="A winding path with three numbered stops: UDL, Grounding, and Putting them together.">
+      <path class="path" d="M20 80 C90 80 90 55 150 55 S300 15 450 55 S600 95 750 55 S860 40 890 40"/>
+      <g class="stopg" style="--d:0"><circle class="stop" cx="150" cy="55" r="30"/><text x="150" y="65">1</text></g>
+      <g class="stopg" style="--d:1"><circle class="stop" cx="450" cy="55" r="30"/><text x="450" y="65">2</text></g>
+      <g class="stopg" style="--d:2"><circle class="stop" cx="750" cy="55" r="30"/><text x="750" y="65">3</text></g>
+    </svg>
+  </div>
+  <div class="stops a"><div><h3>UDL</h3><p>Design for learner variability</p></div><div><h3>Grounding</h3><p>Anchor AI answers to your source</p></div><div><h3>Putting them together</h3><p>Grounded prompts that produce UDL options</p></div></div>
+  <div class="card a">
+    <h3>By the end you can:</h3>
+    <ol class="outcomes">
+      <li>name the three UDL principles and tell a real option from a label,</li>
+      <li>explain grounding and show how attaching a source changes what AI invents,</li>
+      <li>write one grounded prompt that produces UDL options for a lesson.</li>
+    </ol>
+  </div>
+  <p class="a tip"><b>Using this on your own?</b> Press <b>Next</b> (or the right arrow). A yellow <b>Reveal</b> button shows the next step on a slide. <b>Notes</b> explains each slide, <b>Menu</b> jumps anywhere, and <b>Accessibility</b> offers larger text, high contrast, and less motion.</p>
+</section>
+
+<!-- ====================== 3. HOOK ====================== -->
+<section class="slide" id="s3" data-title="The hook: AI sounds sure" data-part="Opening">
+  <h2 class="a">AI sounds sure</h2>
+  <div class="chat a">
+    <div class="bubble me">What is the late work policy at Riverside High School?</div>
+    <div class="bubble ai">
+      <span class="sr-only" id="s3full">Riverside High School gives every student a 7-day grace period with no penalty. After that, the principal must approve any late work in writing, and a signed parent note is required for every extension.</span>
+      <span class="typed" aria-hidden="true" data-text="Riverside High School gives every student a 7-day grace period with no penalty. After that, the principal must approve any late work in writing, and a signed parent note is required for every extension."></span><span class="caret" aria-hidden="true"></span>
+    </div>
+    <span class="badge-ill" style="align-self:flex-start">Illustrative example, not a live AI response (the policy it describes is invented)</span>
+  </div>
+  <div data-build="1" style="margin-top:.5rem"><span class="stamp">Sounds right. Is it right?</span></div>
+  <p data-build="2" class="big">Fluent is not the same as true.</p>
+</section>
+
+<!-- ====================== 4. UDL IN ONE IDEA ====================== -->
+<section class="slide" id="s4" data-title="UDL in one idea" data-part="Part 1 · UDL">
+  <p class="kicker a">Part 1 · Universal Design for Learning</p>
+  <h2 class="a">Learners vary. Design for that from the start, so fewer students need a workaround later.</h2>
+  <div class="doors a">
+    <figure>
+      <svg viewBox="0 0 440 330" role="img" aria-label="A building with a narrow door raised above the ground by one stair. A person in a wheelchair waits at the bottom and cannot get in.">
+        <rect class="wall" x="40" y="50" width="360" height="250"/>
+        <rect class="door" x="190" y="120" width="60" height="130"/>
+        <rect class="stoop" x="150" y="250" width="140" height="50"/>
+        <line class="ground" x1="0" y1="300" x2="440" y2="300"/>
+        <g class="person"><circle class="fill" cx="80" cy="233" r="11"/><path d="M80 246v22l22 4"/><circle cx="82" cy="278" r="20"/></g>
+        <path d="M112 262 l-14 -14 M98 262 l14 -14" stroke="#B3261E" stroke-width="5" stroke-linecap="round"/>
+      </svg>
+      <figcaption>One way in</figcaption>
+    </figure>
+    <figure data-build="1">
+      <svg viewBox="0 0 440 330" role="img" aria-label="A building with a wide door frame, a gentle ramp, and an automatic door opener. A person in a wheelchair rolls up the ramp and in.">
+        <rect class="wall" x="20" y="50" width="400" height="250"/>
+        <rect class="door" x="190" y="115" width="130" height="135"/>
+        <rect class="opener" x="225" y="96" width="60" height="14" rx="4"/>
+        <circle class="opener pulse" cx="255" cy="86" r="7"/>
+        <polygon class="ramp" points="60,300 190,250 190,300"/>
+        <line class="ground" x1="0" y1="300" x2="440" y2="300"/>
+        <g class="walk"><g class="person"><circle class="fill" cx="80" cy="233" r="11"/><path d="M80 246v22l22 4"/><circle cx="82" cy="278" r="20"/></g></g>
+      </svg>
+      <figcaption>Many ways in: wide frame, ramp, automatic opener</figcaption>
+    </figure>
+  </div>
+  <p data-build="2" class="big" style="font-size:1.5rem">The barrier is in the design, not the student.</p>
+</section>
+
+<!-- ====================== 5. THREE PRINCIPLES ====================== -->
+<section class="slide" id="s5" data-title="The three principles" data-part="Part 1 · UDL">
+  <p class="kicker a">Part 1 · UDL</p>
+  <div class="a" style="display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap">
+    <h2>Three principles: the why, the what, the how</h2>
+    <div class="seg" role="group" aria-label="Grade band"><button type="button" data-band="K" aria-pressed="true">K-5</button><button type="button" data-band="H" aria-pressed="false">9-12</button></div>
+  </div>
+  <p class="a lede">Click a card to open it.</p>
+  <div class="pcards a" id="pcards"></div>
+</section>
+
+<!-- ====================== 6. NINE GUIDELINES ====================== -->
+<section class="slide" id="s6" data-title="The nine guidelines explorer" data-part="Part 1 · UDL">
+  <p class="kicker a">Part 1 · UDL Guidelines 3.0</p>
+  <h2 class="a">The nine guidelines: click any cell</h2>
+  <div class="explore a">
+    <div>
+      <div class="gridwrap" id="gridwrap"></div>
+      <p class="small" style="margin-top:.6rem">Rows move from teacher-held support toward student ownership, with the goal of learner agency: purposeful and reflective, resourceful and authentic, strategic and action-oriented.</p>
+    </div>
+    <aside class="card side" id="gside" aria-live="polite"><p class="lede">Pick a cell to see a plain-language explanation and a classroom example.</p></aside>
+  </div>
+</section>
+
+<!-- ====================== 7. REAL OPTION OR LABEL ====================== -->
+<section class="slide" id="s7" data-title="Real option or just a label?" data-part="Part 1 · UDL">
+  <p class="kicker a">Part 1 · UDL</p>
+  <div class="a" style="display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap">
+    <h2>Real option, or just a label?</h2>
+    <span><b id="sortscore" role="status">0 of 6 sorted</b> <button class="btn" id="sortreset" type="button">Reset</button></span>
+  </div>
+  <p class="a" style="margin:0">Drag each card to a bin, or use the buttons on the card.</p>
+  <div class="sortwrap a">
+    <div class="pool" id="pool"></div>
+    <div class="bins">
+      <div class="bin real" data-bin="real" id="bin-real"><h3><svg class="ico"><use href="#i-check"/></svg> Real option</h3><div class="drops"></div></div>
+      <div class="bin label" data-bin="label" id="bin-label"><h3><svg class="ico"><use href="#i-x"/></svg> Label only</h3><div class="drops"></div></div>
+    </div>
+  </div>
+  <p class="big" id="sortend" role="status" style="font-size:1.6rem"></p>
+</section>
+
+<!-- ====================== 8. WHAT'S NEW IN 3.0 ====================== -->
+<section class="slide" id="s8" data-title="What's new in 3.0 (July 2024)" data-part="Part 1 · UDL">
+  <p class="kicker a">Part 1 · UDL</p>
+  <h2 class="a">What's new in 3.0 (July 2024)</h2>
+  <div class="tl8 a" role="img" aria-label="Timeline of CAST UDL Guidelines versions: 1.0 in 2008, 2.0 in 2011, 2.2 in 2018, and 3.0 in July 2024.">
+    <div><i></i><b>2008</b>v1.0</div><div><i></i><b>2011</b>v2.0</div><div><i></i><b>2018</b>v2.2</div><div class="now"><i></i><b>July 2024</b>v3.0</div>
+  </div>
+  <div class="grid3">
+    <div class="card new" data-build="1"><h3>From "provide" to "design"</h3><p>Wording shifts: don't just hand out options later. Design them in.</p></div>
+    <div class="card new" data-build="2"><h3>Identity, bias, belonging, joy</h3><p>Stronger attention to who learners are and whether they feel they belong.</p></div>
+    <div class="card new" data-build="3"><h3>New considerations</h3><ul><li><b>1.3</b> Represent diverse perspectives and identities authentically</li><li><b>6.5</b> Challenge exclusionary practices</li><li><b>9.4</b> Cultivate empathy and restorative practices</li></ul></div>
+  </div>
+  <p class="tip a"><b>Start small:</b> add one more option for engagement, one for representation, one for action and expression.</p>
+</section>
+
+<!-- ====================== 9. HOW AI ANSWERS ====================== -->
+<section class="slide" id="s9" data-title="How AI answers" data-part="Part 2 · Grounding">
+  <p class="kicker a">Part 2 · Grounding</p>
+  <h2 class="a">How AI answers: it predicts, it doesn't look up</h2>
+  <div class="model a">
+    <div class="card">
+      <p class="small" style="margin:0">Prompt: "What happens to late work?" <span class="badge-ill">Illustrative numbers</span></p>
+      <div class="sentence" id="tokSentence" aria-hidden="true"></div>
+      <p class="sr-only">An animation shows an AI choosing one word at a time. At each step it ranks likely next words, such as schools, teachers, or students, and picks a likely one. It is predicting from patterns, not checking a source.</p>
+      <div style="display:flex;gap:.5rem"><button class="btn" id="tokStep" type="button">Next word</button><button class="btn" id="tokReplay" type="button">Replay</button></div>
+    </div>
+    <div class="card"><h3>Likely next words</h3><div class="cands" id="cands" aria-hidden="true"></div></div>
+  </div>
+  <div class="grid2" data-build="1">
+    <div class="card"><h3><svg class="ico"><use href="#i-check"/></svg> What it does</h3><p>Predicts likely next words from patterns in its training.</p></div>
+    <div class="card"><h3><svg class="ico"><use href="#i-x"/></svg> What it doesn't do by default</h3><p>Check a source.</p></div>
+  </div>
+  <p data-build="2" class="big" style="font-size:1.5rem">When it doesn't know, it still writes something that sounds right.</p>
+</section>
+
+<!-- ====================== 10. WHAT GROUNDING IS ====================== -->
+<section class="slide" id="s10" data-title="What grounding is" data-part="Part 2 · Grounding">
+  <p class="kicker a">Part 2 · Grounding</p>
+  <h2 class="a">What grounding is</h2>
+  <p class="a lede"><b>Grounding</b> means anchoring the AI's answer to source material you supply, so every claim can be traced back and checked.</p>
+  <div class="gdiagram a">
+    <div class="gframe">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.3rem;flex-wrap:wrap;gap:.5rem">
+        <span class="pill pill-u only-b0"><svg class="ico"><use href="#i-cloud"/></svg> NOT GROUNDED</span>
+        <span class="pill pill-g only-b1"><svg class="ico"><use href="#i-shield"/></svg> GROUNDED</span>
+        <button class="btn" id="s10replay" type="button">Replay</button>
+      </div>
+      <svg viewBox="0 0 720 340" role="img" aria-label="Animation. A floating answer balloon drifts with nothing holding it. When a source document slides in, a line connects the balloon to the document and the balloon settles.">
+        <g class="balloon-pos"><g class="balloon-drift">
+          <ellipse class="balloon" cx="0" cy="0" rx="95" ry="68"/>
+          <text class="svgt" x="0" y="8">AI answer</text>
+        </g></g>
+        <g class="docg">
+          <rect class="sheet" x="470" y="60" width="200" height="230" rx="12"/>
+          <text class="svgt" x="570" y="100">Your source</text>
+          <line x1="495" y1="130" x2="645" y2="130"/><line x1="495" y1="160" x2="645" y2="160"/><line x1="495" y1="190" x2="620" y2="190"/><line x1="495" y1="220" x2="645" y2="220"/><line x1="495" y1="250" x2="600" y2="250"/>
+        </g>
+        <path class="tether" d="M345 235 C 400 270, 430 175, 470 175"/>
+      </svg>
+    </div>
+  </div>
+  <p data-build="2" class="big" style="font-size:1.5rem">Grounded answers can be checked. Ungrounded answers have to be trusted.</p>
+</section>
+
+<!-- ====================== 11. DEMO 1 ====================== -->
+<section class="slide" id="s11" data-title="Demo 1: a school policy question" data-part="Part 2 · Grounding">
+  <div class="demo" id="demo1" data-view="split" data-attached="false">
+    <svg class="tl" aria-hidden="true"><path/><circle r="7"/></svg>
+    <div class="qbar a">
+      <h2>Same question, two answers</h2>
+      <div class="seg" role="group" aria-label="View"><button type="button" data-view="split" aria-pressed="true">Split view</button><button type="button" data-view="toggle" aria-pressed="false">Toggle view</button></div>
+      <div class="attach"><button type="button" class="switch" role="switch" aria-checked="false" id="attachSw"><span class="knob"></span> Attach the source</button></div>
+    </div>
+    <div class="q a"><b>Question:</b> "A student turned in an essay 3 school days late with no excused absence. What happens to the grade?"</div>
+    <div class="js-source a" data-prefix="s11" data-open="1"></div>
+    <div class="panels a">
+      <article class="panel st-u" id="p-u" aria-label="Not grounded answer">
+        <header><span class="pill pill-u"><svg class="ico"><use href="#i-cloud"/></svg> NOT GROUNDED</span><span class="badge-ill">Illustrative example</span></header>
+        <p class="ans" id="uAns"></p>
+        <p class="inspect" role="status" id="uInspect">Hover or tap an underlined claim.</p>
+        <p class="notether"><svg viewBox="0 0 48 14" aria-hidden="true"><path d="M2 7h30" stroke="currentColor" stroke-width="3" stroke-dasharray="4 5" stroke-linecap="round" fill="none"/><path d="M38 2l8 10M46 2l-8 10" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg> No tether to a source</p>
+      </article>
+      <article class="panel st-g" id="p-g" aria-label="Grounded answer">
+        <header><span class="pill pill-g"><svg class="ico"><use href="#i-shield"/></svg> GROUNDED</span><span class="badge-ill">Illustrative example</span></header>
+        <p class="ans" id="gAns"></p>
+        <p class="inspect" role="status" id="gInspect">Hover or tap a claim or its S-chip to see the source sentence.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ====================== 12. DEMO 2 ====================== -->
+<section class="slide" id="s12" data-title="Demo 2: It's not in the source" data-part="Part 2 · Grounding">
+  <div class="demo">
+    <div class="qbar a"><h2>"It's not in the source."</h2><button type="button" class="btn" id="scanBtn"><svg class="ico"><use href="#i-doc"/></svg> Search the source for "extra credit"</button></div>
+    <div class="q a" style="background:var(--primary-4);color:#fff;border-radius:1rem;padding:.5rem 1rem"><b>Question:</b> "Can the student earn extra credit to make up the points?"</div>
+    <div class="js-source a" data-prefix="s12" data-open="1" data-scan="1"></div>
+    <div class="panels a">
+      <article class="panel st-u" aria-label="Not grounded answer">
+        <header><span class="pill pill-u"><svg class="ico"><use href="#i-cloud"/></svg> NOT GROUNDED</span><span class="badge-ill">Illustrative example</span></header>
+        <p class="ans">Yes, many teachers allow <span class="claim u" style="cursor:default">extra credit up to 5%</span> to offset late penalties, usually through an extra assignment. <span class="chip chip-u">? invented</span></p>
+        <p class="inspect" style="margin-top:.5rem">The policy says nothing about this.</p>
+      </article>
+      <article class="panel st-g" data-build="1" aria-label="Grounded answer">
+        <header><span class="pill pill-g"><svg class="ico"><use href="#i-shield"/></svg> GROUNDED</span><span class="badge-ill">Illustrative example</span></header>
+        <p class="ans">The attached policy does not say whether extra credit can offset late penalties. <b>Not in the source.</b> Please check with the department or the teacher.</p>
+        <p class="exit-call"><b>Why:</b> the prompt gave an exit: <i>"If the source does not cover something, write 'not in the source.'"</i></p>
+      </article>
+    </div>
+    <p data-build="2" class="big" style="font-size:1.4rem">A good grounded prompt gives the model permission to say "not in the source."</p>
+  </div>
+</section>
+
+<!-- ====================== 13. FIND THE SLIP ====================== -->
+<section class="slide" id="s13" data-title="Demo 3: Grounded is not perfect. Find the slip." data-part="Part 2 · Grounding">
+  <div class="demo" id="demo3">
+    <svg class="tl" aria-hidden="true"><path/><circle r="7"/></svg>
+    <div class="qbar a"><h2>Grounded is not perfect: find the slip</h2><span class="small" id="checkedCount" role="status">Checked 0 of 4 claims</span></div>
+    <div class="q a" style="background:var(--primary-4);color:#fff;border-radius:1rem;padding:.5rem 1rem"><b>Question:</b> "What if the student had been absent 2 days with an excuse?" Click each claim to check it against the source.</div>
+    <div class="js-source a" data-prefix="s13" data-open="1"></div>
+    <article class="panel st-g a" aria-label="Grounded answer with four claims">
+      <header><span class="pill pill-g"><svg class="ico"><use href="#i-shield"/></svg> GROUNDED</span><span class="badge-ill">Illustrative example</span><span class="pill pill-p" data-build="1"><svg class="ico"><use href="#i-flag"/></svg> PROBLEM FOUND: claim 3</span></header>
+      <ol class="claims" id="claims"></ol>
+    </article>
+    <div class="fix" data-build="2"><b>Fix:</b> add "Quote the exact sentence for each claim, and remove any claim you can't quote."<br><b>Grounding reduces invention. It does not remove it. You are the last check.</b></div>
+  </div>
+</section>
+
+<!-- ====================== 14. PROMPT BUILDER ====================== -->
+<section class="slide" id="s14" data-title="Grounding recipe: build a prompt" data-part="Part 2 · Grounding">
+  <p class="kicker a">Part 2 · Grounding</p>
+  <h2 class="a">The grounding recipe: build a prompt</h2>
+  <div class="builder a">
+    <div>
+      <div class="sw-list" id="swlist" role="group" aria-label="Prompt parts"></div>
+      <p style="margin:.6rem 0 0"><b>Grounding meter:</b> <span id="meterTxt">0 of 5</span></p>
+      <div class="meter" id="meter" role="meter" aria-label="Grounding meter" aria-valuemin="0" aria-valuemax="5" aria-valuenow="0"><i></i><i></i><i></i><i></i><i></i></div>
+      <div style="display:flex;gap:.5rem"><button class="btn" type="button" id="allOn">Turn all on</button><button class="btn" type="button" id="allOff">Reset</button></div>
+    </div>
+    <div>
+      <pre class="prompt" id="promptOut" aria-live="polite"><span class="pline" data-l="1">Here is my source: [paste text, standard, or rubric].</span><span class="pline" data-l="2a">Create [the version I need] for [grade level and need, with no student names or identifying details].</span><span class="pline" data-l="2b">Using only this source, create [the version I need] for [grade level and need, with no student names or identifying details].</span><span class="pline" data-l="3">If the source does not cover something, write "not in the source" instead of adding it.</span><span class="pline" data-l="5">First, quote the lines you will rely on. Then write your answer from those quotes.</span><span class="pline" data-l="4">After each key point, quote the line it came from.</span><span class="pline" data-l="4b">Then list anything you were unsure about.</span></pre>
+      <div style="display:flex;gap:.6rem;align-items:center;margin:.5rem 0"><button class="btn" type="button" id="copyBtn">Copy prompt</button><span id="copyMsg" role="status" class="small"></span></div>
+      <div class="prev st-u" id="prev"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ====================== 15. GROUNDING VS WHAT YOU HEAR ====================== -->
+<section class="slide" id="s15" data-title="Grounding vs. what you may hear" data-part="Part 2 · Grounding">
+  <p class="kicker a">Part 2 · Grounding</p>
+  <h2 class="a">Grounding vs. what you may hear</h2>
+  <div class="vs a">
+    <div class="card"><h3>RAG is a technique</h3><p>Retrieval-augmented generation fetches documents and adds them to the prompt. Introduced to the research community by Lewis et al., 2020.</p></div>
+    <div class="arrow" aria-label="is one way to reach">&rarr;</div>
+    <div class="card st-g"><h3><svg class="ico"><use href="#i-shield"/></svg> Grounding is the goal</h3><p>Every claim traceable to a source you chose.</p></div>
+  </div>
+  <div class="card st-u a"><h3><svg class="ico"><use href="#i-flag"/></svg> Grounded is not the same as factual</h3><p>Grounding ties claims to the source <b>you choose</b>. A bad or outdated source gives a confidently wrong grounded answer.</p></div>
+  <div class="a"><p style="margin:0 0 .4rem"><b>Words you may hear:</b> (hover, focus, or tap)</p>
+    <div class="chips" id="terms"></div>
+    <p class="card" id="termDef" role="status" style="margin-top:.6rem">Choose a term.</p>
+  </div>
+</section>
+
+<!-- ====================== 16. THE LOOP ====================== -->
+<section class="slide" id="s16" data-title="The loop" data-part="Part 3 · Putting it together">
+  <p class="kicker a">Part 3 · Putting it together</p>
+  <h2 class="a">The loop</h2>
+  <div class="loop a" id="loop">
+    <svg viewBox="0 0 800 430" aria-hidden="true">
+      <defs><marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#014E25"/></marker></defs>
+      <path class="arr" d="M254 62 H544" marker-end="url(#ah)"/>
+      <path class="arr" d="M676 122 V306" marker-end="url(#ah)"/>
+      <path class="arr" d="M544 368 H254" marker-end="url(#ah)"/>
+      <path class="arr" d="M124 306 V122" marker-end="url(#ah)"/>
+    </svg>
+    <button class="node n1" type="button" aria-pressed="false" data-i="0"><b>1. Your source</b><span>standard, text, rubric</span></button>
+    <button class="node n2" type="button" aria-pressed="false" data-i="1"><b>2. Grounded prompt</b><span>source + limits + exit</span></button>
+    <button class="node n3" type="button" aria-pressed="false" data-i="2"><b>3. UDL options</b><span>engagement / representation / action &amp; expression</span></button>
+    <button class="node n4" type="button" aria-pressed="false" data-i="3"><b>4. Teacher check</b><span>back to the source</span></button>
+    <div class="loopc" id="loopc" role="status">Hover or focus a step to see an example.</div>
+  </div>
+  <p class="big a" style="font-size:1.4rem">UDL says which options your students need. Grounding keeps every option true to your lesson.</p>
+</section>
+
+<!-- ====================== 17. SAME SOURCE, THREE BARRIERS ====================== -->
+<section class="slide" id="s17" data-title="Same source, three barriers" data-part="Part 3 · Putting it together">
+  <div class="demo" id="demo17">
+    <svg class="tl" aria-hidden="true"><path id="tl17a"/><circle r="7"/></svg>
+    <div class="qbar a"><h2>Same source, three barriers</h2>
+      <div class="seg" role="group" aria-label="Grade band"><button type="button" data-band="K" aria-pressed="true">K-5</button><button type="button" data-band="H" aria-pressed="false">9-12</button></div>
+      <button type="button" class="btn" id="runCheck"><svg class="ico"><use href="#i-shield"/></svg> Run grounding check</button></div>
+    <div class="src17 a" id="src17"></div>
+    <div class="cards17 a" id="cards17"></div>
+  </div>
+</section>
+
+<!-- ====================== 18. KEEP SOME OF IT HUMAN ====================== -->
+<section class="slide" id="s18" data-title="Keep some of it human" data-part="Part 3 · Putting it together">
+  <p class="kicker a">Part 3 · Putting it together</p>
+  <h2 class="a">Keep some of it human</h2>
+  <div class="human a">
+    <div class="card"><h3>AI can help draft</h3><ul><li>Alternate formats</li><li>Glossaries</li><li>Scaffolds</li><li>Sentence starters</li></ul></div>
+    <div class="card"><h3>Keep human</h3><ul><li>Relationships</li><li>Judgment about a particular child</li><li>Tasks where the struggle is the learning</li></ul></div>
+  </div>
+  <p class="a" style="margin:0"><b>Which would you keep human?</b></p>
+  <div class="hsort a" id="hsort"></div>
+  <p class="big a" style="font-size:1.35rem">Which part of your next lesson will you keep entirely human, and why?</p>
+</section>
+
+<!-- ====================== 19. DATA RULE ====================== -->
+<section class="slide" id="s19" data-title="Data rule, every time" data-part="Part 3 · Putting it together">
+  <p class="kicker a">Part 3 · Putting it together</p>
+  <h2 class="a">Data rule, every time</h2>
+  <div class="rule a">
+    <span class="pill pill-p" style="justify-self:start"><svg class="ico"><use href="#i-flag"/></svg> ALWAYS</span>
+    <ul>
+      <li><svg class="ico"><use href="#i-check"/></svg><span>Use <b>invented or de-identified</b> data only.</span></li>
+      <li><svg class="ico"><use href="#i-x"/></svg><span><b>Never</b> enter IEP content, disability status, or evaluation results into a general AI tool.</span></li>
+      <li><svg class="ico"><use href="#i-x"/></svg><span>No student names, IDs, or records in decks, HTML files, or scripts.</span></li>
+      <li><svg class="ico"><use href="#i-check"/></svg><span>Follow your district's AI policy.</span></li>
+    </ul>
+  </div>
+  <div class="safe a">
+    <div class="st-g"><span class="pill pill-g"><svg class="ico"><use href="#i-check"/></svg> SAFE</span><p>"A Grade 4 student who reads below grade level and needs a glossary."</p></div>
+    <div class="st-u"><span class="pill pill-p"><svg class="ico"><use href="#i-flag"/></svg> NOT SAFE</span><p>A real student's name, ID, or diagnosis pasted into a chat.</p></div>
+  </div>
+</section>
+
+<!-- ====================== 20. QUIZ ====================== -->
+<section class="slide" id="s20" data-title="Practice check (5 questions)" data-part="Close">
+  <p class="kicker a">Close</p>
+  <div class="a" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.6rem"><h2>Practice check</h2><div class="qprog" id="qprog" aria-hidden="true"></div></div>
+  <div class="quiz a" id="quiz"></div>
+</section>
+
+<!-- ====================== 21. TAKEAWAYS ====================== -->
+<section class="slide" id="s21" data-title="Takeaways and sources" data-part="Close">
+  <p class="kicker a">Close</p>
+  <h2 class="a">Three takeaways</h2>
+  <div class="take a">
+    <div class="card"><svg class="chk" viewBox="0 0 48 48" aria-hidden="true" style="--d:0"><circle cx="24" cy="24" r="22" fill="#014E25"/><path d="M13 25l8 8 14-17"/></svg><span><b>Design options up front,</b> with the goal fixed.</span></div>
+    <div class="card"><svg class="chk" viewBox="0 0 48 48" aria-hidden="true" style="--d:1"><circle cx="24" cy="24" r="22" fill="#014E25"/><path d="M13 25l8 8 14-17"/></svg><span><b>Attach the source,</b> constrain to it, give an exit, require evidence.</span></div>
+    <div class="card"><svg class="chk" viewBox="0 0 48 48" aria-hidden="true" style="--d:2"><circle cx="24" cy="24" r="22" fill="#014E25"/><path d="M13 25l8 8 14-17"/></svg><span><b>You are the final check.</b></span></div>
+  </div>
+  <details class="srcs a"><summary>Sources</summary>
+    <ul>
+      <li>CAST. <i>Universal Design for Learning Guidelines 3.0</i> (2024). udlguidelines.cast.org</li>
+      <li>Lewis, P., et al. (2020). Retrieval-augmented generation for knowledge-intensive NLP tasks.</li>
+      <li>Wilmington University design system, color: wilmu.edu/design-system/color.aspx</li>
+    </ul>
+  </details>
+</section>
+
+  </main>
+
+  <aside id="notes" hidden aria-label="Speaker notes"><h2>Speaker notes</h2><p id="notesText"></p></aside>
+
+  <footer class="controls">
+    <div class="ctl-group">
+      <button class="btn" id="btnBack" type="button">&larr; Back</button>
+      <button class="btn btn-accent" id="btnNext" type="button">Next &rarr;</button>
+    </div>
+    <span class="hint">&larr; &rarr; or Space: move &middot; M menu &middot; N notes &middot; A accessibility &middot; Esc close</span>
+    <div class="ctl-group">
+      <button class="btn" id="btnMenu" type="button" aria-haspopup="dialog">Menu</button>
+      <button class="btn" id="btnNotes" type="button" aria-expanded="false">Notes</button>
+      <button class="btn" id="btnA11y" type="button" aria-expanded="false" aria-controls="a11y">Accessibility</button>
+    </div>
+  </footer>
+</div>
+
+<div id="menu" hidden role="dialog" aria-modal="true" aria-label="Slide menu"><div class="box"><h2>Slides</h2><div id="menuList"></div><p style="margin-top:.8rem"><button class="btn btn-accent" id="menuClose" type="button">Close (Esc)</button></p></div></div>
+
+<div id="a11y" hidden role="group" aria-label="Accessibility options">
+  <h2>Accessibility</h2>
+  <label><input type="checkbox" id="optRM"> Reduce motion</label>
+  <label><input type="checkbox" id="optLG"> Larger text</label>
+  <label><input type="checkbox" id="optHC"> High contrast</label>
+  <label><input type="checkbox" id="optAB"> Show all builds at once</label>
+</div>
+<div id="live" class="sr-only" aria-live="polite" role="status"></div>
+<script>
+/* =====================================================================
+   CONFIG: edit these three lines before presenting
+   ===================================================================== */
+const PRESENTER_NAME = '[Presenter name]';
+const COURSE_NAME    = '[Course name]';
+const DATE           = '[Date]';
+
+(function () {
+'use strict';
+/* =====================================================================
+   HELPERS
+   ===================================================================== */
+const $  = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+const root = document.documentElement;
+const RM   = () => root.classList.contains('rm');
+const ALLB = () => root.classList.contains('allb');
+const NS = 'http://www.w3.org/2000/svg';
+let timers = [];
+const T = (fn, ms) => { const id = setTimeout(fn, ms); timers.push(id); return id; };
+const clearTimers = () => { timers.forEach(clearTimeout); timers = []; };
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const ico = id => `<svg class="ico" aria-hidden="true"><use href="#${id}"/></svg>`;
+const live = $('#live');
+function announce(msg) { live.textContent = ''; setTimeout(() => { live.textContent = msg; }, 60); }
+
+/* =====================================================================
+   NOTES (speaker notes, 2-4 sentences per slide)
+   ===================================================================== */
+const NOTES = [
+/*1*/ 'Welcome. This is a short tour of two ideas that fit together: designing learning so more students can succeed (UDL), and anchoring AI answers to sources you choose (grounding). Everything on screen is invented sample content; no student data appears anywhere in this deck.',
+/*2*/ 'Three stops on our path. Read the outcomes aloud and say that the last one is a prompt they can take back to their classroom. Point out the Accessibility menu (press A): the deck itself is built to model what we teach.',
+/*3*/ 'Let the answer type out and ask: who would believe this? Then reveal the stamp. The policy is invented, and the AI sounds equally sure whether or not it knows. Fluency is a property of the writing, not of the facts.',
+/*4*/ 'UDL starts from the idea that variability is the norm, not the exception. The stair-only door is a design choice, not a flaw in the person. The second door offers several ways in without anyone having to ask. Ask where their own rooms still have a single stair.',
+/*5*/ 'Engagement is the why, representation is the what, and action and expression is the how. Use the K-5 and 9-12 toggle to show the same principle at both levels. Open one card at a time and invite a second example from their own classrooms.',
+/*6*/ 'Walk the grid by column. The rows move from access to support to executive function: the teacher holds more at the top, and the student takes more ownership toward the bottom, aiming at learner agency. Let participants click the cell that matches a challenge they have right now.',
+/*7*/ 'Have the group vote on each card before the sort. The test is whether learners get a real choice or alternative while the goal stays fixed. Close with: keep the goal fixed, flex the means.',
+/*8*/ 'Version 3.0 was released in July 2024. The big shifts: language moves from provide to design, and there is more attention to identity, bias, belonging, and joy. Mention the three new considerations (1.3, 6.5, 9.4), and double-check the numbering on the CAST site before you quote it. Encourage a small start.',
+/*9*/ 'Watch the model pick one word at a time. The numbers are illustrative. The key idea: it predicts likely text from patterns, and by default it does not open a document and look anything up. So when it lacks knowledge, it still produces something plausible.',
+/*10*/ 'Define grounding in plain words, then click Reveal. The source slides in, the tether draws, and the answer settles. Point to the label, icon, and border change: the meaning never relies on color alone. Use Replay as needed.',
+/*11*/ 'This is the centerpiece. Start in Split view and read the shared question. Hover claims on the left: no source. Hover claims or S-chips on the right: the exact sentence glows and a tether is drawn. Then switch to Toggle view and flip Attach the source to watch the same chat transform.',
+/*12*/ 'The question is not covered by the policy. The ungrounded answer invents an extra-credit rule; the grounded one says it is not in the source. Use the search button to show that zero sentences mention it. The exit instruction is what makes that honest answer possible.',
+/*13*/ 'Grounded does not mean perfect. Ask the group to click each claim and check it against the source. Claim 3 has no matching sentence. After the reveal, show the fix. The message: you are the last check.',
+/*14*/ 'Turn the five parts on one at a time and watch the prompt assemble and the meter rise. The preview shows more claims becoming checkable. Use Copy prompt to hand them the finished template. Remind them never to paste student data into the source.',
+/*15*/ 'Keep this short. RAG is a technique that fetches documents; grounding is the goal. Grounding ties answers to your chosen source, so a bad source gives a confidently wrong grounded answer. Use the term chips for the three words they may hear.',
+/*16*/ 'This is the whole workflow in one loop. Hover each node. Your source feeds a grounded prompt, which produces UDL options, which you check against the source and against the real-option test, then revise.',
+/*17*/ 'Same source, three barriers. Switch between K-5 and 9-12. Click Run grounding check to draw a tether from each option back to the source. Each card has a mini-check: same criteria, different product is a real option.',
+/*18*/ 'AI can help with drafts, but some work stays human. Let the group answer the four-item sort and discuss any disagreement. End with the closing question and give them a quiet minute to think or write.',
+/*19*/ 'Pause here. This rule applies every time. Use invented or de-identified data only. Never put IEP content, disability status, or evaluation results into a general AI tool, and keep names, IDs, and records out of decks, HTML files, and scripts. Follow your district policy.',
+/*20*/ 'Five quick questions, one at a time. Read the scenario, take a show of hands, then click. The feedback explains each answer. Aim for discussion more than score.',
+/*21*/ 'Land the three takeaways. Open the sources list for anyone who wants to dig deeper. Remind them they can click through this file on their own at any time.'
+];
+
+/* =====================================================================
+   SLIDE ENGINE
+   ===================================================================== */
+const slides = $$('.slide');
+const stage = $('#stage');
+const step = slides.map(() => 0);
+const maxStep = slides.map(s => Math.max(0, ...$$('[data-build]', s).map(e => +e.dataset.build)));
+let cur = -1;
+const N = slides.length;
+
+function applySteps(n) {
+  const s = slides[n];
+  const eff = ALLB() ? maxStep[n] : step[n];
+  $$('[data-build]', s).forEach(e => e.classList.toggle('on', +e.dataset.build <= eff));
+  for (let k = 1; k <= maxStep[n]; k++) s.classList.toggle('b' + k, k <= eff);
+}
+function updateNav() {
+  const more = !ALLB() && step[cur] < maxStep[cur];
+  const nb = $('#btnNext');
+  nb.innerHTML = more ? 'Reveal &#9656;' : 'Next &rarr;';
+  nb.disabled = !more && cur >= N - 1;
+  $('#btnBack').disabled = cur <= 0 && step[cur] === 0;
+}
+function go(n, dir) {
+  n = Math.max(0, Math.min(N - 1, n));
+  if (n === cur) return;
+  if (cur >= 0) { slides[cur].dispatchEvent(new CustomEvent('slide:leave')); slides[cur].classList.remove('active'); clearTimers(); }
+  dir = dir || (n > cur ? 1 : -1);
+  cur = n;
+  const s = slides[n];
+  s.dataset.dir = dir > 0 ? 'fwd' : 'back';
+  step[n] = dir > 0 ? 0 : maxStep[n];
+  s.classList.add('active');
+  applySteps(n);
+  document.body.classList.toggle('dark', s.dataset.theme === 'dark');
+  $('#partlabel').textContent = s.dataset.part || '';
+  $('#slidenum').textContent = (n + 1) + ' / ' + N;
+  const pct = Math.round((n + 1) / N * 100);
+  $('#progress').style.width = pct + '%'; $('#progress').setAttribute('aria-valuenow', pct);
+  $('#notesText').textContent = NOTES[n] || '';
+  $$('#menuList button').forEach(b => b.setAttribute('aria-current', String(+b.dataset.i === n)));
+  document.title = s.dataset.title + ' (' + (n + 1) + '/' + N + ') | UDL and Grounding';
+  try { history.replaceState(null, '', '#' + (n + 1)); } catch (e) {}
+  stage.scrollTop = 0;
+  updateNav();
+  announce('Slide ' + (n + 1) + ' of ' + N + ': ' + s.dataset.title);
+  s.dispatchEvent(new CustomEvent('slide:enter'));
+}
+function next() {
+  if (!ALLB() && step[cur] < maxStep[cur]) {
+    step[cur]++; applySteps(cur); updateNav();
+    const shown = $$('[data-build="' + step[cur] + '"]', slides[cur]).map(e => e.textContent.trim()).join(' ');
+    announce(shown || 'Revealed');
+    slides[cur].dispatchEvent(new CustomEvent('slide:step', { detail: step[cur] }));
+  } else go(cur + 1, 1);
+}
+function prev() {
+  if (!ALLB() && step[cur] > 0) { step[cur]--; applySteps(cur); updateNav(); }
+  else go(cur - 1, -1);
+}
+function setStep(n, v) { step[n] = v; applySteps(n); if (n === cur) updateNav(); }
+
+/* ---------- menu, notes, accessibility ---------- */
+const menu = $('#menu');
+let menuReturn = null;
+function buildMenu() {
+  let html = '', lastPart = '';
+  slides.forEach((s, i) => {
+    if (s.dataset.part !== lastPart) { if (lastPart) html += '</ol>'; lastPart = s.dataset.part; html += `<div class="grp">${esc(lastPart)}</div><ol>`; }
+    html += `<li><button type="button" data-i="${i}">${i + 1}. ${esc(s.dataset.title)}</button></li>`;
+  });
+  $('#menuList').innerHTML = html + '</ol>';
+  $$('#menuList button').forEach(b => b.addEventListener('click', () => { closeMenu(); go(+b.dataset.i); }));
+}
+function openMenu() { menuReturn = document.activeElement; menu.hidden = false; closeA11y(); const c = $('#menuList [aria-current="true"]') || $('#menuList button'); c.focus(); }
+function closeMenu() { if (menu.hidden) return; menu.hidden = true; if (menuReturn && menuReturn.focus) menuReturn.focus(); }
+const a11y = $('#a11y');
+function openA11y() { a11y.hidden = false; $('#btnA11y').setAttribute('aria-expanded', 'true'); $('#optRM').focus(); }
+function closeA11y() { if (a11y.hidden) return; a11y.hidden = true; $('#btnA11y').setAttribute('aria-expanded', 'false'); }
+function toggleNotes(force) {
+  const n = $('#notes'); const show = force === undefined ? n.hidden : force;
+  n.hidden = !show; $('#btnNotes').setAttribute('aria-expanded', String(show));
+}
+$('#btnMenu').addEventListener('click', openMenu);
+$('#menuClose').addEventListener('click', closeMenu);
+$('#btnNotes').addEventListener('click', () => toggleNotes());
+$('#btnA11y').addEventListener('click', () => a11y.hidden ? openA11y() : closeA11y());
+$('#btnNext').addEventListener('click', next);
+$('#btnBack').addEventListener('click', prev);
+document.addEventListener('click', e => { if (!a11y.hidden && !a11y.contains(e.target) && !e.target.closest('#btnA11y')) closeA11y(); });
+function bindOpt(id, cls, after) {
+  $(id).addEventListener('change', e => { root.classList.toggle(cls, e.target.checked); if (after) after(); });
+}
+bindOpt('#optRM', 'rm'); bindOpt('#optLG', 'lg'); bindOpt('#optHC', 'hc');
+bindOpt('#optAB', 'allb', () => { if (cur >= 0) { applySteps(cur); updateNav(); } });
+if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) { root.classList.add('rm'); $('#optRM').checked = true; }
+
+document.addEventListener('keydown', e => {
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  if (e.key === 'Escape') {
+    if (!menu.hidden) closeMenu(); else if (!a11y.hidden) { closeA11y(); $('#btnA11y').focus(); } else if (!$('#notes').hidden) toggleNotes(false);
+    return;
+  }
+  if (!menu.hidden) {            // simple focus trap inside the menu dialog
+    if (e.key === 'Tab') {
+      const f = $$('#menu button'); const first = f[0], last = f[f.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+    return;
+  }
+  const t = e.target, tag = t.tagName;
+  if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+  const interactive = t.closest && t.closest('button,a,summary,input,[role="switch"]');
+  switch (e.key) {
+    case 'ArrowRight': e.preventDefault(); next(); break;
+    case 'ArrowLeft':  e.preventDefault(); prev(); break;
+    case ' ': if (!interactive) { e.preventDefault(); next(); } break;
+    case 'm': case 'M': e.preventDefault(); openMenu(); break;
+    case 'n': case 'N': e.preventDefault(); toggleNotes(); break;
+    case 'a': case 'A': e.preventDefault(); a11y.hidden ? openA11y() : closeA11y(); break;
+  }
+});
+
+/* =====================================================================
+   TETHER (SVG line drawn with stroke-dashoffset)
+   ===================================================================== */
+function drawTether(layer, from, to, idx = 0) {
+  let paths = $$('path', layer), dots = $$('circle', layer);
+  while (paths.length <= idx) {
+    const p = document.createElementNS(NS, 'path'), c = document.createElementNS(NS, 'circle'); c.setAttribute('r', 7);
+    layer.appendChild(p); layer.appendChild(c); paths = $$('path', layer); dots = $$('circle', layer);
+  }
+  const path = paths[idx], dot = dots[idx];
+  const L = layer.getBoundingClientRect(), a = from.getBoundingClientRect(), b = to.getBoundingClientRect();
+  const up = b.top < a.top;
+  const x1 = a.left + a.width / 2 - L.left, y1 = (up ? a.top : a.bottom) - L.top;
+  const x2 = Math.min(b.left + b.width / 2, b.left + 140) - L.left + idx * 60, y2 = (up ? b.bottom : b.top) - L.top;
+  const my = (y1 + y2) / 2;
+  path.setAttribute('d', `M${x1} ${y1} C ${x1} ${my}, ${x2} ${my}, ${x2} ${y2}`);
+  const len = path.getTotalLength();
+  path.style.transition = 'none'; path.style.strokeDasharray = len; path.style.strokeDashoffset = len;
+  dot.setAttribute('cx', x2); dot.setAttribute('cy', y2); dot.style.opacity = 0;
+  path.getBoundingClientRect();
+  if (RM()) { path.style.strokeDashoffset = 0; dot.style.opacity = 1; }
+  else { path.style.transition = 'stroke-dashoffset .6s ease'; path.style.strokeDashoffset = 0; setTimeout(() => { dot.style.opacity = 1; }, 520); }
+}
+function clearTether(layer) { $$('path', layer).forEach(p => p.setAttribute('d', '')); $$('circle', layer).forEach(c => { c.style.opacity = 0; }); }
+window.addEventListener('resize', () => $$('.tl').forEach(clearTether));
+
+/* =====================================================================
+   SOURCE DOCUMENT (shared by slides 11, 12, 13)
+   ===================================================================== */
+const SRC_TITLE = 'Riverside High School: Late Work Policy (fictional)';
+const SRC = [
+  ['S1', 'Late work is accepted for up to 5 school days after the due date.'],
+  ['S2', 'A penalty of 10% per school day applies, to a maximum penalty of 50%.'],
+  ['S3', 'Students with an excused absence may submit without penalty for the same number of days they were absent.'],
+  ['S4', 'Work submitted more than 5 school days late receives a maximum grade of 50% if the teacher accepts it.'],
+  ['S5', 'Projects over 2 weeks in length follow the same policy, and teachers should discuss extensions with the student before the due date.'],
+  ['S6', 'Students must submit late work through the same method as the original assignment.']
+];
+const srcText = id => SRC.find(r => r[0] === id)[1];
+$$('.js-source').forEach(el => {
+  const p = el.dataset.prefix;
+  el.classList.add('src'); el.id = p + '-src';
+  if (!el.dataset.open) el.classList.add('closed');
+  el.innerHTML = `<div class="src-head"><span>${ico('i-doc')} <b>Source document:</b> ${esc(SRC_TITLE)}</span>
+    <span class="small srcstatus" role="status"></span>${el.dataset.scan ? '<span class="scanres" role="status"></span>' : ''}
+    <button class="btn" type="button" aria-expanded="${el.dataset.open ? 'true' : 'false'}" aria-controls="${p}-body">${el.dataset.open ? 'Hide' : 'Show'}</button></div>
+    <div class="src-body" id="${p}-body"><div><ol>${SRC.map(r => `<li id="${p}-${r[0]}"><b>${r[0]}</b>${esc(r[1])}</li>`).join('')}</ol></div></div>`;
+  const btn = $('button', el);
+  btn.addEventListener('click', () => {
+    const closed = el.classList.toggle('closed');
+    btn.setAttribute('aria-expanded', String(!closed)); btn.textContent = closed ? 'Show' : 'Hide';
+  });
+});
+function hlSource(p, sid, on) {
+  const li = $('#' + p + '-' + sid); if (!li) return null;
+  $$('#' + p + '-src li.hl').forEach(x => x.classList.remove('hl'));
+  const box = $('#' + p + '-src');
+  if (on) { if (box.classList.contains('closed')) $('button', box).click(); li.classList.add('hl'); }
+  return li;
+}
+
+/* =====================================================================
+   SLIDE 1: config values
+   ===================================================================== */
+$$('[data-cfg]').forEach(el => { el.textContent = { PRESENTER_NAME, COURSE_NAME, DATE }[el.dataset.cfg]; });
+
+/* =====================================================================
+   SLIDE 3: typing chat bubble
+   ===================================================================== */
+slides[2].addEventListener('slide:enter', () => {
+  const el = $('.typed', slides[2]), text = el.dataset.text; el.textContent = '';
+  if (RM()) { el.textContent = text; return; }
+  let i = 0;
+  (function tick() { if (i <= text.length) { el.textContent = text.slice(0, i++); T(tick, 28); } })();
+});
+
+/* =====================================================================
+   SLIDE 5: three principles (flip/expand cards + band toggle)
+   ===================================================================== */
+const PR = [
+  { n: 'Engagement', w: 'the why', q: 'Why will they care and keep going?', K: ['Choose which animal to research.', 'Pick a reading buddy and a quiet or active spot.'], H: ['Pick the case study that connects to your community.', 'Set a personal goal and track it on the same rubric.'] },
+  { n: 'Representation', w: 'the what', q: 'How is the information presented?', K: ['Text plus picture plus read-aloud.', 'Key words with a picture glossary.'], H: ['Transcript, captions, glossary, and a diagram for the same source.', 'Text at adjustable size, with audio.'] },
+  { n: 'Action & Expression', w: 'the how', q: 'How do they act on it and show what they know?', K: ['Draw, tell, or label the main idea.', 'Build it with blocks, then explain it.'], H: ['Podcast, poster, or essay against the same rubric.', 'Type, dictate, or sketch notes first.'] }
+];
+let band5 = 'K';
+function renderPrinciples() {
+  const open = $$('.pcard', slides[4]).map(c => c.classList.contains('open'));
+  $('#pcards').innerHTML = PR.map((p, i) => `<article class="pcard${open[i] ? ' open' : ''}">
+    <button type="button" aria-expanded="${open[i] ? 'true' : 'false'}" aria-controls="pm${i}"><svg class="ico chev" aria-hidden="true"><use href="#i-chev"/></svg>
+      <h3>${esc(p.n)}</h3><div class="why">${esc(p.w)}</div><div class="q">Design question: ${esc(p.q)}</div></button>
+    <div class="more" id="pm${i}"><div><ul>${p[band5].map(x => `<li>${esc(x)}</li>`).join('')}</ul></div></div></article>`).join('');
+  $$('.pcard > button', slides[4]).forEach(b => b.addEventListener('click', () => {
+    const c = b.parentElement, o = c.classList.toggle('open'); b.setAttribute('aria-expanded', String(o));
+  }));
+}
+renderPrinciples();
+$$('.seg button', slides[4]).forEach(b => b.addEventListener('click', () => {
+  band5 = b.dataset.band; $$('.seg button', slides[4]).forEach(x => x.setAttribute('aria-pressed', String(x === b))); renderPrinciples();
+}));
+
+/* =====================================================================
+   SLIDE 6: nine guidelines explorer
+   ===================================================================== */
+const GL = {
+  7: ['Welcoming interests & identities', 'Offer ways in that connect to learners\' interests, cultures, and identities, so everyone feels they belong.', 'Students pick the historical figure for a report from a varied list, or propose their own.'],
+  8: ['Sustaining effort & persistence', 'Help learners keep going when work gets hard: clear goals, useful feedback, and a community to lean on.', 'A posted goal, a progress checklist, and peer check-in partners for a long project.'],
+  9: ['Emotional capacity', 'Help learners notice and manage feelings so they can keep learning.', 'A quick "how am I feeling" check-in before a test, and a calm space students can choose to use.'],
+  1: ['Perception', 'Make information reachable through more than one sense and in more than one form.', 'Every video has captions and a transcript, and text size can be changed.'],
+  2: ['Language & symbols', 'Make words, symbols, and notation clear for all learners.', 'Glossary pop-ups, sentence frames, and a key for math symbols.'],
+  3: ['Building knowledge', 'Connect new ideas to what learners already know, and help them organize it.', 'Start with a what-I-know chart; finish with a concept map.'],
+  4: ['Interaction', 'Let learners move through and use materials in different ways.', 'Answer by typing, voice dictation, or tapping, with hands-on manipulatives beside the digital version.'],
+  5: ['Expression & communication', 'Offer several tools and ways to show learning.', 'Podcast, poster, or essay, all judged on the same rubric.'],
+  6: ['Strategy development', 'Help learners set goals, plan, monitor, and reflect.', 'A project planner with checkpoints and a short end-of-task reflection.']
+};
+const GRID = [[7, 1, 4], [8, 2, 5], [9, 3, 6]], ROWS = ['Access', 'Support', 'Executive function'];
+(function () {
+  const w = $('#gridwrap');
+  let h = '<div></div>' + ['Engagement', 'Representation', 'Action & Expression'].map(c => `<div class="colh">${esc(c)}</div>`).join('');
+  GRID.forEach((row, r) => {
+    h += `<div class="rowh">${ROWS[r]}</div>` + row.map(n => `<button type="button" class="cell" aria-pressed="false" data-n="${n}"><span class="n">${n}</span>${esc(GL[n][0])}</button>`).join('');
+  });
+  w.innerHTML = h;
+  $$('.cell', w).forEach(c => c.addEventListener('click', () => {
+    $$('.cell', w).forEach(x => x.setAttribute('aria-pressed', String(x === c)));
+    const g = GL[c.dataset.n];
+    $('#gside').innerHTML = `<h3>${c.dataset.n}. ${esc(g[0])}</h3><p>${esc(g[1])}</p><p><b>Classroom example:</b> ${esc(g[2])}</p>`;
+  }));
+})();
+
+/* =====================================================================
+   SLIDE 7: real option or label (drag + click-to-assign)
+   ===================================================================== */
+const SORT = [
+  { t: '"Multiple means of expression," but every student writes the same paragraph.', a: 'label', s: 'Same paragraph for everyone', r: 'The label is there, but the means never change.' },
+  { t: 'Students choose one of three tasks (podcast, poster, essay) judged by the same rubric.', a: 'real', s: 'Three tasks, one rubric', r: 'The means flex while the goal and criteria stay fixed.' },
+  { t: '"Visual learners" get a picture on the worksheet, but there is no audio or text alternative for anyone else.', a: 'label', s: 'A picture for "visual learners"', r: 'One added format and no alternatives. Options should be open to every learner.' },
+  { t: 'The same passage is offered as text, captioned audio, and a glossary students can switch between.', a: 'real', s: 'Text, audio, glossary', r: 'Several ways to perceive the same content, available to all.' },
+  { t: 'A "choice board" where every square leads to the same worksheet.', a: 'label', s: 'Choice board, one worksheet', r: 'The choice is cosmetic. The task never changes.' },
+  { t: 'Students pick the topic from a list, and the learning goal and success criteria stay fixed.', a: 'real', s: 'Pick the topic, fixed goal', r: 'Interest drives engagement while the goal stays put.' }
+];
+let sorted = 0, correct = 0;
+function renderSort() {
+  sorted = 0; correct = 0;
+  $('#pool').innerHTML = SORT.map((c, i) => `<div class="scard" draggable="true" data-i="${i}" id="sc${i}"><span>${esc(c.t)}</span>
+    <div class="acts"><button type="button" data-c="real" aria-label="Sort as real option: ${esc(c.s)}">Real option</button><button type="button" data-c="label" aria-label="Sort as label only: ${esc(c.s)}">Label only</button></div></div>`).join('');
+  $$('.drops').forEach(d => { d.innerHTML = ''; });
+  $('#sortend').textContent = ''; scoreSort();
+  $$('#pool .scard').forEach(card => {
+    card.addEventListener('dragstart', e => { e.dataTransfer.setData('text/plain', card.dataset.i); card.classList.add('dragging'); });
+    card.addEventListener('dragend', () => card.classList.remove('dragging'));
+    $$('.acts button', card).forEach(b => b.addEventListener('click', () => place(+card.dataset.i, b.dataset.c)));
+  });
+}
+function scoreSort() { $('#sortscore').textContent = `${sorted} of 6 sorted, ${correct} correct`; }
+function place(i, choice) {
+  const c = SORT[i], card = $('#sc' + i); if (!card) return;
+  const ok = choice === c.a; sorted++; if (ok) correct++;
+  card.remove();
+  $('#bin-' + c.a + ' .drops').insertAdjacentHTML('beforeend', `<div class="placed" role="status"><b class="${ok ? 'ok' : 'no'}">${ok ? ico('i-check') + ' Correct' : ico('i-x') + ' Not quite, it is ' + (c.a === 'real' ? 'a real option' : 'label only')}.</b> <i>${esc(c.s)}:</i> ${esc(c.r)}</div>`);
+  scoreSort();
+  if (sorted === 6) $('#sortend').textContent = 'Keep the goal fixed. Flex the means.';
+}
+$$('.bin').forEach(b => {
+  b.addEventListener('dragover', e => { e.preventDefault(); b.classList.add('over'); });
+  b.addEventListener('dragleave', () => b.classList.remove('over'));
+  b.addEventListener('drop', e => { e.preventDefault(); b.classList.remove('over'); place(+e.dataTransfer.getData('text/plain'), b.dataset.bin); });
+});
+$('#sortreset').addEventListener('click', renderSort);
+renderSort();
+
+/* =====================================================================
+   SLIDE 9: token-by-token generation
+   ===================================================================== */
+const TOK = [
+  ['Most', [['Most', 34], ['Many', 22], ['Some', 14]]],
+  ['schools', [['schools', 41], ['teachers', 24], ['students', 9]]],
+  ['deduct', [['deduct', 28], ['allow', 19], ['accept', 12]]],
+  ['about', [['about', 33], ['up', 21], ['points', 14]]],
+  ['10%', [['10%', 37], ['5%', 21], ['a', 12]]],
+  ['per', [['per', 52], ['for', 18], ['of', 11]]],
+  ['day.', [['day.', 71], ['week.', 16], ['assignment.', 5]]]
+];
+let ti = 0;
+function tokReset() { clearTimers(); ti = 0; $('#tokSentence').innerHTML = ''; $('#cands').innerHTML = ''; $('#tokStep').disabled = false; }
+function tokShow(i) {
+  $('#cands').innerHTML = TOK[i][1].map(([w, p], k) => `<div class="cand${k === 0 ? ' pick' : ''}"><span>${esc(w)}</span><span class="bar"><i data-p="${p}"></i></span><span>${p}%</span></div>`).join('');
+  requestAnimationFrame(() => requestAnimationFrame(() => $$('#cands .bar i').forEach(b => { b.style.width = b.dataset.p + '%'; })));
+}
+function tokCommit(i) {
+  const sp = document.createElement('span'); sp.textContent = TOK[i][0]; $('#tokSentence').appendChild(sp);
+  ti = i + 1; if (ti >= TOK.length) $('#tokStep').disabled = true;
+}
+function tokAuto() {
+  if (ti >= TOK.length) return;
+  tokShow(ti); T(() => { tokCommit(ti); T(tokAuto, 800); }, 1100);
+}
+function tokManual() { if (ti < TOK.length) { clearTimers(); tokShow(ti); tokCommit(ti); } }
+$('#tokStep').addEventListener('click', tokManual);
+$('#tokReplay').addEventListener('click', () => { tokReset(); if (!RM()) tokAuto(); });
+slides[8].addEventListener('slide:enter', () => { tokReset(); if (!RM()) T(tokAuto, 500); });
+
+/* =====================================================================
+   SLIDE 10: replay
+   ===================================================================== */
+$('#s10replay').addEventListener('click', () => { clearTimers(); setStep(9, 0); T(() => setStep(9, 1), RM() ? 50 : 900); });
+
+/* =====================================================================
+   SLIDE 11: demo 1 (claims, chips, tether, split/toggle view)
+   ===================================================================== */
+const d1 = $('#demo1'), L1 = $('.tl', d1);
+const UCL = [
+  ['Most schools', 'Where did this come from? No source. "Most schools" is not your school\'s policy.'],
+  ['10% to 20% per day', 'Where did this come from? No source. This range is unverified.'],
+  ['stop accepting work after 3 days', 'Where did this come from? No source. Unverified. Your policy allows 5 school days (S1).'],
+  ['deduct about 30%', 'Where did this come from? No source. It happens to equal 30%, but it came from a guessed range, not from your policy.'],
+  ['a one-time grace day', 'Where did this come from? No source. This was invented.'],
+  ['email submissions are often not accepted', 'Where did this come from? No source. This was invented.']
+];
+const uc = i => `<button type="button" class="claim u" data-tip="${esc(UCL[i][1])}">${esc(UCL[i][0])}<span class="chip chip-u">? unverified</span></button>`;
+$('#uAns').innerHTML = `${uc(0)} take off ${uc(1)}, and many ${uc(2)}. For a 3-day-late essay you'd typically ${uc(3)}, and some teachers allow ${uc(4)}. You should also check whether the essay was submitted through the online portal, since ${uc(5)}.`;
+const gc = (t, s) => `<button type="button" class="claim g" data-src="${s}">${esc(t)}<span class="chip chip-g">${s}</span></button>`;
+$('#gAns').innerHTML = `${gc('The essay is within the 5-school-day window', 'S1')}. ${gc('A 10% penalty applies per school day', 'S2')}, ${gc('so 3 days late is a 30% penalty (maximum penalty is 50%)', 'S2')}. ${gc('No excused absence was reported, so the exemption does not apply', 'S3')}. ${gc('The essay should be submitted the same way as the original', 'S6')}.`;
+function shake(el) { el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake'); setTimeout(() => el.classList.remove('shake'), 520); }
+$$('.claim.u', d1).forEach(b => {
+  const show = () => { $('#uInspect').textContent = b.dataset.tip; shake(b); };
+  ['pointerenter', 'focus', 'click'].forEach(ev => b.addEventListener(ev, show));
+});
+$$('.claim.g', d1).forEach(b => {
+  const show = () => {
+    const sid = b.dataset.src, li = hlSource('s11', sid, true);
+    $('#gInspect').innerHTML = `<b>${sid}</b> says: "${esc(srcText(sid))}"`;
+    drawTether(L1, $('.chip', b), li);
+  };
+  const hide = () => { $$('#s11-src li.hl').forEach(x => x.classList.remove('hl')); clearTether(L1); };
+  ['pointerenter', 'focus', 'click'].forEach(ev => b.addEventListener(ev, show));
+  ['pointerleave', 'blur'].forEach(ev => b.addEventListener(ev, hide));
+});
+function syncDemo1() {
+  const toggle = d1.dataset.view === 'toggle', att = d1.dataset.attached === 'true';
+  const src = $('#s11-src');
+  src.classList.toggle('dim', toggle && !att);
+  src.classList.toggle('attached', !toggle || att);
+  $('.srcstatus', src).textContent = toggle ? (att ? 'Attached to the prompt' : 'Not attached') : 'Attached to the grounded answer';
+  clearTether(L1);
+}
+$$('.seg button', d1).forEach(b => b.addEventListener('click', () => {
+  d1.dataset.view = b.dataset.view; $$('.seg button', d1).forEach(x => x.setAttribute('aria-pressed', String(x === b))); syncDemo1();
+}));
+$('#attachSw').addEventListener('click', e => {
+  const on = e.currentTarget.getAttribute('aria-checked') !== 'true';
+  e.currentTarget.setAttribute('aria-checked', String(on)); d1.dataset.attached = String(on); syncDemo1();
+  announce(on ? 'Source attached. Grounded answer shown.' : 'Source removed. Ungrounded answer shown.');
+});
+syncDemo1();
+
+/* =====================================================================
+   SLIDE 12: demo 2 (search the source)
+   ===================================================================== */
+$('#scanBtn').addEventListener('click', () => {
+  clearTimers();
+  const lis = $$('#s12-src li'), res = $('#s12-src .scanres');
+  const box = $('#s12-src'); if (box.classList.contains('closed')) $('button', box).click();
+  lis.forEach(l => l.classList.remove('scanning')); res.textContent = '';
+  const done = () => { lis.forEach(l => l.classList.remove('scanning')); res.innerHTML = ico('i-x') + ' 0 of 6 sentences mention "extra credit".'; };
+  if (RM()) return done();
+  lis.forEach((l, i) => T(() => { lis.forEach(x => x.classList.remove('scanning')); l.classList.add('scanning'); }, i * 450));
+  T(done, lis.length * 450);
+});
+
+/* =====================================================================
+   SLIDE 13: find the slip
+   ===================================================================== */
+const d3 = $('#demo3'), L3 = $('.tl', d3);
+const CL3 = [
+  { t: 'The student may submit without penalty for 2 days.', s: 'S3' },
+  { t: 'After those days, the normal 10% per day penalty applies.', s: 'S2' },
+  { t: 'The excuse must be documented by a parent or guardian note.', s: null },
+  { t: 'Work is submitted through the original method.', s: 'S6' }
+];
+const checked = new Set();
+$('#claims').innerHTML = CL3.map((c, i) => `<li><button type="button" class="claim" data-i="${i}"><span class="num">${i + 1}.</span>${esc(c.t)}${c.s ? `<span class="chip chip-g">${c.s}</span>` : '<span class="chip chip-p">no citation</span>'}</button><div class="msg" role="status"></div></li>`).join('');
+$$('#claims .claim').forEach(b => b.addEventListener('click', () => {
+  const i = +b.dataset.i, c = CL3[i], msg = b.nextElementSibling;
+  $$('#claims .claim').forEach(x => x.classList.remove('sel')); b.classList.add('sel');
+  $$('#s13-src li.hl').forEach(x => x.classList.remove('hl'));
+  checked.add(i); $('#checkedCount').textContent = `Checked ${checked.size} of 4 claims`;
+  if (c.s) {
+    const li = hlSource('s13', c.s, true); drawTether(L3, $('.chip', b), li);
+    msg.className = 'msg'; msg.innerHTML = `${ico('i-check')} Matches <b>${c.s}</b>: "${esc(srcText(c.s))}"`;
+  } else {
+    clearTether(L3); b.classList.add('bad'); shake(b);
+    msg.className = 'msg bad'; msg.innerHTML = `${ico('i-flag')} No matching sentence in the source.`;
+  }
+}));
+
+/* =====================================================================
+   SLIDE 14: prompt builder
+   ===================================================================== */
+const PARTS = [
+  ['Supply the source', 'Paste the text, standard, or rubric.'],
+  ['Constrain to it', '"Use only the attached material."'],
+  ['Give an exit', '"If it isn\'t there, say \'not in the source.\'"'],
+  ['Require evidence', 'Quote the line each point comes from.'],
+  ['Quote first, then answer', 'Pull the quotes before writing.']
+];
+const PS = [false, false, false, false, false];
+$('#swlist').innerHTML = PARTS.map((p, i) => `<button type="button" class="part" role="switch" aria-checked="false" data-i="${i}"><span class="knob"></span><span><b>${i + 1}. ${esc(p[0])}</b><small>${esc(p[1])}</small></span></button>`).join('');
+function renderBuilder() {
+  const on = { '1': PS[0], '2a': !PS[1], '2b': PS[1], '3': PS[2], '5': PS[4], '4': PS[3], '4b': PS[3] };
+  $$('#promptOut .pline').forEach(l => l.classList.toggle('on', !!on[l.dataset.l]));
+  const n = PS.filter(Boolean).length;
+  $$('#meter i').forEach((b, k) => b.classList.toggle('f', k < n));
+  $('#meter').setAttribute('aria-valuenow', n); $('#meterTxt').textContent = n + ' of 5';
+  $$('#swlist .part').forEach((b, i) => b.setAttribute('aria-checked', String(PS[i])));
+  const [src, con, exit, evi, qf] = PS, rows = [];
+  if (qf && src) rows.push(['<i>Quotes first:</i> "A penalty of 10% per school day applies, to a maximum penalty of 50%."', null]);
+  rows.push(src ? ['A 3-day-late essay loses 30%.', evi ? 'traceable to S2, quoted' : 'from the source, no quote'] : ['Most schools take off 10% to 20% a day.', 0]);
+  if (!con) rows.push(['Some teachers also allow a one-time grace day.', 0]);
+  rows.push(src && exit ? ['Extra credit: not in the source. Ask your department.', 'honest gap'] : ['Extra credit up to 5% can offset it.', 0]);
+  const claims = rows.filter(r => r[1] !== null), good = claims.filter(r => r[1]).length;
+  const pv = $('#prev'); pv.className = 'prev ' + (src ? 'st-g' : 'st-u');
+  pv.innerHTML = `<span class="pill ${src ? 'pill-g' : 'pill-u'}">${src ? ico('i-shield') + ' GROUNDED' : ico('i-cloud') + ' NOT GROUNDED'}</span> <span class="badge-ill">Illustrative example</span>
+    <ul>${rows.map(r => `<li>${r[0]}${r[1] === null ? '' : r[1] ? `<span class="chip chip-ok">${ico('i-check')} ${r[1]}</span>` : '<span class="chip chip-u">? unverified</span>'}</li>`).join('')}</ul>
+    <b>Checkable claims: ${good} of ${claims.length}</b>`;
+}
+$$('#swlist .part').forEach(b => b.addEventListener('click', () => { PS[+b.dataset.i] = !PS[+b.dataset.i]; renderBuilder(); }));
+$('#allOn').addEventListener('click', () => { PS.fill(true); renderBuilder(); });
+$('#allOff').addEventListener('click', () => { PS.fill(false); renderBuilder(); });
+async function copyText(t) {
+  try { await navigator.clipboard.writeText(t); return true; }
+  catch (e) { const ta = document.createElement('textarea'); ta.value = t; document.body.appendChild(ta); ta.select(); let ok = false; try { ok = document.execCommand('copy'); } catch (_) {} ta.remove(); return ok; }
+}
+$('#copyBtn').addEventListener('click', async () => {
+  const txt = $$('#promptOut .pline.on').map(l => l.textContent).join('\n');
+  const ok = await copyText(txt); $('#copyMsg').textContent = ok ? 'Copied the prompt.' : 'Copy was blocked. Select the prompt text and copy it by hand.';
+});
+renderBuilder();
+
+/* =====================================================================
+   SLIDE 15: term chips
+   ===================================================================== */
+const TERMS = {
+  'Hallucination': 'When an AI states something fluent and confident that is not true or not supported. It is invention, not lying.',
+  'RAG': 'Retrieval-augmented generation: the system fetches relevant documents and adds them to the prompt before the AI answers. Introduced to the research community by Lewis et al., 2020.',
+  'Citation': 'A pointer from a claim to the exact place in the source it came from, so you can check it.'
+};
+$('#terms').innerHTML = Object.keys(TERMS).map(k => `<button type="button" class="term" aria-pressed="false">${k}</button>`).join('');
+$$('#terms .term').forEach(b => {
+  const show = () => { $$('#terms .term').forEach(x => x.setAttribute('aria-pressed', String(x === b))); $('#termDef').innerHTML = `<b>${b.textContent}:</b> ${esc(TERMS[b.textContent])}`; };
+  ['pointerenter', 'focus', 'click'].forEach(ev => b.addEventListener(ev, show));
+});
+
+/* =====================================================================
+   SLIDE 16: the loop
+   ===================================================================== */
+const LOOP = [
+  'Your source: for example, a Grade 3 science text, "Plants need sunlight, water, and air to make their food."',
+  'Grounded prompt: "Using only this text, write a 4-sentence story about a plant who needs food. If it isn\'t in the text, say so."',
+  'UDL options: an engagement story, a representation picture-word list, an action and expression menu (draw, tell, or label).',
+  'Teacher check: does every line match the source? Is each option a real option or just a label? Then revise and loop back.'
+];
+$$('#loop .node').forEach(n => {
+  const show = () => { $$('#loop .node').forEach(x => x.setAttribute('aria-pressed', String(x === n))); $('#loopc').textContent = LOOP[+n.dataset.i]; };
+  ['pointerenter', 'focus', 'click'].forEach(ev => n.addEventListener(ev, show));
+});
+
+/* =====================================================================
+   SLIDE 17: same source, three barriers
+   ===================================================================== */
+const T17 = {
+  K: {
+    src: '"Plants need sunlight, water, and air to make their food. Leaves catch the sunlight. Roots take in water from the soil."', lab: 'Grade 3 science source',
+    c: [
+      { p: 'Engagement', pr: 'Using only this text, write a 4-sentence story about a plant who needs food, for Grade 3.', o: 'Pip the plant needed food.<br>Pip\'s leaves caught the sunlight.<br>Pip\'s roots took in water from the soil.<br>With air too, Pip made its food!', m: 'Real option: a story path to the same facts, and the learning goal stays fixed.' },
+      { p: 'Representation', pr: 'Using only this text, make a picture-word list and a one-sentence-per-line version with no new facts.', o: 'Picture words: sun, water, air, leaf, root.<br>Plants need sunlight, water, and air to make food.<br>Leaves catch sunlight. Roots take in water.', m: 'Real option: the same content in two formats students can switch between.' },
+      { p: 'Action & Expression', pr: 'Using only this text, give three ways to show the main idea (draw, tell, or label) against this success criterion: "I can name two things a plant needs."', o: 'Draw a plant and label two things it needs.<br>Tell a partner two things a plant needs.<br>Label a picture: sun, water, air.', m: 'Real option: same success criterion, different way to show it.' }
+    ]
+  },
+  H: {
+    src: '"A bill becomes law after both chambers of Congress pass it in the same form and the President signs it. If the President vetoes it, Congress can override with a two-thirds vote in both chambers. If the President takes no action for 10 days (Sundays excepted) while Congress is in session, it becomes law without a signature."', lab: 'Grade 10 civics source',
+    c: [
+      { p: 'Engagement', pr: 'Using only this text, write a short scenario about a student council bill that follows the same steps, and keep every step traceable to the text.', o: 'The council has two chambers. Both pass a bill in the same form, and the president signs it. If the president vetoes it, each chamber can override with a two-thirds vote.', m: 'Real option: a student-council hook for the same learning goal.' },
+      { p: 'Representation', pr: 'Using only this text, create a flow chart outline and a glossary of terms (veto, override, chamber), quoting the line each definition comes from.', o: 'Both chambers pass it in the same form, then the President signs: law. Veto: two-thirds override in both chambers: law.<br>Veto: "If the President vetoes it..."', m: 'Real option: the same content as an outline and a glossary.' },
+      { p: 'Action & Expression', pr: 'Using only this text, offer three product options (flow chart, explainer script, short essay) judged by the same rubric: "Names each step in order; explains the veto override."', o: 'Choose one: flow chart, explainer script, or short essay.<br>Everyone is judged on: names each step in order; explains the veto override.', m: 'Real option: same criteria, different product.' }
+    ]
+  }
+};
+let band17 = 'K'; const d17 = $('#demo17'), L17 = $('.tl', d17);
+function render17() {
+  const d = T17[band17];
+  clearTether(L17);
+  $('#src17').innerHTML = `<b>${d.lab}</b> <span class="badge-ill">Illustrative example</span><br>${esc(d.src)}`;
+  $('#cards17').innerHTML = d.c.map((c, i) => `<article class="card c17"><h3>${esc(c.p)}</h3>
+    <div class="out" id="o17-${i}">${c.o}</div><span class="gcheck" id="g17-${i}">${ico('i-shield')} grounding check: not run</span>
+    <p class="pr" style="margin:0">Prompt: "${esc(c.pr)}"</p>
+    <p class="mini" style="margin:0"><b>Real option or label?</b> ${esc(c.m)}</p></article>`).join('');
+}
+render17();
+$$('.seg button', d17).forEach(b => b.addEventListener('click', () => {
+  band17 = b.dataset.band; $$('.seg button', d17).forEach(x => x.setAttribute('aria-pressed', String(x === b))); clearTimers(); render17();
+}));
+$('#runCheck').addEventListener('click', () => {
+  clearTimers();
+  [0, 1, 2].forEach(i => T(() => {
+    drawTether(L17, $('#o17-' + i), $('#src17'), i);
+    const g = $('#g17-' + i); g.className = 'gcheck done'; g.innerHTML = ico('i-check') + ' traced to the source';
+  }, RM() ? 0 : i * 800));
+});
+
+/* =====================================================================
+   SLIDE 18: keep human sort
+   ===================================================================== */
+const HS = [
+  { t: 'Draft a glossary for tomorrow\'s passage.', a: 'ai', r: 'AI can draft it. You check it against the passage.' },
+  { t: 'Talk with a student about the goals they set.', a: 'human', r: 'Relationships and a learner\'s own goals are yours to hold.' },
+  { t: 'Write sentence starters for a paragraph.', a: 'ai', r: 'A good scaffold to draft, then review.' },
+  { t: 'A student\'s first attempt to explain their own reasoning.', a: 'human', r: 'The struggle is the learning. Don\'t shortcut it.' }
+];
+$('#hsort').innerHTML = HS.map((h, i) => `<div class="hitem" id="hi${i}"><span>${esc(h.t)}</span><div class="acts"><button class="btn" type="button" data-c="human">Keep human</button><button class="btn" type="button" data-c="ai">AI can help</button></div><div class="fb" role="status"></div></div>`).join('');
+$$('#hsort .hitem').forEach((el, i) => $$('button', el).forEach(b => b.addEventListener('click', () => {
+  const ok = b.dataset.c === HS[i].a;
+  $('.fb', el).innerHTML = `${ok ? ico('i-check') + ' <b>Yes.</b>' : ico('i-x') + ' <b>Not quite.</b>'} ${esc(HS[i].r)}`;
+  el.classList.add('done');
+})));
+
+/* =====================================================================
+   SLIDE 20: practice check
+   ===================================================================== */
+const QZ = [
+  { q: 'You attach your lesson and ask for a quiz "using only the attached lesson." One question includes a fact that isn\'t in the lesson. What does that show?',
+    o: ['The AI is broken and should not be used.', 'Grounding reduces invention but does not remove it, so check every item.', 'The lesson was too short.', 'Grounding only works for math.'], c: 1,
+    e: 'Grounding reduces invention but does not remove it. You are the last check, so verify every item.' },
+  { q: 'A slide deck from AI opens and looks polished. What do you do?',
+    o: ['Use it as is. Polish means quality.', 'Ask the AI if it is accurate and trust the yes.', 'Delete it.', 'Check the content against your source, because polish is not evidence of accuracy.'], c: 3,
+    e: 'Polish is not evidence of accuracy. Check the content.' },
+  { q: 'A lesson claims "multiple means of expression," but every student submits the same written paragraph. What is true?',
+    o: ['It is a real option because the label is there.', 'The label is there and the option is not.', 'UDL does not allow writing.', 'It is fine if the paragraph is long.'], c: 1,
+    e: 'The label is there, but the learners have no real choice. Keep the goal fixed and flex the means.' },
+  { q: 'The lesson plan says the activity runs 15 minutes, and the teaching guide says 20. What is the best move?',
+    o: ['Average them.', 'Ask the AI which is right.', 'Decide which is right for your class, then fix the other.', 'Ignore it.'], c: 2,
+    e: 'Two sources disagree, so a human decides which is right for this class, then fixes the other.' },
+  { q: 'Which task is the best candidate to keep human?',
+    o: ['A conversation with a student about their own goals.', 'Drafting a glossary.', 'Formatting a worksheet.', 'Making sentence starters.'], c: 0,
+    e: 'Relationships and a learner\'s own goals are yours to hold. AI can help with the drafts.' }
+];
+let qi = 0, qscore = 0, qres = [];
+function renderQuiz() {
+  const box = $('#quiz');
+  $('#qprog').innerHTML = QZ.map((_, i) => `<i class="${qres[i] === 1 ? 'ok' : qres[i] === 0 ? 'no' : i === qi ? 'cur' : ''}"></i>`).join('');
+  if (qi >= QZ.length) {
+    box.innerHTML = `<h3 style="font-size:1.6rem">Your score: ${qscore} of ${QZ.length}</h3><p class="lede">${qscore >= 4 ? 'Strong. You can tell options from labels and keep the last check.' : 'Good start. Revisit slides 7, 13, and 14, then try again.'}</p><button class="btn" id="qRetry" type="button">Try again</button>`;
+    $('#qRetry').addEventListener('click', () => { qi = 0; qscore = 0; qres = []; renderQuiz(); }); return;
+  }
+  const q = QZ[qi];
+  box.innerHTML = `<p class="small" style="margin:0">Question ${qi + 1} of ${QZ.length}</p><h3 style="font-size:1.25rem;font-weight:700">${esc(q.q)}</h3>
+    <div class="opts" role="group" aria-label="Answer choices">${q.o.map((o, i) => `<button type="button" class="opt" data-i="${i}"><span class="k">${'ABCD'[i]}.</span><span>${esc(o)}</span></button>`).join('')}</div>
+    <div class="fbk" role="status" id="qfb">Choose an answer.</div><p><button class="btn" id="qNext" type="button" hidden>${qi === QZ.length - 1 ? 'See score' : 'Next question'}</button></p>`;
+  $$('.opt', box).forEach(b => b.addEventListener('click', () => {
+    const i = +b.dataset.i, ok = i === q.c; if (ok) qscore++; qres[qi] = ok ? 1 : 0;
+    $$('.opt', box).forEach((x, k) => { x.disabled = true; if (k === q.c) x.classList.add('right'); else if (k === i) x.classList.add('wrong'); });
+    $('#qfb').innerHTML = `${ok ? ico('i-check') + ' <b>Correct.</b>' : ico('i-x') + ' <b>Not quite.</b>'} ${esc(q.e)}`;
+    $('#qprog').innerHTML = QZ.map((_, k) => `<i class="${qres[k] === 1 ? 'ok' : qres[k] === 0 ? 'no' : k === qi ? 'cur' : ''}"></i>`).join('');
+    const nb = $('#qNext'); nb.hidden = false; nb.focus();
+    nb.addEventListener('click', () => { qi++; renderQuiz(); const f = $('.opt') || $('#qRetry'); if (f) f.focus(); });
+  }));
+}
+renderQuiz();
+
+/* =====================================================================
+   INIT: stagger indexes, menu, first slide
+   ===================================================================== */
+slides.forEach(s => $$('.a', s).forEach((el, i) => el.style.setProperty('--i', i)));
+buildMenu();
+const h = parseInt(location.hash.slice(1), 10);
+go(h >= 1 && h <= N ? h - 1 : 0, 1);
+window.__deck = { go, next, prev, N, step: () => step[cur], cur: () => cur };
+})();
+</script>
+</body>
+</html>
