@@ -14,7 +14,7 @@ Press `A` (or the Auto button) to switch to **autoplay**, where it runs itself s
 | Left / Right | Previous / next page |
 | A | Toggle autoplay (turns click mode off) |
 | 1-9 (0 = page 10) | Jump to a page (use Home/End or click the trail dots for 11-18); Home / End also work; the progress trail dots are clickable |
-| F | Fullscreen |
+| F | Fullscreen (full-bleed, bar hidden; Esc or F exits). If a host blocks it, open the file in its own tab |
 | R | Restart the current page's animation |
 | [ and ] | Slow down / speed up all timings (0.5x to 3x) |
 | M | Reduce-motion ("Calm") toggle; also on by default if the OS asks for reduced motion |
