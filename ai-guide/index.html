@@ -334,6 +334,22 @@ body.calm *,body.calm *::before,body.calm *::after{animation:none!important;tran
 .sc.drag{z-index:20;cursor:grabbing}
 .sc.done{font-size:27px;padding:8px 14px;cursor:default}
 
+/* ---------- page 18: check for understanding ---------- */
+#qtxt{display:block;font-size:54px;line-height:1.2;text-align:center}
+#qbox{display:flex;align-items:center;justify-content:center}
+.btn.opt{display:flex;align-items:center;gap:26px;text-align:left;font-size:42px;font-weight:400;padding:0 30px}
+.btn.opt .ltr{flex:none;display:grid;place-items:center;width:68px;height:68px;border-radius:50%;border:6px solid var(--ink);background:var(--yellow-l);font-size:42px}
+.btn.opt.right::before{background:var(--green-l);border-color:var(--green);border-width:10px}
+.btn.opt.right .ltr{background:var(--green)}
+.btn.opt.wrong::before{background:var(--orange-l);border-color:#c4561a;border-width:10px}
+.btn.opt.dim{opacity:.55}
+.btn.pop.in.opt.dim{opacity:.55}
+#qfb{font-size:40px;line-height:1.2}
+#qfb.big{top:400px!important;height:auto!important;min-height:220px;width:1660px!important;padding:26px 40px}
+.pgref{display:inline-block;margin-top:4px;font-weight:700;background:#fff;border:4px solid var(--ink);border-radius:12px;padding:0 14px}
+.rv{display:block;font-size:48px;margin-bottom:12px}
+.rl{list-style:none;columns:2;column-gap:60px;font-size:40px}
+.rl li{margin-bottom:12px;break-inside:avoid}
 /* ---------- page 16 ---------- */
 .idea{display:flex;flex-direction:column;align-items:center;text-align:center;padding:56px 18px 18px;gap:12px}
 .idea.pop.in{transform:rotate(var(--rot))}
@@ -513,7 +529,8 @@ const DWELL = {
   15: 60,  //  Verify
   16: 90,  //  Traffic light
   17: 60,  //  Key takeaways
-  18: 45   //  The End
+  18: 165, //  Check your understanding (14 questions)
+  19: 45   //  The End
 };
 const CONFIG = {
   idleWaitMs: 4000,        // wait this long after the last real input before auto-advancing
@@ -1614,6 +1631,74 @@ ${ch('robo', 1590, gy('robo', 150), 150, { id: 'r16', cls: 'pop', wave: 1 })}
   }
 });
 
+/* ---------- 18 · CHECK YOUR UNDERSTANDING ---------- */
+/* o[0] is always the correct answer; the display order is rotated so the right letter varies. */
+const Q18 = [
+  { q: 'What is the best simple description of what AI does?', o: ['It finds patterns in data and uses them', 'It thinks and feels like a person', 'It looks up the one true answer in a giant book'], why: 'AI is a pattern finder. It is a tool, not a thinking brain.', pg: 2, topic: 'What is AI?' },
+  { q: 'A large language model (LLM) is most like&hellip;', o: ['The world&rsquo;s biggest autocomplete', 'A search engine that only shows facts', 'A tiny robot teacher with a brain'], why: 'It guesses the next word, after reading a giant library of text.', pg: 3, topic: 'What is an LLM?' },
+  { q: 'How does an LLM learn?', o: ['It reads huge amounts of text and learns patterns', 'People type in every answer by hand', 'It goes to school and takes tests'], why: 'Training means reading a giant library and learning which words tend to follow which.', pg: 4, topic: 'Training' },
+  { q: 'What is a token?', o: ['A chunk of text, like a word or part of a word', 'A password for the AI', 'A single letter, never more'], why: 'Text is chopped into tokens, and each token becomes a number the computer can use.', pg: 5, topic: 'Tokens' },
+  { q: 'When an LLM writes an answer, what does it do at each step?', o: ['Picks one likely next token, again and again', 'Plans the whole answer, then types it', 'Searches the internet for a finished answer'], why: 'One token at a time: predict, add it to the context, predict again.', pg: 6, topic: 'Next-word prediction' },
+  { q: 'You turn the temperature up. What happens?', o: ['Answers get more varied and surprising', 'Answers get more accurate', 'The model works faster'], why: 'Higher temperature flattens the bars, so less likely words get a real chance.', pg: 7, topic: 'Temperature' },
+  { q: 'What is the context window?', o: ['What the model can hold in mind at once; old things fall out', 'The model&rsquo;s whole training library', 'The screen where you type'], why: 'It is Robo-Pal&rsquo;s backpack. When it is full, the oldest messages fall out.', pg: 8, topic: 'Context window' },
+  { q: 'Does an LLM truly understand what it says?', o: ['No. It matches patterns, even when it sounds sure', 'Yes, just like a person', 'Only when its answer is correct'], why: 'It knows what sounds likely. It does not check facts or have experiences.', pg: 10, topic: 'It does not &ldquo;know&rdquo;' },
+  { q: 'What is a hallucination?', o: ['A confident answer that is made up or wrong', 'A slow answer', 'An answer in another language'], why: 'The ghost invents fake books and fake citations that sound real.', pg: 11, topic: 'Hallucinations' },
+  { q: 'Why can an AI&rsquo;s answers be biased?', o: ['Its training data leaves some voices out or overuses others', 'Because it has its own opinions', 'Because the internet is slow'], why: 'It only knows the books in its library. Missing books mean missing voices.', pg: 12, topic: 'Bias' },
+  { q: 'Which list is the prompt recipe?', o: ['Role, Task, Context, Format, Constraints', 'Question, Answer, Fact, Source, Date', 'Hello, Please, Thanks, Goodbye, Done'], why: 'Each ingredient makes the answer fit your class a little better.', pg: 13, topic: 'The prompt recipe' },
+  { q: 'The first draft is not what you wanted. What is the best move?', o: ['Say what to change and ask again', 'Give up on AI', 'Use it as is'], why: 'Prompting is a conversation. Each turn gets closer to what you need.', pg: 14, topic: 'Iterate' },
+  { q: 'Before you use an AI answer with students, you should&hellip;', o: ['Check the facts, names, and fit for your students', 'Trust it if it sounds sure', 'Ask the AI if it is sure'], why: 'Trust, but check. The AI cannot reliably check itself.', pg: 15, topic: 'Verify' },
+  { q: 'Which classroom use belongs in the RED zone (keep AI out)?', o: ['Pasting a student&rsquo;s IEP into a chatbot', 'Brainstorming science fair ideas', 'Making an easier reading passage that you then review'], why: 'Private student data and final decisions stay with people.', pg: 16, topic: 'Traffic light' }
+];
+const qpos = i => (i * 2 + 1) % 3;
+const qorder = (q, i) => { const pos = qpos(i), w = q.o.slice(1); let k = 0; return [0, 1, 2].map(s => s === pos ? q.o[0] : w[k++]); };
+page({
+  name: 'Check your understanding',
+  build: () => `
+${ttl('Check Your Understanding', 'var(--blue)')}
+<div class="cap pop" id="qn" style="${S(1150, 84, 500)}text-align:right"></div>
+<div class="box pop" id="qbox" style="${S(130, 185, 1660, 190)}--bg:#fff"><span id="qtxt"></span></div>
+<div id="opts" data-demo="quiz">${[0, 1, 2].map(i => `<button class="btn pop opt" data-i="${i}" tabindex="-1" style="${S(130, 405 + i * 135, 1660, 115)}--bg:#fff"><b class="ltr">${'ABC'[i]}</b><span class="ot"></span></button>`).join('')}</div>
+<div class="box pop" id="qfb" style="${S(130, 820, 1200, 175)}--bg:var(--yellow-l)"><span id="qfbt"></span></div>
+${btn('Next', 1400, 800, 300, { id: 'qnext', demo: 'quiz', bg: 'var(--blue-l)', cls: 'hidden' })}`,
+  script(t) {
+    const root = t.root, opts = $$('.opt', root), fb = $('#qfb', root), fbt = $('#qfbt', root), nx = $('#qnext', root), qtxt = $('#qtxt', root), qn = $('#qn', root);
+    let idx = 0, score = 0, locked = false; const missed = [];
+    const show = () => {
+      locked = false; fb.classList.remove('in'); nx.classList.remove('in'); nx.classList.add('hidden');
+      if (idx >= Q18.length) {
+        const pct = score / Q18.length;
+        setText(qtxt, `You got <b>${score} of ${Q18.length}</b>. ${pct === 1 ? 'Every one. Nice work!' : pct >= .7 ? 'Strong understanding!' : 'A good start. Look back at the pages below.'}`);
+        qn.classList.remove('in'); opts.forEach(o => { o.classList.remove('in'); o.classList.add('hidden'); });
+        fb.classList.add('big'); fb.style.setProperty('--bg', 'var(--green-l)');
+        fbt.innerHTML = missed.length ? '<b class="rv">Look back at these pages:</b><ul class="rl">' + missed.map(m => `<li><b>Page ${m.pg}:</b> ${m.topic}</li>`).join('') + '</ul>' : '<b class="rv">Nothing to review. You are ready to use AI with your students!</b>';
+        fb.classList.remove('in'); void fb.offsetWidth; fb.classList.add('in'); return;
+      }
+      const q = Q18[idx], order = qorder(q, idx);
+      setText(qtxt, q.q); qn.innerHTML = `Question <b>${idx + 1}</b> of ${Q18.length}`; qn.classList.add('in');
+      opts.forEach((o, k) => { $('.ot', o).innerHTML = order[k]; o.classList.remove('right', 'wrong', 'dim'); });
+    };
+    const answer = k => {
+      if (locked || idx >= Q18.length) return; locked = true;
+      const q = Q18[idx], pos = qpos(idx), ok = k === pos; if (ok) score++; else missed.push(q);
+      opts.forEach((o, i) => { o.classList.toggle('right', i === pos); o.classList.toggle('wrong', i === k && !ok); o.classList.toggle('dim', i !== pos && i !== k); });
+      fb.style.setProperty('--bg', ok ? 'var(--green-l)' : 'var(--orange-l)');
+      fbt.innerHTML = ok ? `<b>Yes!</b> ${q.why}` : `<b>Not quite.</b> The answer is <b>${q.o[0]}</b>. ${q.why} <span class="pgref">Look back at page ${q.pg} (${q.topic})</span>`;
+      fb.classList.remove('in'); void fb.offsetWidth; fb.classList.add('in'); nx.classList.remove('hidden'); nx.classList.add('in'); nx.textContent = idx === Q18.length - 1 ? 'See my results' : 'Next question';
+    };
+    opts.forEach((o, i) => o.addEventListener('click', () => answer(i)));
+    nx.addEventListener('click', () => { if (!locked) return; idx++; show(); });
+    t.need(() => idx >= Q18.length, 'Answer every question, then open your results');
+    t.show(700, '.ttl'); t.show(1200, '#qbox'); opts.forEach((o, i) => t.show(1400 + i * 150, o));
+    t.at(1200, show);
+    // autoplay demo: the cursor answers, and gets two wrong on purpose to show the review
+    Q18.forEach((q, i) => {
+      const b = 3500 + i * 11500, wrong = (i === 3 || i === 8), pick = wrong ? (qpos(i) + 1) % 3 : qpos(i);
+      t.click(b + 3500, `.opt[data-i="${pick}"]`, 'quiz'); t.click(b + 8200, '#qnext', 'quiz');
+    });
+    t.at(3500 + Q18.length * 11500, () => ghost.hide(), 'quiz');
+  }
+});
+
 /* ---------- 17 · THE END ---------- */
 const Q17 = ['Where could AI save you time this week?', 'What would you never let AI do for your students?', 'How will you check an AI&rsquo;s answer?'];
 page({
@@ -1795,7 +1880,7 @@ function bindInput() {
     const d = e.target && e.target.closest && e.target.closest('[data-demo]');
     if (d) { owned.add(d.dataset.demo); ghost.hide(); }
   };
-  stage.addEventListener('click', e => { if (!e.isTrusted || !st.click || st.dragging) return; const m = e.target.closest && e.target.closest(NOCLICK); if (m && !m.closest('.pop:not(.in)')) return; advance(); });
+  stage.addEventListener('click', e => { if (!e.isTrusted || !st.click || st.dragging) return; if (e.target.closest && e.target.closest(NOCLICK)) return; advance(); });
   stage.addEventListener('pointerdown', mark, true);
   stage.addEventListener('input', mark, true);
   stage.addEventListener('pointermove', e => { if (e.buttons) mark(e); }, true);
