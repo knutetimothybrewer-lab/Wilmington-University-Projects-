@@ -20,6 +20,13 @@ A small toolbar appears on mouse move and hides after 3 seconds. The cursor hide
 Touch/mouse input on any interactive widget cancels that widget's auto-demo, and autoplay will
 not advance until 4 seconds after the last input.
 
+## Motion
+Everything on every page is always moving a little:
+- **The crayon artist.** A small kid with a beret and a crayon box runs to each element as it appears and draws it on, with a left-to-right wipe timed to his crayon. Titles are written letter by letter as he sweeps across.
+- Speech bubbles and captions pop in word by word; characters hop, tilt, fidget their arms and look around; cards and tokens bob; birds, a butterfly, rising stars, clouds and grass keep the scenery alive.
+- Hand-drawn "line boil": art re-wiggles between two crayon textures. This is the heaviest effect. To remove it, delete the `.box::before,.btn::before,.tile::before,.chip::before{animation:boil ...}` rules in the CSS.
+- Calm mode (M, or the OS reduced-motion setting) turns all of this off and shows everything at once.
+
 ## Adjusting timing
 Open `index.html` and edit the `DWELL` object at the top of the script (seconds per page).
 `CONFIG` just below it holds the idle wait, toolbar/cursor hide delays and speed steps.
