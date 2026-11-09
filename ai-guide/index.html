@@ -22,7 +22,7 @@
 html,body{width:100%;height:100%;overflow:hidden;background:#e9d9ae;font-family:var(--font);color:var(--ink);-webkit-font-smoothing:antialiased;user-select:none;-webkit-user-select:none}
 body.nocursor,body.nocursor *{cursor:none!important}
 button{font-family:inherit}
-#stage{position:absolute;left:50%;top:50%;width:1920px;height:1080px;margin:-540px 0 0 -960px;background:var(--cream);overflow:hidden;transform-origin:50% 50%}
+#stage{position:absolute;left:50%;top:calc(50% - 22px);width:1920px;height:1080px;margin:-540px 0 0 -960px;background:var(--cream);overflow:hidden;transform-origin:50% 50%}
 #deco,#pages,#wipe{position:absolute;inset:0}
 #deco{z-index:1;pointer-events:none}
 #pages{z-index:5}
@@ -42,11 +42,10 @@ button{font-family:inherit}
 svg text{font-family:var(--font)}
 
 /* ---------- reveal helpers ---------- */
-.pop{opacity:0;transform:scale(.65) rotate(-3deg);transform-origin:50% 60%;clip-path:inset(-120px 100% -120px -120px);transition:opacity calc(.35s*var(--k)),transform calc(.55s*var(--k)) cubic-bezier(.3,1.5,.5,1),clip-path var(--dd,calc(.8s*var(--k))) linear}
-.pop.in{opacity:1;transform:none;clip-path:inset(-120px -120px -120px -120px)}
-svg .pop,.ttl.pop,.stamp.pop{clip-path:none!important}
-body.calm .pop{clip-path:none}
+.pop{opacity:0;transform:scale(.65) rotate(-3deg);transform-origin:50% 60%;transition:opacity calc(.35s*var(--k)),transform calc(.55s*var(--k)) cubic-bezier(.3,1.5,.5,1)}
+.pop.in{opacity:1;transform:none}
 svg .pop{transform-box:fill-box;transform-origin:50% 50%}
+.pop:not(.in){pointer-events:none}
 .hid{opacity:0}
 .hidden{visibility:hidden}
 
@@ -138,13 +137,16 @@ svg .pop{transform-box:fill-box;transform-origin:50% 50%}
 @keyframes ring{0%{opacity:1;transform:scale(.4)}100%{opacity:0;transform:scale(2.4)}}
 #wipe{z-index:60;pointer-events:none;overflow:hidden}
 .stripe{position:absolute;left:-60px;width:2040px;height:200px;transform:translateX(-112%) rotate(-1.2deg);filter:url(#crayon)}
-#toolbar{position:fixed;top:10px;left:50%;transform:translate(-50%,-90px);z-index:100;display:flex;gap:8px;padding:8px 12px;background:#fff8e1;border:3px solid var(--ink);border-radius:18px 8px 16px 8px;opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;font-family:var(--font)}
-#toolbar.show{opacity:1;transform:translate(-50%,0);pointer-events:auto}
-#toolbar button{font-size:16px;font-weight:700;padding:6px 12px;border:3px solid var(--ink);border-radius:12px 6px 10px 6px;background:var(--yellow-l);cursor:pointer;color:var(--ink)}
+#toolbar{position:fixed;left:0;right:0;bottom:0;height:44px;z-index:100;display:flex;gap:8px;justify-content:center;align-items:center;padding:0 12px;background:#fff8e1;border-top:3px solid var(--ink);font-family:var(--font)}
+#toolbar button{font-size:16px;font-weight:700;padding:3px 12px;border:3px solid var(--ink);border-radius:12px 6px 10px 6px;background:var(--yellow-l);cursor:pointer;color:var(--ink)}
 #toolbar button:hover{background:var(--yellow)}
 #spd{align-self:center;font-weight:700;font-size:16px;min-width:3.2em;text-align:center}
-#toast{position:fixed;left:50%;top:76px;transform:translateX(-50%);z-index:101;font-size:26px;font-weight:700;background:var(--yellow);border:4px solid var(--ink);padding:4px 22px;border-radius:16px 6px 14px 6px;opacity:0;pointer-events:none;transition:opacity .3s}
+#toast{position:fixed;left:50%;bottom:60px;transform:translateX(-50%);z-index:101;font-size:26px;font-weight:700;background:var(--yellow);border:4px solid var(--ink);padding:4px 22px;border-radius:16px 6px 14px 6px;opacity:0;pointer-events:none;transition:opacity .3s}
 #toast.show{opacity:1}
+#clickhint{position:absolute;right:170px;bottom:86px;z-index:31;display:none;align-items:center;gap:10px;font-size:34px;font-weight:700;background:var(--yellow-l);border:5px solid var(--ink);padding:2px 20px 2px 14px;border-radius:18px 8px 16px 8px;animation:hintbob 1.1s ease-in-out infinite}
+#clickhint.show{display:flex}
+#clickhint svg{width:34px;height:34px}
+@keyframes hintbob{50%{translate:0 -8px}}
 body.paused *{animation-play-state:paused!important}
 body.calm *,body.calm *::before,body.calm *::after{animation:none!important;transition-duration:.01s!important;transition-delay:0s!important}
 
@@ -407,17 +409,6 @@ body.calm .w{opacity:1}
 @keyframes gs{50%{translate:8px 0}}
 .dot.cur circle{animation:pulse 1.2s ease-in-out infinite}
 
-/* ---------- the little crayon artist who draws every page ---------- */
-#artist{position:absolute;left:0;top:0;width:132px;z-index:42;pointer-events:none;opacity:0;transition:opacity .4s}
-#artist.on{opacity:1}
-#artist svg{display:block;width:100%;overflow:visible;animation:bob 2.2s ease-in-out infinite}
-.run .lg1{animation:stepA .22s steps(2,end) infinite}
-.run .lg2{animation:stepA .22s steps(2,end) infinite reverse}
-@keyframes stepA{50%{translate:0 -7px}}
-.drawing .pen{animation:scr .2s steps(2,end) infinite alternate}
-@keyframes scr{from{rotate:-17deg}to{rotate:21deg}}
-.drawing svg{animation:bob .4s ease-in-out infinite}
-body.calm #artist{display:none}
 </style>
 </head>
 <body>
@@ -465,31 +456,8 @@ body.calm #artist{display:none}
   <svg id="trail" viewBox="0 0 1180 68" role="navigation" aria-label="Page progress"></svg>
   <div id="pageno" aria-hidden="true"><svg viewBox="0 0 116 100"><g filter="url(#crayon)"><ellipse cx="58" cy="50" rx="46" ry="40" fill="#fbf3dc" stroke="#2a2118" stroke-width="6"/><ellipse cx="58" cy="50" rx="52" ry="44" fill="none" stroke="#f28c1c" stroke-width="4" transform="rotate(-6 58 50)"/></g></svg><b>1</b></div>
   <div id="status" role="status"></div>
+  <div id="clickhint" aria-hidden="true"><svg viewBox="0 0 76 76"><path d="M8 6L8 58L22 46L32 70L44 64L34 42L54 42Z" fill="#e0342b" stroke="#2a2118" stroke-width="6" stroke-linejoin="round"/></svg><span id="clicktxt">Click</span></div>
   <div id="wipe" aria-hidden="true"></div>
-  <div id="artist" aria-hidden="true"><svg viewBox="0 0 220 270">
-  <g class="lg" filter="url(#crayonB)" stroke="#2a2118" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
-    <rect class="lg1" x="78" y="196" width="22" height="40" rx="5" fill="#8a5a2b"/><rect class="lg2" x="108" y="196" width="22" height="40" rx="5" fill="#8a5a2b"/>
-    <rect class="lg1" x="70" y="232" width="34" height="14" rx="6" fill="#2a2118"/><rect class="lg2" x="104" y="232" width="34" height="14" rx="6" fill="#2a2118"/>
-  </g>
-  <g filter="url(#crayon)" stroke="#2a2118" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M70 142L46 186" stroke-width="12" fill="none"/>
-    <rect x="8" y="190" width="60" height="38" rx="4" fill="#fbf3dc" stroke-width="4"/>
-    <rect x="14" y="176" width="9" height="16" fill="#e0342b" stroke-width="2"/><rect x="26" y="172" width="9" height="20" fill="#ffd21f" stroke-width="2"/><rect x="38" y="176" width="9" height="16" fill="#3fa535" stroke-width="2"/><rect x="50" y="172" width="9" height="20" fill="#2f8fdc" stroke-width="2"/>
-    <rect x="68" y="126" width="72" height="72" rx="12" fill="#8e4bb5" stroke-width="6"/>
-    <circle cx="86" cy="150" r="6" fill="#ffd21f" stroke="none"/><circle cx="118" cy="168" r="6" fill="#3fa535" stroke="none"/><circle cx="96" cy="184" r="5" fill="#f28c1c" stroke="none"/>
-    <circle cx="104" cy="84" r="40" fill="#f6c9a0" stroke-width="6"/>
-    <ellipse cx="104" cy="50" rx="48" ry="18" fill="#e0342b" stroke-width="5"/><path d="M104 32V18" stroke-width="6"/>
-    <path d="M92 108Q104 118 116 108" fill="none" stroke-width="5"/>
-    <circle cx="82" cy="100" r="6" fill="#f59ab8" stroke="none"/><circle cx="126" cy="100" r="6" fill="#f59ab8" stroke="none"/>
-  </g>
-  <g class="pen" style="transform-origin:140px 148px"><g filter="url(#crayonB)" stroke="#2a2118" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M140 148L182 186" stroke-width="12" fill="none"/>
-    <circle cx="186" cy="190" r="10" fill="#f6c9a0" stroke-width="5"/>
-    <polygon points="180,192 196,184 212,236 196,244" style="fill:var(--cc,#e0342b)" stroke-width="4"/>
-    <polygon points="196,244 212,236 205,258" style="fill:var(--cc,#e0342b)" stroke-width="4"/>
-  </g></g>
-  <circle cx="92" cy="86" r="5.5" fill="#2a2118"/><circle cx="118" cy="86" r="5.5" fill="#2a2118"/>
-</svg></div>
   <div id="ghost" aria-hidden="true"><svg viewBox="0 0 76 76"><circle class="ring" cx="8" cy="8" r="18" fill="none" stroke="#f28c1c" stroke-width="5"/><path d="M8 6L8 58L22 46L32 70L44 64L34 42L54 42Z" fill="#e0342b" stroke="#2a2118" stroke-width="5" stroke-linejoin="round"/></svg></div>
 </div>
 
@@ -497,7 +465,8 @@ body.calm #artist{display:none}
   <button data-act="prev" tabindex="-1" title="Previous page (Left)">&lt; Prev</button>
   <button data-act="pause" tabindex="-1" title="Pause or resume (Space)">Pause</button>
   <button data-act="next" tabindex="-1" title="Next page (Right)">Next &gt;</button>
-  <button data-act="auto" tabindex="-1" title="Toggle autoplay (A)">Auto: on</button>
+  <button data-act="click" tabindex="-1" title="Click to reveal (C)">Click: on</button>
+  <button data-act="auto" tabindex="-1" title="Toggle autoplay (A)">Auto: off</button>
   <button data-act="slower" tabindex="-1" title="Slower ( [ )">Slower</button>
   <span id="spd">1×</span>
   <button data-act="faster" tabindex="-1" title="Faster ( ] )">Faster</button>
@@ -552,7 +521,7 @@ const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const rand = (a, b) => a + Math.random() * (b - a);
 const INK = '#2a2118';
-const st = { cur: -1, speed: 1, paused: false, auto: true, calm: false, lastInput: -1e9, busy: false, pending: null, scale: 1, dragging: false };
+const st = { click: true, cur: -1, speed: 1, paused: false, auto: false, calm: false, lastInput: -1e9, busy: false, pending: null, scale: 1, dragging: false };
 const owned = new Set();          // demo keys the audience has taken over
 const live = new Set();           // running Web Animations (so we can pause / speed them)
 let TL = null;                    // current page's timeline
@@ -583,7 +552,21 @@ function walkAnim(el, x0, x1, dur, steps = 12) {
    and is multiplied by the speed setting. Events with a `key` are demo
    steps: they are skipped once the audience takes that widget over.      */
 class Timeline {
-  constructor(root) { this.root = root; this.time = 0; this.ev = []; this.tw = []; }
+  constructor(root) { this.root = root; this.time = 0; this.ev = []; this.tw = []; this.gates = []; this._b = null; this.held = false; }
+  /* click mode: reveals (t.show / t.walk) are "gates". Reveals within 650ms of each other form one beat.
+     The clock stops just before each beat and waits for a click. Titles and scribbled titles are automatic. */
+  gate(ms) { if (ms >= 1000) this.gates.push(ms); return this; }
+  nextGate() {
+    if (!this._b) {
+      this._b = [];
+      this.gates.slice().sort((a, b) => a - b).forEach(x => { const l = this._b[this._b.length - 1]; if (l && x - l.last <= 650) l.last = x; else this._b.push({ ms: x, last: x, released: false }); });
+    }
+    return this._b.find(b => !b.released) || null;
+  }
+  release() {
+    const g = this.nextGate(); if (!g) return false;
+    g.released = true; this.held = false; if (this.time < g.ms) this.time = g.ms; this.tick(0); return true;
+  }
   at(ms, fn, key) {
     let i = this.ev.length;
     while (i > 0 && this.ev[i - 1].ms > ms) i--;
@@ -592,7 +575,9 @@ class Timeline {
   }
   tween(ms, dur, fn, key) { this.tw.push({ ms, dur, fn, key, done: false }); return this; }
   tick(dt) {
-    this.time += dt;
+    let t = this.time + dt; const g = st.click ? this.nextGate() : null;
+    if (g && t >= g.ms) { t = g.ms - 1; this.held = true; } else this.held = false;
+    this.time = t;
     while (this.ev.length && this.ev[0].ms <= this.time) {
       const e = this.ev.shift();
       if (e.key && owned.has(e.key)) continue;
@@ -609,11 +594,14 @@ class Timeline {
   }
   els(s) { return typeof s === 'string' ? $$(s, this.root) : (s ? [s] : []); }
   one(s) { return typeof s === 'string' ? $(s, this.root) : s; }
-  show(ms, s, key) { return this.at(ms, () => this.els(s).forEach(e => e.classList.add('in')), key); }
+  show(ms, s, key) {
+    if (!(typeof s === 'string' && /ttl|scrib|scrawl/.test(s))) this.gate(ms);
+    return this.at(ms, () => this.els(s).forEach(e => e.classList.add('in')), key);
+  }
   hide(ms, s, key) { return this.at(ms, () => this.els(s).forEach(e => e.classList.remove('in')), key); }
   cls(ms, s, c, on = true, key) { return this.at(ms, () => this.els(s).forEach(e => e.classList.toggle(c, on)), key); }
   anim(ms, s, kf, opt, key) { return this.at(ms, () => this.els(s).forEach(e => anim(e, kf, opt)), key); }
-  walk(ms, s, x0, x1, dur) { return this.at(ms, () => this.els(s).forEach(e => walkAnim(e, x0, x1, dur))); }
+  walk(ms, s, x0, x1, dur) { this.gate(ms); return this.at(ms, () => this.els(s).forEach(e => walkAnim(e, x0, x1, dur))); }
   type(ms, s, text, dur, key) {
     return this.tween(ms, dur, p => { const e = this.one(s); if (e) e.textContent = text.slice(0, Math.round(p * text.length)); }, key);
   }
@@ -1635,7 +1623,7 @@ const stage = $('#stage'), pagesEl = $('#pages'), toastEl = $('#toast');
 const WIPE_COL = ['#e0342b', '#f28c1c', '#ffd21f', '#3fa535', '#2f8fdc', '#8e4bb5', '#8a5a2b'];
 
 function fit() {
-  const s = Math.min(innerWidth / 1920, innerHeight / 1080);
+  const s = Math.min(innerWidth / 1920, (innerHeight - 44) / 1080);
   st.scale = s; stage.style.transform = `scale(${s})`;
 }
 let toastT;
@@ -1678,82 +1666,7 @@ function sweep(dir) {
   return Promise.all(as.map(a => a.finished.catch(() => 0))).then(() => { if (dir === 'out') as.forEach(a => a.cancel()); });
 }
 
-/* The artist: whenever a page reveals something (an element gaining .in), the little guy runs to it and
-   "draws" it. Reveals are scheduled one after another; we set each element's transition-delay and
-   --dd (wipe duration) so the left-to-right wipe is exactly in step with his crayon. */
-const artist = {
-  el: null, W: 132, tip: [205, 258], rest: [1700, 1022], end: [1700, 1022], free: 0, timers: [], anim: null, ci: 0, idleT: null,
-  COL: ['#e0342b', '#2f8fdc', '#3fa535', '#f28c1c', '#8e4bb5', '#ffd21f'],
-  tp(p) { const s = this.W / 220; return `${p[0] - this.tip[0] * s}px ${p[1] - this.tip[1] * s}px`; },
-  init() {
-    this.el = $('#artist');
-    new MutationObserver(recs => {
-      if (st.calm || st.cur < 0) return;
-      for (const r of recs) {
-        const t = r.target; if (t.nodeType !== 1 || !t.classList.contains('in')) continue;
-        if (/(^|\s)in(\s|$)/.test(r.oldValue || '')) continue;
-        const k = 1 / st.speed;
-        if (t.classList.contains('scrib')) this.plan(t, { desired: (parseFloat(t.style.getPropertyValue('--d')) || 0) * 1000 * k, dur: 2100, reveal: false });
-        else if (t.classList.contains('scrawl')) this.plan(t, { desired: 4500 * k, dur: 2000, reveal: false });
-        else if (t.classList.contains('pop')) this.plan(t, t.classList.contains('ttl') ? { dur: $$('.lt', t).length * 50 + 750 } : {});
-      }
-    }).observe($('#pages'), { subtree: true, attributes: true, attributeFilter: ['class'], attributeOldValue: true });
-    this.reset();
-  },
-  reset() {
-    this.timers.forEach(clearTimeout); this.timers = []; clearTimeout(this.idleT);
-    if (this.anim) { try { this.anim.cancel(); } catch (_) { } this.anim = null; }
-    this.free = 0; this.end = this.rest.slice();
-    this.el.style.translate = this.tp(this.rest); this.el.classList.remove('run', 'drawing'); this.el.classList.add('on');
-  },
-  box(el) {
-    if (el.offsetParent !== undefined && el.offsetWidth) {
-      let x = 0, y = 0; for (let e = el; e && e !== stage; e = e.offsetParent) { x += e.offsetLeft; y += e.offsetTop; }
-      return { x, y, w: el.offsetWidth, h: el.offsetHeight };
-    }
-    const r = el.getBoundingClientRect(), s = stage.getBoundingClientRect();
-    return r.width ? { x: (r.left - s.left) / st.scale, y: (r.top - s.top) / st.scale, w: r.width / st.scale, h: r.height / st.scale } : null;
-  },
-  plan(el, o = {}) {
-    const b = this.box(el); if (!b || b.w < 8) return;
-    clearTimeout(this.idleT);
-    const k = 1 / st.speed, now = performance.now();
-    const dur = (o.dur != null ? o.dur : clamp(b.w / 1500, .35, .9) * 1000) * k;
-    const ty = clamp(b.y + Math.min(b.h / 2, 90), 170, 1030), start = [b.x, ty], end = [b.x + b.w, ty];
-    const from = this.end.slice(), travel = clamp(Math.hypot(start[0] - from[0], start[1] - from[1]) / 3200, .14, .42) * 1000 * k;
-    let startAt = Math.max(now, this.free) + travel;
-    if (o.desired != null) startAt = Math.max(now + o.desired, startAt);
-    const delay = startAt - now;
-    if (o.reveal !== false) {
-      el.style.transitionDelay = delay + 'ms'; el.style.setProperty('--dd', (dur / 1000) + 's'); el.style.setProperty('--td', (delay / 1000) + 's');
-      this.timers.push(setTimeout(() => { el.style.transitionDelay = ''; }, delay + dur + 400));
-    }
-    this.free = startAt + dur; this.end = end;
-    this.timers.push(setTimeout(() => this.run(from, start, end, travel, dur), Math.max(0, startAt - travel - now)));
-  },
-  run(from, start, end, travel, dur) {
-    const el = this.el, total = travel + dur, prev = this.anim;
-    el.style.setProperty('--cc', this.COL[this.ci++ % this.COL.length]);
-    el.classList.add('on', 'run'); el.classList.remove('drawing');
-    this.anim = el.animate([{ translate: this.tp(from), easing: 'ease-in-out', offset: 0 }, { translate: this.tp(start), easing: 'linear', offset: travel / total }, { translate: this.tp(end), offset: 1 }], { duration: total, fill: 'forwards' });
-    if (prev) prev.cancel();
-    this.timers.push(setTimeout(() => { el.classList.remove('run'); el.classList.add('drawing'); }, travel));
-    this.timers.push(setTimeout(() => { el.classList.remove('drawing'); this.idle(); }, total));
-  },
-  idle() {
-    clearTimeout(this.idleT);
-    this.idleT = setTimeout(() => {
-      const k = 1 / st.speed, prev = this.anim, el = this.el;
-      el.classList.add('run');
-      this.anim = el.animate([{ translate: this.tp(this.end) }, { translate: this.tp(this.rest) }], { duration: 900 * k, easing: 'ease-in-out', fill: 'forwards' });
-      if (prev) prev.cancel(); this.end = this.rest.slice();
-      this.timers.push(setTimeout(() => el.classList.remove('run'), 900 * k));
-    }, 2200 / st.speed);
-  }
-};
-
 function mount(i, wiped) {
-  artist.reset();
   ghost.hide(); owned.clear();
   live.forEach(a => { try { a.cancel(); } catch (_) { } }); live.clear();
   pagesEl.innerHTML = `<section class="page" id="pg${i + 1}" aria-label="Page ${i + 1}: ${PAGES[i].name}">${PAGES[i].build()}</section>`;
@@ -1800,28 +1713,32 @@ function stepSpeed(d) {
 }
 function statusUpdate() {
   const s = $('#status');
-  s.textContent = st.paused ? 'Paused' : (!st.auto ? 'Autoplay off' : '');
-  s.classList.toggle('show', st.paused || !st.auto);
+  s.textContent = st.paused ? 'Paused' : '';
+  s.classList.toggle('show', st.paused);
   $('[data-act=pause]').textContent = st.paused ? 'Play' : 'Pause';
   $('[data-act=auto]').textContent = 'Auto: ' + (st.auto ? 'on' : 'off');
+  $('[data-act=click]').textContent = 'Click: ' + (st.click ? 'on' : 'off');
 }
 function setPaused(p) {
   st.paused = p; document.body.classList.toggle('paused', p);
   live.forEach(a => { try { p ? a.pause() : a.play(); } catch (_) { } });
   statusUpdate(); toast(p ? 'Paused' : 'Playing');
 }
-function setAuto(a) { st.auto = a; statusUpdate(); toast('Autoplay ' + (a ? 'on' : 'off')); }
+function setAuto(a) { st.auto = a; if (a) st.click = false; statusUpdate(); toast('Autoplay ' + (a ? 'on' : 'off')); }
+function setClick(c) { st.click = c; if (c) st.auto = false; statusUpdate(); toast(c ? 'Click to reveal' : 'Click mode off'); }
+/* one click = reveal the next beat; when everything is revealed, go to the next page */
+function advance() { if (st.busy) return; if (TL && TL.release()) return; go(st.cur + 1); }
+const NOCLICK = 'button,input,textarea,.sc,.bin,.shelf,.row,.tile,.chk,.btn,#L9,#R9,#trail,.dot';
 function setCalm(c) { st.calm = c; document.body.classList.toggle('calm', c); $('[data-act=calm]').textContent = 'Calm: ' + (c ? 'on' : 'off'); toast(c ? 'Reduced motion on' : 'Reduced motion off'); }
 function fullscreen() {
   if (document.fullscreenElement) document.exitFullscreen(); else (document.documentElement.requestFullscreen || (() => { })).call(document.documentElement);
 }
-const ACTS = { prev: () => go(st.cur - 1), next: () => go(st.cur + 1), pause: () => setPaused(!st.paused), auto: () => setAuto(!st.auto), slower: () => stepSpeed(-1), faster: () => stepSpeed(1), full: fullscreen, restart, calm: () => setCalm(!st.calm) };
+const ACTS = { prev: () => go(st.cur - 1), next: () => go(st.cur + 1), pause: () => setPaused(!st.paused), auto: () => setAuto(!st.auto), click: () => setClick(!st.click), slower: () => stepSpeed(-1), faster: () => stepSpeed(1), full: fullscreen, restart, calm: () => setCalm(!st.calm) };
 
 /* UI auto-hide: toolbar after 3s, mouse cursor after a short idle */
 let uiT, curT;
 function activity(e) {
-  $('#toolbar').classList.add('show'); document.body.classList.remove('nocursor');
-  clearTimeout(uiT); uiT = setTimeout(() => $('#toolbar').classList.remove('show'), CONFIG.toolbarHideMs);
+  document.body.classList.remove('nocursor');
   clearTimeout(curT); curT = setTimeout(() => document.body.classList.add('nocursor'), CONFIG.cursorHideMs);
 }
 
@@ -1835,6 +1752,7 @@ function bindInput() {
     const d = e.target && e.target.closest && e.target.closest('[data-demo]');
     if (d) { owned.add(d.dataset.demo); ghost.hide(); }
   };
+  stage.addEventListener('click', e => { if (!e.isTrusted || !st.click || st.dragging) return; const m = e.target.closest && e.target.closest(NOCLICK); if (m && !m.closest('.pop:not(.in)')) return; advance(); });
   stage.addEventListener('pointerdown', mark, true);
   stage.addEventListener('input', mark, true);
   stage.addEventListener('pointermove', e => { if (e.buttons) mark(e); }, true);
@@ -1847,7 +1765,9 @@ function bindInput() {
     if (e.ctrlKey || e.metaKey || e.altKey) return;
     const k = e.key; let used = true;
     if (k === ' ') ACTS.pause();
-    else if (k === 'ArrowRight' || k === 'PageDown') ACTS.next();
+    else if (k === 'ArrowRight') { st.click ? advance() : ACTS.next(); }
+    else if (k === 'PageDown') ACTS.next();
+    else if (k === 'c' || k === 'C') ACTS.click();
     else if (k === 'ArrowLeft' || k === 'PageUp') ACTS.prev();
     else if (k === 'a' || k === 'A') ACTS.auto();
     else if (k === 'f' || k === 'F') ACTS.full();
@@ -1871,13 +1791,16 @@ function frame(now) {
   if (!st.paused && TL) {
     TL.tick(dt * st.speed);
     const dw = (DWELL[st.cur + 1] || 60) * 1000;
-    if (st.auto && !st.busy && !st.dragging && st.cur < N - 1 && TL.time >= dw && now - st.lastInput > CONFIG.idleWaitMs) go(st.cur + 1);
+    const hint = $('#clickhint'), has = st.click && !st.busy;
+    hint.classList.toggle('show', has);
+    if (has) { const tx = TL.nextGate() ? 'Click' : 'Click for next page'; if ($('#clicktxt').textContent !== tx) $('#clicktxt').textContent = tx; }
+    if (st.auto && !st.click && !st.busy && !st.dragging && st.cur < N - 1 && TL.time >= dw && now - st.lastInput > CONFIG.idleWaitMs) go(st.cur + 1);
   }
   requestAnimationFrame(frame);
 }
 
 function boot() {
-  ghost.init(); artist.init(); fit(); buildDeco(); buildWipe(); bindInput();
+  ghost.init(); fit(); buildDeco(); buildWipe(); bindInput();
   st.calm = matchMedia('(prefers-reduced-motion: reduce)').matches; document.body.classList.toggle('calm', st.calm);
   $('[data-act=calm]').textContent = 'Calm: ' + (st.calm ? 'on' : 'off');
   statusUpdate(); activity();
@@ -1885,7 +1808,7 @@ function boot() {
   transition(clamp((isNaN(h) ? 1 : h) - 1, 0, N - 1), true);
   requestAnimationFrame(frame);
 }
-window.__deck = { go, st, DWELL, PAGES, setSpeed: v => { st.speed = v; document.documentElement.style.setProperty('--k', String(1 / v)); live.forEach(a => { a.playbackRate = v; }); }, setPaused, setAuto, setCalm, get tl() { return TL; }, owned };
+window.__deck = { go, st, advance, setClick, DWELL, PAGES, setSpeed: v => { st.speed = v; document.documentElement.style.setProperty('--k', String(1 / v)); live.forEach(a => { a.playbackRate = v; }); }, setPaused, setAuto, setCalm, get tl() { return TL; }, owned };
 boot();
 
 </script>
