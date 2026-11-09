@@ -19,17 +19,17 @@
   --font:"Chalkboard SE","Marker Felt","Comic Sans MS","Comic Neue","Segoe Print","Bradley Hand",cursive;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{width:100%;height:100%;overflow:hidden;background:#e9d9ae;font-family:var(--font);color:var(--ink);-webkit-font-smoothing:antialiased;user-select:none;-webkit-user-select:none}
+html,body{width:100%;height:100%;overflow:hidden;background:#fbf3dc;font-family:var(--font);color:var(--ink);-webkit-font-smoothing:antialiased;user-select:none;-webkit-user-select:none}
 body.nocursor,body.nocursor *{cursor:none!important}
 button{font-family:inherit}
-#stage{position:absolute;left:50%;top:calc(50% - 22px);width:1920px;height:1080px;margin:-540px 0 0 -960px;background:var(--cream);overflow:hidden;transform-origin:50% 50%}
+#stage{position:absolute;left:50%;top:calc(50% - 22px);width:1920px;height:1080px;margin:-540px 0 0 -960px;overflow:visible;transform-origin:50% 50%}
 #deco,#pages,#wipe{position:absolute;inset:0}
 #deco{z-index:1;pointer-events:none}
 #pages{z-index:5}
 .page{position:absolute;inset:0}
 .page>*,.phase>*,#p15>*,.jp>*{position:absolute}
 .jp{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity calc(.5s*var(--k))}
-.jp.on{opacity:1;pointer-events:auto}
+.jp.on{opacity:1}
 .jp .row{cursor:default;height:80px}
 .jp .row .fill{width:var(--w)}
 .jp:not(.on) .row .fill{width:0}
@@ -38,7 +38,8 @@ button{font-family:inherit}
 .tok.dim{opacity:.55}
 .btn.on::before{border-color:var(--green);border-width:10px}
 #ctx4{margin-top:4px}
-#grain{position:absolute;inset:0;z-index:20;pointer-events:none;opacity:.5}
+#grain{position:fixed;left:0;top:0;right:0;bottom:44px;z-index:50;pointer-events:none;opacity:.5;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><filter id='p' x='0' y='0' width='100%' height='100%'><feTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' seed='2' stitchTiles='stitch'/><feColorMatrix type='matrix' values='0 0 0 0 .55 0 0 0 0 .42 0 0 0 0 .2 0 0 0 -1.7 .95'/></filter><rect width='400' height='400' filter='url(%23p)'/></svg>")}
+body.fs #grain{bottom:0}
 svg text{font-family:var(--font)}
 
 /* ---------- reveal helpers ---------- */
@@ -111,7 +112,7 @@ svg .pop{transform-box:fill-box;transform-origin:50% 50%}
 @keyframes spin{to{transform:rotate(360deg)}}
 .cloud{position:absolute;left:0;animation:drift linear infinite;opacity:.95}
 .cloud svg{width:100%;display:block}
-@keyframes drift{from{transform:translateX(-500px)}to{transform:translateX(2100px)}}
+@keyframes drift{from{transform:translateX(-2600px)}to{transform:translateX(4500px)}}
 .spark{position:absolute;width:54px;height:54px;animation:twinkle 1.5s steps(4,end) infinite}
 .spark svg{width:100%;height:100%}
 @keyframes twinkle{0%{transform:scale(1) rotate(0)}25%{transform:scale(1.25) rotate(14deg)}50%{transform:scale(.8) rotate(-10deg)}75%{transform:scale(1.15) rotate(8deg)}100%{transform:scale(1) rotate(0)}}
@@ -135,8 +136,8 @@ svg .pop{transform-box:fill-box;transform-origin:50% 50%}
 #ghost.tap .ring{animation:ring .6s}
 @keyframes tap{40%{transform:translate(5px,5px) scale(.85)}}
 @keyframes ring{0%{opacity:1;transform:scale(.4)}100%{opacity:0;transform:scale(2.4)}}
-#wipe{z-index:60;pointer-events:none;overflow:hidden}
-.stripe{position:absolute;left:-60px;width:2040px;height:200px;transform:translateX(-112%) rotate(-1.2deg);filter:url(#crayon)}
+#wipe{z-index:60;pointer-events:none}
+.stripe{position:absolute;left:-3000px;width:7920px;height:200px;transform:translateX(-112%) rotate(-1.2deg);filter:url(#crayon)}
 #toolbar{position:fixed;left:0;right:0;bottom:0;height:44px;z-index:100;display:flex;gap:8px;justify-content:center;align-items:center;padding:0 12px;background:#fff8e1;border-top:3px solid var(--ink);font-family:var(--font)}
 #toolbar button{font-size:16px;font-weight:700;padding:3px 12px;border:3px solid var(--ink);border-radius:12px 6px 10px 6px;background:var(--yellow-l);cursor:pointer;color:var(--ink)}
 #toolbar button:hover{background:var(--yellow)}
@@ -149,6 +150,8 @@ body.fs #stage{top:50%}
 #clickhint.show{display:flex}
 #clickhint svg{width:34px;height:34px}
 @keyframes hintbob{50%{translate:0 -8px}}
+#clickhint.nudge{animation:nudge .5s steps(4,end)}
+@keyframes nudge{25%{translate:-10px 0}75%{translate:10px 0}}
 body.paused *{animation-play-state:paused!important}
 body.calm *,body.calm *::before,body.calm *::after{animation:none!important;transition-duration:.01s!important;transition-delay:0s!important}
 
@@ -398,7 +401,7 @@ body.calm .w{opacity:1}
 /* scenery: birds, butterfly, rising stars, swaying grass */
 .bird{position:absolute;left:0;width:84px;animation:fly linear infinite}
 .bird svg{width:100%;overflow:visible;animation:flap .5s steps(2,end) infinite;transform-origin:50% 60%}
-@keyframes fly{from{translate:-160px 0}50%{translate:900px -50px}to{translate:2060px 10px}}
+@keyframes fly{from{translate:-2200px 0}50%{translate:1000px -50px}to{translate:4300px 10px}}
 @keyframes flap{50%{transform:scaleY(.35)}}
 .flutter{position:absolute;left:0;top:0;width:64px;animation:flutter 26s ease-in-out infinite alternate}
 .flutter svg{width:100%;overflow:visible;animation:wing .35s steps(2,end) infinite}
@@ -407,9 +410,11 @@ body.calm .w{opacity:1}
 .rise{position:absolute;bottom:-80px;width:34px;height:34px;animation:rise linear infinite;opacity:.85}
 .rise svg{width:100%;height:100%}
 @keyframes rise{from{translate:0 0;rotate:0deg}to{translate:60px -1200px;rotate:360deg}}
-.grass{left:-12px;width:1944px;animation:gs 1.6s steps(2,end) infinite}
+.grass{left:-2400px;width:6720px;animation:gs 1.6s steps(2,end) infinite}
+.ground{position:absolute;background:#3fa535}
 @keyframes gs{50%{translate:8px 0}}
 .dot.cur circle{animation:pulse 1.2s ease-in-out infinite}
+.btn:hover,.tile:hover,.shelf:hover,.chk:hover,.sc:hover{animation-play-state:paused!important}
 
 </style>
 </head>
@@ -451,10 +456,11 @@ body.calm .w{opacity:1}
   </filter>
 </defs></svg>
 
+<div id="grain" aria-hidden="true"></div>
 <div id="stage" aria-live="off">
   <div id="deco"></div>
   <div id="pages"></div>
-  <svg id="grain" viewBox="0 0 1920 1080" aria-hidden="true"><rect width="1920" height="1080" fill="#000" filter="url(#paper)"/></svg>
+  
   <svg id="trail" viewBox="0 0 1180 68" role="navigation" aria-label="Page progress"></svg>
   <div id="pageno" aria-hidden="true"><svg viewBox="0 0 116 100"><g filter="url(#crayon)"><ellipse cx="58" cy="50" rx="46" ry="40" fill="#fbf3dc" stroke="#2a2118" stroke-width="6"/><ellipse cx="58" cy="50" rx="52" ry="44" fill="none" stroke="#f28c1c" stroke-width="4" transform="rotate(-6 58 50)"/></g></svg><b>1</b></div>
   <div id="status" role="status"></div>
@@ -554,7 +560,9 @@ function walkAnim(el, x0, x1, dur, steps = 12) {
    and is multiplied by the speed setting. Events with a `key` are demo
    steps: they are skipped once the audience takes that widget over.      */
 class Timeline {
-  constructor(root) { this.root = root; this.time = 0; this.ev = []; this.tw = []; this.gates = []; this._b = null; this.held = false; }
+  constructor(root) { this.root = root; this.time = 0; this.ev = []; this.tw = []; this.gates = []; this._b = null; this.held = false; this.needFn = null; this.needMsg = ''; }
+  need(fn, msg) { this.needFn = fn; this.needMsg = msg || 'Finish this activity first'; return this; }
+  ready() { try { return !this.needFn || !!this.needFn(); } catch (_) { return true; } }
   /* click mode: reveals (t.show / t.walk) are "gates". Reveals within 650ms of each other form one beat.
      The clock stops just before each beat and waits for a click. Titles and scribbled titles are automatic. */
   gate(ms) { if (ms >= 1000) this.gates.push(ms); return this; }
@@ -582,12 +590,12 @@ class Timeline {
     this.time = t;
     while (this.ev.length && this.ev[0].ms <= this.time) {
       const e = this.ev.shift();
-      if (e.key && owned.has(e.key)) continue;
+      if (e.key && (owned.has(e.key) || st.click)) continue;
       try { e.fn(); } catch (err) { console.error(err); }
     }
     for (const w of this.tw) {
       if (w.done || this.time < w.ms) continue;
-      if (w.key && owned.has(w.key)) { w.done = true; continue; }
+      if (w.key && (owned.has(w.key) || st.click)) { w.done = true; continue; }
       const p = clamp((this.time - w.ms) / w.dur, 0, 1);
       try { w.fn(p); } catch (err) { console.error(err); }
       if (p >= 1) w.done = true;
@@ -600,7 +608,7 @@ class Timeline {
     if (!(typeof s === 'string' && /ttl|scrib|scrawl/.test(s))) this.gate(ms);
     return this.at(ms, () => this.els(s).forEach(e => e.classList.add('in')), key);
   }
-  hide(ms, s, key) { return this.at(ms, () => this.els(s).forEach(e => e.classList.remove('in')), key); }
+  hide(ms, s, key) { this.gate(ms); return this.at(ms, () => this.els(s).forEach(e => e.classList.remove('in')), key); }
   cls(ms, s, c, on = true, key) { return this.at(ms, () => this.els(s).forEach(e => e.classList.toggle(c, on)), key); }
   anim(ms, s, kf, opt, key) { return this.at(ms, () => this.els(s).forEach(e => anim(e, kf, opt)), key); }
   walk(ms, s, x0, x1, dur) { this.gate(ms); return this.at(ms, () => this.els(s).forEach(e => walkAnim(e, x0, x1, dur))); }
@@ -923,6 +931,7 @@ ${bub('I learn patterns, not pages!', 630, 520, 330, { id: 'b4', tail: 'left', t
       a.onfinish = done;
     };
     $('#feed', root).addEventListener('click', launch);
+    t.need(() => fed >= NOTES4.length, 'Click "Feed a book!" until all six patterns appear');
     t.show(700, '.ttl'); t.show(1100, '#cbox'); t.show(1400, '#feed'); t.show(1700, '#board');
     t.at(2600, launch); t.at(3600, launch);
     [8000, 12500, 17000, 21500].forEach(ms => t.click(ms, '#feed', 'feed'));
@@ -973,6 +982,9 @@ ${bub('I don&rsquo;t read letters. I read <b>chunks</b>, then turn each into a n
       stat.innerHTML = toks.length ? `<b>${toks.length}</b> tokens from <b>${words}</b> words` : 'Type something to see the chunks.';
     };
     inp.addEventListener('input', upd);
+    let typed = false; inp.addEventListener('input', () => { typed = true; });
+    t.need(() => typed, 'Type your own sentence in the box');
+    if (st.click) { inp.value = 'Teachers love learning new things'; }
     const tw = (ms, txt, dur) => t.tween(ms, dur, p => { inp.value = txt.slice(0, Math.round(p * txt.length)); upd(); }, 'tok');
     t.show(700, '.ttl'); t.show(1200, '#tbox'); t.show(1600, '#toks'); t.show(1800, '#tstat'); t.show(2500, '#tcav');
     t.show(3500, '#r5'); t.show(4200, '#b5');
@@ -1030,6 +1042,7 @@ ${btn('Start over', 1040, 910, 300, { id: 'reset', demo: 'pred', bg: 'var(--red-
     });
     $('#reset', root).addEventListener('click', () => { words = []; last = ''; render(); });
     render();
+    t.need(() => words.length >= 3, 'Click a few words to finish the sentence');
     t.show(700, '.ttl'); t.show(1200, '#sent'); t.show(1700, '#r6'); t.show(2300, '#b6');
     rows.forEach((r, i) => t.show(3000 + i * 350, r)); t.show(5200, '#other6'); t.show(5500, '#pick'); t.show(5700, '#reset');
     t.click(10000, rows[0], 'pred');
@@ -1082,6 +1095,8 @@ ${ch('robo', 130, gy('robo', 190), 190, { id: 'r7', hat: 1 })}
       }
     };
     sl.addEventListener('input', upd);
+    let moved = false; sl.addEventListener('input', () => { moved = true; });
+    t.need(() => moved, 'Drag the slider from careful to creative');
     const setV = v => {
       sl.value = v; upd();
       const w = 1180 - 64; tp.style.left = (370 + 32 + (v / 100) * w) + 'px';
@@ -1145,6 +1160,7 @@ ${btn('Add a message', 560, 850, 400, { id: 'add8', demo: 'ctx', bg: 'var(--yell
       cnt.innerHTML = `Backpack: <b>${Math.min(items.length, CAP)} / ${CAP}</b>`;
     };
     $('#add8', root).addEventListener('click', add);
+    t.need(() => n >= 6, 'Keep adding messages until the first one falls out');
     t.show(700, '.ttl'); t.show(1100, '#pack'); t.show(1400, '#r8'); t.show(1700, '#cnt8'); t.show(2000, '#add8');
     t.at(1700, () => cnt.innerHTML = 'Backpack: <b>0 / 5</b>');
     t.show(3000, '#tp1'); t.show(12000, '#tp2'); t.show(24000, '#tp3'); t.show(44000, '#tp4');
@@ -1210,7 +1226,9 @@ ${ttl('From Prompt to Answer, Step by Step', 'var(--green)')}
         t.at(t.time + 1800 + k * 2200, () => { drawCtx(k + 1); out.innerHTML = 'Answer so far: <b>' + JOUT.slice(0, k + 1).join('') + '</b>'; cnt.innerHTML = `Added token <b>#${k + 1}</b>.${k === 2 ? ' That is the stop token!' : ' Go again.'}`; });
       });
     };
+    const seenS = new Set([0]); t.need(() => seenS.size === 6, 'Click each of the six steps above');
     const setStep = i => {
+      seenS.add(i);
       panels.forEach((p, k) => p.classList.toggle('on', k === i));
       tabs.forEach((b, k) => b.classList.toggle('on', k === i));
       if (i === 4) loop();
@@ -1232,8 +1250,8 @@ page({
   name: 'It does not know',
   build: () => `
 ${ttl('It Does Not &ldquo;Know&rdquo; Things', 'var(--purple)')}
-<div class="box bub thk pop" id="L9" data-demo="pairs" style="${S(110, 190, 820, 350)};--bg:var(--orange-l);--tx:600px"><h3 style="color:#8a4a00">What it SEEMS like</h3><div id="L9t"></div><b class="d1"></b><b class="d2"></b></div>
-<div class="box bub pop t-down" id="R9" data-demo="pairs" style="${S(1010, 190, 800, 350)};--bg:var(--blue-l);--tx:60px;--bd:#1d6aa8"><h3 style="color:#134a75">What&rsquo;s REALLY happening</h3><div id="R9t"></div></div>
+<div class="box bub thk pop" id="L9" style="${S(110, 190, 820, 350)};--bg:var(--orange-l);--tx:600px"><h3 style="color:#8a4a00">What it SEEMS like</h3><div id="L9t"></div><b class="d1"></b><b class="d2"></b></div>
+<div class="box bub pop t-down" id="R9" style="${S(1010, 190, 800, 350)};--bg:var(--blue-l);--tx:60px;--bd:#1d6aa8"><h3 style="color:#134a75">What&rsquo;s REALLY happening</h3><div id="R9t"></div></div>
 ${ch('robo', 830, gy('robo', 270), 270, { id: 'r9' })}
 ${ch('tess', 70, gy('tess', 220), 220, { id: 't9' })}
 ${ch('kid', 1560, gy('kid', 200), 200, { id: 'k9', skin: '#d9a066', hair: '#2a2118', shirt: '#8e4bb5' })}
@@ -1245,13 +1263,12 @@ ${bub('Is it alive?', 1500, 620, 300, { id: 'bk9', tail: 'down', tx: 120 })}
     const L = $('#L9t', root), R = $('#R9t', root), dots = $$('#dots9 i', root);
     const left = i => { cur = i; setText(L, PAIRS9[i][0]); L.parentNode.classList.add('in'); dots.forEach((d, k) => d.classList.toggle('on', k === i)); };
     const right = i => { setText(R, PAIRS9[i][1]); R.parentNode.classList.add('in'); };
-    $('#R9', root).addEventListener('click', () => { const i = (cur + 1) % PAIRS9.length; left(i); right(i); });
-    $('#L9', root).addEventListener('click', () => $('#R9', root).click());
     t.show(700, '.ttl'); t.show(1200, '#r9'); t.show(1600, '#t9'); t.show(2000, '#bt9'); t.show(3000, '#k9'); t.show(3400, '#bk9');
     PAIRS9.forEach((p, i) => {
       const b = 5500 + i * 17000;
-      t.at(b, () => { $('#R9', root).classList.remove('in'); left(i); }, 'pairs');
-      t.at(b + 6500, () => right(i), 'pairs');
+      t.gate(b); t.gate(b + 6500);
+      t.at(b, () => { $('#R9', root).classList.remove('in'); left(i); });
+      t.at(b + 6500, () => right(i));
     });
     t.hide(40000, '#bt9'); t.hide(40000, '#bk9');
   }
@@ -1313,11 +1330,13 @@ ${ch('ghost', 1650, 760, 200, { id: 'g10b', float: 1, nobob: 1 })}
     $('#bReal', root).addEventListener('click', () => answer('r'));
     $('#bGhost', root).addEventListener('click', () => answer('g'));
     nx.addEventListener('click', () => { if (!locked) return; idx++; show(); });
+    t.need(() => idx >= STM10.length, 'Answer all five questions (tap REAL or GHOST, then Next)');
     // phase 1 story
     t.show(700, '#ph1 .ttl'); t.show(1500, '#t10'); t.show(2000, '#r10'); t.show(2600, '#bT10');
     t.hide(7000, '#bT10'); t.show(7400, '#bR10'); t.show(8200, '#cov'); t.show(10200, '#cite');
     t.hide(14500, '#bR10'); t.show(15000, '#g10'); t.show(15800, '#bG10'); t.show(20500, '#stamp');
     // switch phases
+    t.gate(27000);
     t.at(27000, () => { $('#ph1', root).classList.remove('in'); $('#ph2', root).classList.add('in'); });
     t.show(27800, '#ph2 .ttl'); t.show(28200, '#stm'); t.show(28600, '#bReal'); t.show(28800, '#bGhost'); t.show(29200, '#t10b'); t.show(29400, '#g10b');
     t.at(28200, show);
@@ -1363,7 +1382,8 @@ ${bub('', 390, 330, 590, { id: 'a11', tail: 'down', tx: 330 })}
       setText(a, txt); a.classList.add('in'); setText(note, nt);
       shelves.forEach(s => s.querySelector('.tag').textContent = s.classList.contains('on') ? 'IN LIBRARY' : 'REMOVED');
     };
-    shelves.forEach(s => s.addEventListener('click', () => { s.classList.toggle('on'); answer(); }));
+    let tog = 0; t.need(() => tog >= 3, 'Tap at least three shelves to add or remove books');
+    shelves.forEach(s => s.addEventListener('click', () => { tog++; s.classList.toggle('on'); answer(); }));
     t.show(700, '.ttl'); t.show(1200, '#t11'); t.show(1500, '#r11'); t.show(1800, '#q11'); t.show(2400, '#libt');
     shelves.forEach((s, i) => t.show(2600 + i * 300, s));
     t.show(4000, '#note11'); t.at(3600, answer);
@@ -1410,6 +1430,7 @@ ${ttl('How to Prompt: The Recipe', 'var(--green)')}
       tiles.forEach((tl, i) => tl.classList.toggle('on', on.has(i)));
     };
     tiles.forEach(tl => tl.addEventListener('click', () => { const k = +tl.dataset.k; if (on.has(k)) on.delete(k); else { on.add(k); lastK = k; } upd(); }));
+    t.need(() => on.size === 5, 'Tap all five ingredients to build the prompt');
     upd();
     t.show(700, '.ttl'); tiles.forEach((tl, i) => t.show(1200 + i * 250, tl)); t.show(2600, '#sheet'); t.show(3000, '#res');
     [9000, 20000, 31000, 42000, 53000].forEach((ms, i) => t.click(ms, tiles[i], 'recipe'));
@@ -1453,6 +1474,7 @@ ${bub('Better every turn!', 1440, 700, 380, { id: 'b13', tail: 'down', tx: 250 }
       });
     };
     $('#nxt', root).addEventListener('click', next);
+    t.need(() => turn >= 3 && !busy, 'Ask for all three tweaks');
     t.show(700, '.ttl'); t.show(1200, '#t13'); t.show(1500, '#draft'); t.show(1800, '#nxt'); t.show(2200, '#r13');
     t.click(5000, '#nxt', 'iter'); t.click(22000, '#nxt', 'iter'); t.click(40000, '#nxt', 'iter');
   }
@@ -1477,6 +1499,7 @@ ${bub('Trust me!', 380, 560, 230, { id: 'bR14', tail: 'down', tx: 100 })}
     const root = t.root, items = $$('.chk', root);
     const upd = () => $('#st14', root).classList.toggle('in', items.every(i => i.classList.contains('on')));
     items.forEach(li => li.addEventListener('click', () => { li.classList.toggle('on'); upd(); }));
+    t.need(() => items.every(i => i.classList.contains('on')), 'Tick every box on the checklist');
     t.show(700, '.ttl');
     t.at(1200, () => { const e = $('#t14', root); anim(e, [{ transform: 'translateX(-600px)', opacity: 1 }, { transform: 'translateX(0)', opacity: 1 }], { duration: 2000 }); });
     t.show(2600, '#r14'); t.show(3400, '#bR14'); t.show(5200, '#bT14');
@@ -1548,6 +1571,7 @@ ${Object.entries(BIN15).map(([k, b]) => `<div class="box bin pop" data-bin="${k}
       });
     });
     bins.forEach(b => b.addEventListener('click', () => { if (sel) place(sel, b); }));
+    t.need(() => placed >= 8, 'Sort all eight cards into the right color');
     upd();
     t.show(700, '.ttl'); bins.forEach((b, i) => t.show(1200 + i * 400, b)); cards.forEach((c, i) => t.show(2800 + i * 250, c));
     const ORDER = [0, 1, 3, 2, 4, 6, 5, 7];
@@ -1633,19 +1657,20 @@ function toast(msg) { toastEl.textContent = msg; toastEl.classList.add('show'); 
 
 /* scenery that is always on screen: grass, sun, clouds, sparkles */
 function buildDeco() {
-  let g = 'M0 80L0 44';
-  for (let x = 0; x <= 1920; x += 24) g += `L${x + 8} ${28 + (x * 7 % 17)}L${x + 20} ${46 + (x * 3 % 9)}`;
-  g += 'L1920 80Z';
+  const md = (a, n) => ((a % n) + n) % n;
+  let edge = 'M-2400 44';
+  for (let x = -2400; x <= 4320; x += 24) edge += `L${x + 8} ${28 + md(x * 7, 17)}L${x + 20} ${46 + md(x * 3, 9)}`;
+  const g = edge + 'L4320 80L-2400 80Z';
   const cloud = (cls, top, w, dur, delay) => `<div class="cloud" style="top:${top}px;width:${w}px;animation-duration:${dur}s;animation-delay:${delay}s"><svg viewBox="0 0 300 120"><g filter="url(#crayonB)"><path d="M40 100Q10 100 14 76Q18 54 44 58Q50 24 90 30Q110 6 150 20Q180 4 210 26Q250 24 254 58Q288 62 282 88Q278 104 250 100Z" fill="#fff" stroke="#2f8fdc" stroke-width="6" stroke-linejoin="round"/></g></svg></div>`;
   const sp = [[40, 330, 0], [1840, 450, .4], [1850, 830, .8], [60, 900, 1.1], [1000, 28, .3], [1540, 300, .6], [1180, 900, .9]];
   $('#deco').innerHTML =
-    cloud('', -34, 210, 110, -20) + cloud('', -20, 170, 150, -90) + cloud('', -28, 190, 130, -55) +
+    cloud('', -34, 210, 330, -60) + cloud('', -20, 170, 450, -270) + cloud('', -28, 190, 390, -165) +
     `<div class="sun"><svg viewBox="0 0 260 260"><g class="rays" filter="url(#crayonB)" stroke="#f28c1c" stroke-width="10" stroke-linecap="round">${Array.from({ length: 12 }, (_, i) => { const a = i * Math.PI / 6; return `<path d="M${130 + Math.cos(a) * 92} ${130 + Math.sin(a) * 92}L${130 + Math.cos(a) * 124} ${130 + Math.sin(a) * 124}"/>`; }).join('')}</g><circle filter="url(#crayon)" cx="130" cy="130" r="70" fill="#ffd21f" stroke="#f28c1c" stroke-width="8"/></svg></div>` +
-    [[210, 14], [150, 8]].map(([top, dl], k) => `<div class="bird" style="top:${top + k * 180}px;animation-duration:${26 + k * 9}s;animation-delay:-${dl + k * 11}s"><svg viewBox="0 0 60 30"><path filter="url(#crayonB)" d="M2 22Q16 0 30 18Q44 0 58 22" fill="none" stroke="#2a2118" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>`).join('') +
+    [[210, 14], [150, 8]].map(([top, dl], k) => `<div class="bird" style="top:${top + k * 180}px;animation-duration:${78 + k * 27}s;animation-delay:-${(dl + k * 11) * 3}s"><svg viewBox="0 0 60 30"><path filter="url(#crayonB)" d="M2 22Q16 0 30 18Q44 0 58 22" fill="none" stroke="#2a2118" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>`).join('') +
     `<div class="flutter"><svg viewBox="0 0 60 50"><g filter="url(#crayonB)" stroke="#2a2118" stroke-width="3" stroke-linejoin="round"><path d="M30 25Q6 0 4 22Q4 40 30 28Z" fill="#f59ab8"/><path d="M30 25Q54 0 56 22Q56 40 30 28Z" fill="#f28c1c"/><path d="M30 14V40" stroke-width="5" stroke-linecap="round"/></g></svg></div>` +
     [[120, 17, 0], [420, 23, 6], [760, 19, 11], [1100, 27, 3], [1420, 21, 14], [1750, 25, 9]].map(([x, du, dl], k) => `<div class="rise" style="left:${x}px;animation-duration:${du}s;animation-delay:-${dl}s">${spark(k % 2 ? '#f59ab8' : '#ffd21f')}</div>`).join('') +
     sp.map(([x, y, d]) => `<div class="spark" style="left:${x}px;top:${y}px;animation-delay:${d}s">${spark(d > .7 ? '#f59ab8' : '#ffd21f')}</div>`).join('') +
-    `<svg class="grass" viewBox="0 0 1920 80" preserveAspectRatio="none"><path filter="url(#crayon)" d="${g}" fill="#3fa535" stroke="#2a7524" stroke-width="5" stroke-linejoin="round"/></svg>`;
+    `<div class="ground" style="left:-2400px;width:6720px;top:1076px;height:2000px"></div><svg class="grass" viewBox="-2400 0 6720 80" preserveAspectRatio="none"><g filter="url(#crayon)"><path d="${g}" fill="#3fa535" stroke="none"/><path d="${edge}" fill="none" stroke="#2a7524" stroke-width="5" stroke-linejoin="round"/></g></svg>`;
 }
 /* progress trail: wobbly crayon line with one dot per page */
 function drawTrail() {
@@ -1659,7 +1684,7 @@ function drawTrail() {
   $('#trail').innerHTML = `<g filter="url(#crayon)"><path d="${d}" fill="none" stroke="${INK}" stroke-width="5" stroke-linecap="round" opacity=".7"/>${dots}</g>`;
 }
 function buildWipe() {
-  $('#wipe').innerHTML = WIPE_COL.map((c, i) => `<div class="stripe" style="top:${i * 160 - 30}px;background:${c}"></div>`).join('');
+  $('#wipe').innerHTML = Array.from({ length: 11 }, (_, i) => `<div class="stripe" style="top:${i * 160 - 350}px;background:${WIPE_COL[i % 7]}"></div>`).join('');
 }
 function sweep(dir) {
   const ss = $$('#wipe .stripe');
@@ -1695,8 +1720,9 @@ async function transition(i, instant) {
   st.busy = false;
   if (st.pending != null) { const p = st.pending; st.pending = null; if (p !== st.cur) go(p); }
 }
-function go(i) {
+function go(i, force) {
   i = clamp(i, 0, N - 1);
+  if (st.click && !force && i > st.cur) { toast('Click to continue. No skipping ahead.'); return; }
   if (st.busy) { st.pending = i; return; }
   if (i === st.cur) return;
   transition(i);
@@ -1729,7 +1755,11 @@ function setPaused(p) {
 function setAuto(a) { st.auto = a; if (a) st.click = false; statusUpdate(); toast('Autoplay ' + (a ? 'on' : 'off')); }
 function setClick(c) { st.click = c; if (c) st.auto = false; statusUpdate(); toast(c ? 'Click to reveal' : 'Click mode off'); }
 /* one click = reveal the next beat; when everything is revealed, go to the next page */
-function advance() { if (st.busy) return; if (TL && TL.release()) return; go(st.cur + 1); }
+function advance() {
+  if (st.busy) return; if (TL && TL.release()) return;
+  if (TL && !TL.ready()) { toast(TL.needMsg); const h = $('#clickhint'); h.classList.remove('nudge'); void h.offsetWidth; h.classList.add('nudge'); return; }
+  go(st.cur + 1, true);
+}
 const NOCLICK = 'button,input,textarea,.sc,.bin,.shelf,.row,.tile,.chk,.btn,#L9,#R9,#trail,.dot';
 function setCalm(c) { st.calm = c; document.body.classList.toggle('calm', c); $('[data-act=calm]').textContent = 'Calm: ' + (c ? 'on' : 'off'); toast(c ? 'Reduced motion on' : 'Reduced motion off'); }
 /* Fullscreen works from a key press or click. Some embedded frames refuse it, so fail with a clear message. */
@@ -1744,7 +1774,7 @@ function fullscreen() {
   } catch (_) { blocked(); }
 }
 function onFsChange() { document.body.classList.toggle('fs', !!(document.fullscreenElement || document.webkitFullscreenElement)); fit(); }
-const ACTS = { prev: () => go(st.cur - 1), next: () => go(st.cur + 1), pause: () => setPaused(!st.paused), auto: () => setAuto(!st.auto), click: () => setClick(!st.click), slower: () => stepSpeed(-1), faster: () => stepSpeed(1), full: fullscreen, restart, calm: () => setCalm(!st.calm) };
+const ACTS = { prev: () => go(st.cur - 1), next: () => { st.click ? advance() : go(st.cur + 1); }, pause: () => setPaused(!st.paused), auto: () => setAuto(!st.auto), click: () => setClick(!st.click), slower: () => stepSpeed(-1), faster: () => stepSpeed(1), full: fullscreen, restart, calm: () => setCalm(!st.calm) };
 
 /* UI auto-hide: toolbar after 3s, mouse cursor after a short idle */
 let uiT, curT;
@@ -1779,7 +1809,7 @@ function bindInput() {
     const k = e.key; let used = true;
     if (k === ' ') ACTS.pause();
     else if (k === 'ArrowRight') { st.click ? advance() : ACTS.next(); }
-    else if (k === 'PageDown') ACTS.next();
+    else if (k === 'PageDown') { st.click ? advance() : go(st.cur + 1); }
     else if (k === 'c' || k === 'C') ACTS.click();
     else if (k === 'ArrowLeft' || k === 'PageUp') ACTS.prev();
     else if (k === 'a' || k === 'A') ACTS.auto();
@@ -1790,6 +1820,7 @@ function bindInput() {
     else if (k === 'm' || k === 'M') ACTS.calm();
     else if (k === 'Home') go(0);
     else if (k === 'End') go(N - 1);
+    else if (false) { }
     else if (k >= '1' && k <= '9') go(+k - 1);
     else if (k === '0') go(9);
     else used = false;
@@ -1806,7 +1837,7 @@ function frame(now) {
     const dw = (DWELL[st.cur + 1] || 60) * 1000;
     const hint = $('#clickhint'), has = st.click && !st.busy;
     hint.classList.toggle('show', has);
-    if (has) { const tx = TL.nextGate() ? 'Click' : 'Click for next page'; if ($('#clicktxt').textContent !== tx) $('#clicktxt').textContent = tx; }
+    if (has) { const tx = TL.nextGate() ? 'Click' : (TL.ready() ? 'Click for next page' : 'Finish the activity'); if ($('#clicktxt').textContent !== tx) $('#clicktxt').textContent = tx; }
     if (st.auto && !st.click && !st.busy && !st.dragging && st.cur < N - 1 && TL.time >= dw && now - st.lastInput > CONFIG.idleWaitMs) go(st.cur + 1);
   }
   requestAnimationFrame(frame);

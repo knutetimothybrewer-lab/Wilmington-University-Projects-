@@ -3,6 +3,7 @@
 A self-running, 18-page crayon picture-book presentation for "AI Literacy for Educators."
 One file (`index.html`), vanilla JS/CSS/SVG, no network calls, works fully offline.
 Open it in a browser. By default it is in **click mode**: every speech bubble, character and animation appears when you click.
+Click mode has no skipping: the Next button, Page Down, number keys, End and the progress dots only go **backward** or stay put. The only way forward is to click through every step. Activity pages (feed the books, tokens, next word, temperature, backpack, prompt journey, Real-or-Ghost game, bias shelves, recipe, iterate, checklist, traffic light) also wait until the activity is finished, and the page shows what is still needed. Demo cursors do not run in click mode, so you do each activity yourself.
 Press `A` (or the Auto button) to switch to **autoplay**, where it runs itself start to finish (about 20 minutes).
 
 ## Controls
@@ -13,7 +14,7 @@ Press `A` (or the Auto button) to switch to **autoplay**, where it runs itself s
 | Space | Pause / resume everything |
 | Left / Right | Previous / next page |
 | A | Toggle autoplay (turns click mode off) |
-| 1-9 (0 = page 10) | Jump to a page (use Home/End or click the trail dots for 11-18); Home / End also work; the progress trail dots are clickable |
+| 1-9 (0 = page 10) | Jump to a page (autoplay mode only; click mode only goes back) (use Home/End or click the trail dots for 11-18); Home / End also work; the progress trail dots are clickable |
 | F | Fullscreen (full-bleed, bar hidden; Esc or F exits). If a host blocks it, open the file in its own tab |
 | R | Restart the current page's animation |
 | [ and ] | Slow down / speed up all timings (0.5x to 3x) |
@@ -45,3 +46,6 @@ demo steps keyed so real input overrides them) · character components (`svgRobo
 Handwriting fonts come from system fallbacks (Chalkboard SE, Marker Felt, Comic Sans MS, cursive),
 so lettering varies by machine; SVG titles are length-locked so they always fit.
 Token splitting on page 5 is a labeled approximation, not a real tokenizer.
+
+## Publishing with GitHub Pages
+`.github/workflows/pages.yml` publishes only `ai-guide/index.html` (nothing else in the repo). One-time setup: repository Settings > Pages > Source: "GitHub Actions". After that, each push to `main` that touches `ai-guide/` redeploys it to `https://<owner>.github.io/<repo>/`.
