@@ -875,10 +875,11 @@ html.rm .take svg.chk path{stroke-dashoffset:0}
       <button class="btn" id="btnBack" type="button">&larr; Back</button>
       <button class="btn btn-accent" id="btnNext" type="button">Next &rarr;</button>
     </div>
-    <span class="hint">&larr; &rarr; or Space: move &middot; M menu &middot; N notes &middot; A accessibility &middot; Esc close</span>
+    <span class="hint">&larr; &rarr; or Space: move &middot; M menu &middot; N notes &middot; F full screen &middot; A accessibility &middot; Esc close</span>
     <div class="ctl-group">
       <button class="btn" id="btnMenu" type="button" aria-haspopup="dialog">Menu</button>
       <button class="btn" id="btnNotes" type="button" aria-expanded="false">Notes</button>
+      <button class="btn" id="btnFS" type="button" aria-pressed="false">Full screen</button>
       <button class="btn" id="btnA11y" type="button" aria-expanded="false" aria-controls="a11y">Accessibility</button>
     </div>
   </footer>
@@ -898,9 +899,9 @@ html.rm .take svg.chk path{stroke-dashoffset:0}
 /* =====================================================================
    CONFIG: edit these three lines before presenting
    ===================================================================== */
-const PRESENTER_NAME = '[Presenter name]';
-const COURSE_NAME    = '[Course name]';
-const DATE           = '[Date]';
+const PRESENTER_NAME = 'Knute Brewer';
+const COURSE_NAME    = 'Wilmington University';
+const DATE           = 'November 2026';
 
 (function () {
 'use strict';
@@ -1031,6 +1032,20 @@ function toggleNotes(force) {
   const n = $('#notes'); const show = force === undefined ? n.hidden : force;
   n.hidden = !show; $('#btnNotes').setAttribute('aria-expanded', String(show));
 }
+/* ---------- full screen ---------- */
+function toggleFS() {
+  const d = document;
+  if (d.fullscreenElement) { d.exitFullscreen(); }
+  else if (root.requestFullscreen) { root.requestFullscreen().catch(() => announce('Full screen was blocked by the browser.')); }
+}
+if (!root.requestFullscreen) $('#btnFS').hidden = true;
+$('#btnFS').addEventListener('click', toggleFS);
+document.addEventListener('fullscreenchange', () => {
+  const on = !!document.fullscreenElement;
+  $('#btnFS').textContent = on ? 'Exit full screen' : 'Full screen';
+  $('#btnFS').setAttribute('aria-pressed', String(on));
+  announce(on ? 'Full screen on' : 'Full screen off');
+});
 $('#btnMenu').addEventListener('click', openMenu);
 $('#menuClose').addEventListener('click', closeMenu);
 $('#btnNotes').addEventListener('click', () => toggleNotes());
@@ -1068,6 +1083,7 @@ document.addEventListener('keydown', e => {
     case ' ': if (!interactive) { e.preventDefault(); next(); } break;
     case 'm': case 'M': e.preventDefault(); openMenu(); break;
     case 'n': case 'N': e.preventDefault(); toggleNotes(); break;
+    case 'f': case 'F': e.preventDefault(); toggleFS(); break;
     case 'a': case 'A': e.preventDefault(); a11y.hidden ? openA11y() : closeA11y(); break;
   }
 });
