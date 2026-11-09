@@ -524,21 +524,6 @@ html.rm .take svg.chk path{stroke-dashoffset:0}
   <p class="a tip"><b>Using this on your own?</b> Press <b>Next</b> (or the right arrow). A yellow <b>Reveal</b> button shows the next step on a slide. <b>Notes</b> explains each slide, <b>Menu</b> jumps anywhere, and <b>Accessibility</b> offers larger text, high contrast, and less motion.</p>
 </section>
 
-<!-- ====================== 3. HOOK ====================== -->
-<section class="slide" id="s3" data-title="The hook: AI sounds sure" data-part="Opening">
-  <h2 class="a">AI sounds sure</h2>
-  <div class="chat a">
-    <div class="bubble me">What is the late work policy at Riverside High School?</div>
-    <div class="bubble ai">
-      <span class="sr-only" id="s3full">Riverside High School gives every student a 7-day grace period with no penalty. After that, the principal must approve any late work in writing, and a signed parent note is required for every extension.</span>
-      <span class="typed" aria-hidden="true" data-text="Riverside High School gives every student a 7-day grace period with no penalty. After that, the principal must approve any late work in writing, and a signed parent note is required for every extension."></span><span class="caret" aria-hidden="true"></span>
-    </div>
-    <span class="badge-ill" style="align-self:flex-start">Illustrative example, not a live AI response (the policy it describes is invented)</span>
-  </div>
-  <div data-build="1" style="margin-top:.5rem"><span class="stamp">Sounds right. Is it right?</span></div>
-  <p data-build="2" class="big">Fluent is not the same as true.</p>
-</section>
-
 <!-- ====================== 4. UDL IN ONE IDEA ====================== -->
 <section class="slide" id="s4" data-title="UDL in one idea" data-part="Part 1 · UDL">
   <p class="kicker a">Part 1 · Universal Design for Learning</p>
@@ -626,6 +611,23 @@ html.rm .take svg.chk path{stroke-dashoffset:0}
     <div class="card new" data-build="3"><h3>New considerations</h3><ul><li><b>1.3</b> Represent diverse perspectives and identities authentically</li><li><b>6.5</b> Challenge exclusionary practices</li><li><b>9.4</b> Cultivate empathy and restorative practices</li></ul></div>
   </div>
   <p class="tip a"><b>Start small:</b> add one more option for engagement, one for representation, one for action and expression.</p>
+</section>
+
+<!-- ====================== 3. HOOK ====================== -->
+<section class="slide" id="s3" data-title="The hook: AI sounds sure" data-part="Part 2 · Grounding">
+  <p class="kicker a">Part 2 · Grounding</p>
+  <p class="lede a" style="margin:0">Part 1 was about designing for learners. Now we design how we use AI.</p>
+  <h2 class="a">AI sounds sure</h2>
+  <div class="chat a">
+    <div class="bubble me">What is the late work policy at Riverside High School?</div>
+    <div class="bubble ai">
+      <span class="sr-only" id="s3full">Riverside High School gives every student a 7-day grace period with no penalty. After that, the principal must approve any late work in writing, and a signed parent note is required for every extension.</span>
+      <span class="typed" aria-hidden="true" data-text="Riverside High School gives every student a 7-day grace period with no penalty. After that, the principal must approve any late work in writing, and a signed parent note is required for every extension."></span><span class="caret" aria-hidden="true"></span>
+    </div>
+    <span class="badge-ill" style="align-self:flex-start">Illustrative example, not a live AI response (the policy it describes is invented)</span>
+  </div>
+  <div data-build="1" style="margin-top:.5rem"><span class="stamp">Sounds right. Is it right?</span></div>
+  <p data-build="2" class="big">Fluent is not the same as true.</p>
 </section>
 
 <!-- ====================== 9. HOW AI ANSWERS ====================== -->
@@ -928,12 +930,12 @@ function announce(msg) { live.textContent = ''; setTimeout(() => { live.textCont
 const NOTES = [
 /*1*/ 'Welcome. This is a short tour of two ideas that fit together: designing learning so more students can succeed (UDL), and anchoring AI answers to sources you choose (grounding). Everything on screen is invented sample content; no student data appears anywhere in this deck.',
 /*2*/ 'Three stops on our path. Read the outcomes aloud and say that the last one is a prompt they can take back to their classroom. Point out the Accessibility menu (press A): the deck itself is built to model what we teach.',
-/*3*/ 'Let the answer type out and ask: who would believe this? Then reveal the stamp. The policy is invented, and the AI sounds equally sure whether or not it knows. Fluency is a property of the writing, not of the facts.',
 /*4*/ 'UDL starts from the idea that variability is the norm, not the exception. The stair-only door is a design choice, not a flaw in the person. The second door offers several ways in without anyone having to ask. Ask where their own rooms still have a single stair.',
 /*5*/ 'Engagement is the why, representation is the what, and action and expression is the how. Use the K-5 and 9-12 toggle to show the same principle at both levels. Open one card at a time and invite a second example from their own classrooms.',
 /*6*/ 'Walk the grid by column. The rows move from access to support to executive function: the teacher holds more at the top, and the student takes more ownership toward the bottom, aiming at learner agency. Let participants click the cell that matches a challenge they have right now.',
 /*7*/ 'Have the group vote on each card before the sort. The test is whether learners get a real choice or alternative while the goal stays fixed. Close with: keep the goal fixed, flex the means.',
 /*8*/ 'Version 3.0 was released in July 2024. The big shifts: language moves from provide to design, and there is more attention to identity, bias, belonging, and joy. Mention the three new considerations (1.3, 6.5, 9.4), and double-check the numbering on the CAST site before you quote it. Encourage a small start.',
+/*hook*/ 'Let the answer type out and ask: who would believe this? Then reveal the stamp. The policy is invented, and the AI sounds equally sure whether or not it knows. Fluency is a property of the writing, not of the facts.',
 /*9*/ 'Watch the model pick one word at a time. The numbers are illustrative. The key idea: it predicts likely text from patterns, and by default it does not open a document and look anything up. So when it lacks knowledge, it still produces something plausible.',
 /*10*/ 'Define grounding in plain words, then click Reveal. The source slides in, the tether draws, and the answer settles. Point to the label, icon, and border change: the meaning never relies on color alone. Use Replay as needed.',
 /*11*/ 'This is the centerpiece. Start in Split view and read the shared question. Hover claims on the left: no source. Hover claims or S-chips on the right: the exact sentence glows and a tether is drawn. Then switch to Toggle view and flip Attach the source to watch the same chat transform.',
@@ -1157,8 +1159,8 @@ $$('[data-cfg]').forEach(el => { el.textContent = { PRESENTER_NAME, COURSE_NAME,
 /* =====================================================================
    SLIDE 3: typing chat bubble
    ===================================================================== */
-slides[2].addEventListener('slide:enter', () => {
-  const el = $('.typed', slides[2]), text = el.dataset.text; el.textContent = '';
+$('#s3').addEventListener('slide:enter', () => {
+  const el = $('.typed', $('#s3')), text = el.dataset.text; el.textContent = '';
   if (RM()) { el.textContent = text; return; }
   let i = 0;
   (function tick() { if (i <= text.length) { el.textContent = text.slice(0, i++); T(tick, 28); } })();
@@ -1174,18 +1176,18 @@ const PR = [
 ];
 let band5 = 'K';
 function renderPrinciples() {
-  const open = $$('.pcard', slides[4]).map(c => c.classList.contains('open'));
+  const open = $$('.pcard', $('#s5')).map(c => c.classList.contains('open'));
   $('#pcards').innerHTML = PR.map((p, i) => `<article class="pcard${open[i] ? ' open' : ''}">
     <button type="button" aria-expanded="${open[i] ? 'true' : 'false'}" aria-controls="pm${i}"><svg class="ico chev" aria-hidden="true"><use href="#i-chev"/></svg>
       <h3>${esc(p.n)}</h3><div class="why">${esc(p.w)}</div><div class="q">Design question: ${esc(p.q)}</div></button>
     <div class="more" id="pm${i}"><div><ul>${p[band5].map(x => `<li>${esc(x)}</li>`).join('')}</ul></div></div></article>`).join('');
-  $$('.pcard > button', slides[4]).forEach(b => b.addEventListener('click', () => {
+  $$('.pcard > button', $('#s5')).forEach(b => b.addEventListener('click', () => {
     const c = b.parentElement, o = c.classList.toggle('open'); b.setAttribute('aria-expanded', String(o));
   }));
 }
 renderPrinciples();
-$$('.seg button', slides[4]).forEach(b => b.addEventListener('click', () => {
-  band5 = b.dataset.band; $$('.seg button', slides[4]).forEach(x => x.setAttribute('aria-pressed', String(x === b))); renderPrinciples();
+$$('.seg button', $('#s5')).forEach(b => b.addEventListener('click', () => {
+  band5 = b.dataset.band; $$('.seg button', $('#s5')).forEach(x => x.setAttribute('aria-pressed', String(x === b))); renderPrinciples();
 }));
 
 /* =====================================================================
@@ -1287,12 +1289,12 @@ function tokAuto() {
 function tokManual() { if (ti < TOK.length) { clearTimers(); tokShow(ti); tokCommit(ti); } }
 $('#tokStep').addEventListener('click', tokManual);
 $('#tokReplay').addEventListener('click', () => { tokReset(); if (!RM()) tokAuto(); });
-slides[8].addEventListener('slide:enter', () => { tokReset(); if (!RM()) T(tokAuto, 500); });
+$('#s9').addEventListener('slide:enter', () => { tokReset(); if (!RM()) T(tokAuto, 500); });
 
 /* =====================================================================
    SLIDE 10: replay
    ===================================================================== */
-$('#s10replay').addEventListener('click', () => { clearTimers(); setStep(9, 0); T(() => setStep(9, 1), RM() ? 50 : 900); });
+$('#s10replay').addEventListener('click', () => { clearTimers(); setStep(slides.indexOf($('#s10')), 0); T(() => setStep(slides.indexOf($('#s10')), 1), RM() ? 50 : 900); });
 
 /* =====================================================================
    SLIDE 11: demo 1 (claims, chips, tether, split/toggle view)
@@ -1538,7 +1540,7 @@ function renderQuiz() {
   const box = $('#quiz');
   $('#qprog').innerHTML = QZ.map((_, i) => `<i class="${qres[i] === 1 ? 'ok' : qres[i] === 0 ? 'no' : i === qi ? 'cur' : ''}"></i>`).join('');
   if (qi >= QZ.length) {
-    box.innerHTML = `<h3 style="font-size:1.6rem">Your score: ${qscore} of ${QZ.length}</h3><p class="lede">${qscore >= 4 ? 'Strong. You can tell options from labels and keep the last check.' : 'Good start. Revisit slides 7, 13, and 14, then try again.'}</p><button class="btn" id="qRetry" type="button">Try again</button>`;
+    box.innerHTML = `<h3 style="font-size:1.6rem">Your score: ${qscore} of ${QZ.length}</h3><p class="lede">${qscore >= 4 ? 'Strong. You can tell options from labels and keep the last check.' : 'Good start. Revisit slides 6, 13, and 14, then try again.'}</p><button class="btn" id="qRetry" type="button">Try again</button>`;
     $('#qRetry').addEventListener('click', () => { qi = 0; qscore = 0; qres = []; renderQuiz(); }); return;
   }
   const q = QZ[qi];
