@@ -141,6 +141,8 @@ svg .pop{transform-box:fill-box;transform-origin:50% 50%}
 #toolbar button{font-size:16px;font-weight:700;padding:3px 12px;border:3px solid var(--ink);border-radius:12px 6px 10px 6px;background:var(--yellow-l);cursor:pointer;color:var(--ink)}
 #toolbar button:hover{background:var(--yellow)}
 #spd{align-self:center;font-weight:700;font-size:16px;min-width:3.2em;text-align:center}
+body.fs #toolbar{display:none}
+body.fs #stage{top:50%}
 #toast{position:fixed;left:50%;bottom:60px;transform:translateX(-50%);z-index:101;font-size:26px;font-weight:700;background:var(--yellow);border:4px solid var(--ink);padding:4px 22px;border-radius:16px 6px 14px 6px;opacity:0;pointer-events:none;transition:opacity .3s}
 #toast.show{opacity:1}
 #clickhint{position:absolute;right:170px;bottom:86px;z-index:31;display:none;align-items:center;gap:10px;font-size:34px;font-weight:700;background:var(--yellow-l);border:5px solid var(--ink);padding:2px 20px 2px 14px;border-radius:18px 8px 16px 8px;animation:hintbob 1.1s ease-in-out infinite}
@@ -1623,7 +1625,7 @@ const stage = $('#stage'), pagesEl = $('#pages'), toastEl = $('#toast');
 const WIPE_COL = ['#e0342b', '#f28c1c', '#ffd21f', '#3fa535', '#2f8fdc', '#8e4bb5', '#8a5a2b'];
 
 function fit() {
-  const s = Math.min(innerWidth / 1920, (innerHeight - 44) / 1080);
+  const s = Math.min(innerWidth / 1920, (innerHeight - (document.body.classList.contains('fs') ? 0 : 44)) / 1080);
   st.scale = s; stage.style.transform = `scale(${s})`;
 }
 let toastT;
@@ -1730,9 +1732,18 @@ function setClick(c) { st.click = c; if (c) st.auto = false; statusUpdate(); toa
 function advance() { if (st.busy) return; if (TL && TL.release()) return; go(st.cur + 1); }
 const NOCLICK = 'button,input,textarea,.sc,.bin,.shelf,.row,.tile,.chk,.btn,#L9,#R9,#trail,.dot';
 function setCalm(c) { st.calm = c; document.body.classList.toggle('calm', c); $('[data-act=calm]').textContent = 'Calm: ' + (c ? 'on' : 'off'); toast(c ? 'Reduced motion on' : 'Reduced motion off'); }
+/* Fullscreen works from a key press or click. Some embedded frames refuse it, so fail with a clear message. */
 function fullscreen() {
-  if (document.fullscreenElement) document.exitFullscreen(); else (document.documentElement.requestFullscreen || (() => { })).call(document.documentElement);
+  const d = document, el = d.documentElement, on = d.fullscreenElement || d.webkitFullscreenElement;
+  const blocked = () => toast('Fullscreen is blocked in this view. Open the deck in its own tab.');
+  try {
+    if (on) { (d.exitFullscreen || d.webkitExitFullscreen).call(d); return; }
+    const req = el.requestFullscreen || el.webkitRequestFullscreen;
+    if (!req) { blocked(); return; }
+    const r = req.call(el); if (r && r.catch) r.catch(blocked);
+  } catch (_) { blocked(); }
 }
+function onFsChange() { document.body.classList.toggle('fs', !!(document.fullscreenElement || document.webkitFullscreenElement)); fit(); }
 const ACTS = { prev: () => go(st.cur - 1), next: () => go(st.cur + 1), pause: () => setPaused(!st.paused), auto: () => setAuto(!st.auto), click: () => setClick(!st.click), slower: () => stepSpeed(-1), faster: () => stepSpeed(1), full: fullscreen, restart, calm: () => setCalm(!st.calm) };
 
 /* UI auto-hide: toolbar after 3s, mouse cursor after a short idle */
@@ -1744,6 +1755,8 @@ function activity(e) {
 
 function bindInput() {
   addEventListener('resize', fit);
+  document.addEventListener('fullscreenchange', onFsChange); document.addEventListener('webkitfullscreenchange', onFsChange);
+  addEventListener('pointerdown', () => { try { window.focus(); } catch (_) { } }, true);
   ['pointermove', 'pointerdown', 'keydown'].forEach(ev => addEventListener(ev, activity, { passive: true }));
   // real (trusted) input takes the matching demo over and pauses auto-advance
   const mark = e => {
