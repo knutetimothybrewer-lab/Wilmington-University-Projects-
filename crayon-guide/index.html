@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>How Do Computers Talk? A Crayon Guide to AI and Large Language Models</title>
-<meta name="description" content="A self-running crayon picture-book presentation that teaches K-12 educators how AI and large language models work, and how to use them well. Single file, works offline.">
+<title>How Do Computers Talk? A Basic Guide to AI and Large Language Models</title>
+<meta name="description" content="A self-running picture-book presentation that teaches K-12 educators how AI and large language models work, and how to use them well. Single file, works offline.">
 <!--
-  HOW DO COMPUTERS TALK?  A Crayon Guide to AI and Large Language Models
+  HOW DO COMPUTERS TALK?  A Basic Guide to AI and Large Language Models
   One self-contained file. No external fonts, scripts, images or network calls. Works offline.
   Timing: edit the DWELL object at the top of the script (seconds per page). See README.md.
 -->
@@ -49,7 +49,7 @@ svg .pop{transform-box:fill-box;transform-origin:50% 50%}
 .hidden{visibility:hidden}
 
 /* ---------- headings, captions ---------- */
-.ttl{position:absolute;left:80px;top:34px;font-size:70px;font-weight:700;line-height:1.05;white-space:nowrap;transform-origin:0 50%;z-index:2}
+.ttl{position:absolute;left:80px;top:56px;font-size:70px;font-weight:700;line-height:1.05;white-space:nowrap;transform-origin:0 50%;z-index:2}
 .ttl>span{position:relative;display:inline-block;filter:url(#crayonT);color:var(--c);-webkit-text-stroke:9px var(--ink);paint-order:stroke fill;text-shadow:5px 6px 0 rgba(42,33,24,.28)}
 .ttl .ul{position:absolute;left:0;bottom:-14px;width:100%;height:22px;overflow:visible}
 .ttl .ul path{stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset calc(1.1s*var(--k)) ease-out .3s}
@@ -397,7 +397,7 @@ body.calm *,body.calm *::before,body.calm *::after{animation:none!important;tran
 <script>
 'use strict';
 /* =====================================================================
-   HOW DO COMPUTERS TALK? A Crayon Guide to AI and Large Language Models
+   HOW DO COMPUTERS TALK? A Basic Guide to AI and Large Language Models
    Sections:  1 CONFIG | 2 UTILS | 3 SCHEDULER | 4 CHARACTERS | 5 COMPONENTS
               6 GHOST CURSOR | 7 PAGES (registry) | 8 DECK CONTROLLER
    ===================================================================== */
@@ -667,10 +667,10 @@ const page = def => PAGES.push(def);
 page({
   name: 'Title',
   build: () => `
-<svg class="p1t" style="${S(0, 30, 1920, 470)}" viewBox="0 0 1920 470" aria-label="How Do Computers Talk? A Crayon Guide to AI and Large Language Models">
+<svg class="p1t" style="${S(0, 30, 1920, 470)}" viewBox="0 0 1920 470" aria-label="How Do Computers Talk? A Basic Guide to AI and Large Language Models">
   <g filter="url(#crayonT)" font-weight="700" text-anchor="middle">
     <text class="scrib" style="--d:0s" x="960" y="170" font-size="140" textLength="1660" lengthAdjust="spacingAndGlyphs" fill="#e0342b">How Do Computers Talk?</text>
-    <text class="scrib" style="--d:2.2s" x="960" y="285" font-size="64" textLength="1460" lengthAdjust="spacingAndGlyphs" fill="#2f8fdc">A Crayon Guide to AI and Large Language Models</text>
+    <text class="scrib" style="--d:2.2s" x="960" y="285" font-size="64" textLength="1460" lengthAdjust="spacingAndGlyphs" fill="#2f8fdc">A Basic Guide to AI and Large Language Models</text>
     <text class="scrib" style="--d:4s" x="960" y="395" font-size="54" textLength="760" lengthAdjust="spacingAndGlyphs" fill="#3fa535">AI Literacy for Educators</text>
   </g>
   <path class="scrawl" pathLength="1" d="M180 205Q520 178 840 208T1500 202T1760 196" fill="none" stroke="#f28c1c" stroke-width="12" stroke-linecap="round" filter="url(#crayon)"/>
@@ -1521,7 +1521,7 @@ function buildDeco() {
   const cloud = (cls, top, w, dur, delay) => `<div class="cloud" style="top:${top}px;width:${w}px;animation-duration:${dur}s;animation-delay:${delay}s"><svg viewBox="0 0 300 120"><g filter="url(#crayonB)"><path d="M40 100Q10 100 14 76Q18 54 44 58Q50 24 90 30Q110 6 150 20Q180 4 210 26Q250 24 254 58Q288 62 282 88Q278 104 250 100Z" fill="#fff" stroke="#2f8fdc" stroke-width="6" stroke-linejoin="round"/></g></svg></div>`;
   const sp = [[40, 330, 0], [1840, 450, .4], [1850, 830, .8], [60, 900, 1.1], [1000, 28, .3], [1540, 300, .6], [1180, 900, .9]];
   $('#deco').innerHTML =
-    cloud('', -4, 300, 110, -20) + cloud('', 22, 220, 150, -90) + cloud('', 0, 260, 130, -55) +
+    cloud('', -34, 210, 110, -20) + cloud('', -20, 170, 150, -90) + cloud('', -28, 190, 130, -55) +
     `<div class="sun"><svg viewBox="0 0 260 260"><g class="rays" filter="url(#crayonB)" stroke="#f28c1c" stroke-width="10" stroke-linecap="round">${Array.from({ length: 12 }, (_, i) => { const a = i * Math.PI / 6; return `<path d="M${130 + Math.cos(a) * 92} ${130 + Math.sin(a) * 92}L${130 + Math.cos(a) * 124} ${130 + Math.sin(a) * 124}"/>`; }).join('')}</g><circle filter="url(#crayon)" cx="130" cy="130" r="70" fill="#ffd21f" stroke="#f28c1c" stroke-width="8"/></svg></div>` +
     sp.map(([x, y, d]) => `<div class="spark" style="left:${x}px;top:${y}px;animation-delay:${d}s">${spark(d > .7 ? '#f59ab8' : '#ffd21f')}</div>`).join('') +
     `<svg class="grass" viewBox="0 0 1920 80" preserveAspectRatio="none"><path filter="url(#crayon)" d="${g}" fill="#3fa535" stroke="#2a7524" stroke-width="5" stroke-linejoin="round"/></svg>`;

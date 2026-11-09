@@ -1,4 +1,4 @@
-# How Do Computers Talk? A Crayon Guide to AI and Large Language Models
+# How Do Computers Talk? A Basic Guide to AI and Large Language Models
 
 A self-running, 18-page crayon picture-book presentation for "AI Literacy for Educators."
 One file (`index.html`), vanilla JS/CSS/SVG, no network calls, works fully offline.
