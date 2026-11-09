@@ -1,6 +1,6 @@
 # How Do Computers Talk? A Crayon Guide to AI and Large Language Models
 
-A self-running, 17-page crayon picture-book presentation for "AI Literacy for Educators."
+A self-running, 18-page crayon picture-book presentation for "AI Literacy for Educators."
 One file (`index.html`), vanilla JS/CSS/SVG, no network calls, works fully offline.
 Open it in a browser. It starts playing by itself (about 20 minutes).
 
@@ -10,7 +10,7 @@ Open it in a browser. It starts playing by itself (about 20 minutes).
 | Space | Pause / resume everything |
 | Left / Right | Previous / next page |
 | A | Toggle autoplay (page auto-advance) |
-| 1-9 (0 = page 10) | Jump to a page; Home / End also work; the progress trail dots are clickable |
+| 1-9 (0 = page 10) | Jump to a page (use Home/End or click the trail dots for 11-18); Home / End also work; the progress trail dots are clickable |
 | F | Fullscreen |
 | R | Restart the current page's animation |
 | [ and ] | Slow down / speed up all timings (0.5x to 3x) |

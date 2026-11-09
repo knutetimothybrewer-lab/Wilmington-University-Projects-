@@ -27,7 +27,17 @@ button{font-family:inherit}
 #deco{z-index:1;pointer-events:none}
 #pages{z-index:5}
 .page{position:absolute;inset:0}
-.page>*,.phase>*,#p15>*{position:absolute}
+.page>*,.phase>*,#p15>*,.jp>*{position:absolute}
+.jp{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity calc(.5s*var(--k))}
+.jp.on{opacity:1;pointer-events:auto}
+.jp .row{cursor:default;height:80px}
+.jp .row .fill{width:var(--w)}
+.jp:not(.on) .row .fill{width:0}
+.jp .row.pick .w{font-weight:700}
+.jp .row.pick .fill{border-color:var(--green);border-width:8px}
+.tok.dim{opacity:.55}
+.btn.on::before{border-color:var(--green);border-width:10px}
+#ctx4{margin-top:4px}
 #grain{position:absolute;inset:0;z-index:20;pointer-events:none;opacity:.5}
 svg text{font-family:var(--font)}
 
@@ -40,7 +50,7 @@ svg .pop{transform-box:fill-box;transform-origin:50% 50%}
 
 /* ---------- headings, captions ---------- */
 .ttl{position:absolute;left:80px;top:34px;font-size:70px;font-weight:700;line-height:1.05;white-space:nowrap;transform-origin:0 50%;z-index:2}
-.ttl>span{position:relative;display:inline-block;filter:url(#crayonT)}
+.ttl>span{position:relative;display:inline-block;filter:url(#crayonT);color:var(--c);-webkit-text-stroke:9px var(--ink);paint-order:stroke fill;text-shadow:5px 6px 0 rgba(42,33,24,.28)}
 .ttl .ul{position:absolute;left:0;bottom:-14px;width:100%;height:22px;overflow:visible}
 .ttl .ul path{stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset calc(1.1s*var(--k)) ease-out .3s}
 .ttl.in .ul path{stroke-dashoffset:0}
@@ -138,7 +148,7 @@ body.calm *,body.calm *::before,body.calm *::after{animation:none!important;tran
 
 /* ---------- page 1 & 17: scribbled titles ---------- */
 .p1t{position:absolute;overflow:visible}
-.scrib{stroke:var(--ink);stroke-width:3;stroke-dasharray:800;stroke-dashoffset:800;fill-opacity:0;paint-order:stroke;transition:stroke-dashoffset calc(2.8s*var(--k)) ease-out calc(var(--d,0s)*var(--k)),fill-opacity calc(1s*var(--k)) ease calc((var(--d,0s) + 2.3s)*var(--k))}
+.scrib{stroke:var(--ink);stroke-width:10;stroke-linejoin:round;stroke-dasharray:800;stroke-dashoffset:800;fill-opacity:0;paint-order:stroke;transition:stroke-dashoffset calc(2.8s*var(--k)) ease-out calc(var(--d,0s)*var(--k)),fill-opacity calc(1s*var(--k)) ease calc((var(--d,0s) + 2.3s)*var(--k))}
 .scrib.in{stroke-dashoffset:0;fill-opacity:1}
 .scrawl{stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset calc(2s*var(--k)) ease-out calc(4.5s*var(--k))}
 .scrawl.in{stroke-dashoffset:0}
@@ -397,22 +407,23 @@ body.calm *,body.calm *::before,body.calm *::after{animation:none!important;tran
    These are "virtual" seconds: the [ and ] speed keys scale them. Total ≈ 20 min. */
 const DWELL = {
    1: 40,  //  Title
-   2: 65,  //  What is AI?
-   3: 60,  //  What is an LLM?
-   4: 75,  //  Training
-   5: 75,  //  Tokens
-   6: 85,  //  Next-word prediction
-   7: 80,  //  Temperature
+   2: 60,  //  What is AI?
+   3: 55,  //  What is an LLM?
+   4: 70,  //  Training
+   5: 70,  //  Tokens
+   6: 80,  //  Next-word prediction
+   7: 75,  //  Temperature
    8: 75,  //  Context window
-   9: 65,  //  It does not "know"
-  10: 90,  //  Hallucinations
-  11: 80,  //  Bias and training data
-  12: 100, //  Prompt recipe
-  13: 75,  //  Iterate
-  14: 60,  //  Verify
-  15: 90,  //  Traffic light
-  16: 60,  //  Key takeaways
-  17: 45   //  The End
+   9: 70,  //  A prompt's journey (end to end)
+  10: 65,  //  It does not "know"
+  11: 90,  //  Hallucinations
+  12: 75,  //  Bias and training data
+  13: 90,  //  Prompt recipe
+  14: 75,  //  Iterate
+  15: 60,  //  Verify
+  16: 90,  //  Traffic light
+  17: 60,  //  Key takeaways
+  18: 45   //  The End
 };
 const CONFIG = {
   idleWaitMs: 4000,        // wait this long after the last real input before auto-advancing
@@ -1021,6 +1032,75 @@ ${btn('Add a message', 560, 850, 400, { id: 'add8', demo: 'ctx', bg: 'var(--yell
     t.show(3000, '#tp1'); t.show(12000, '#tp2'); t.show(24000, '#tp3'); t.show(44000, '#tp4');
     [5500, 9500, 13500, 17500, 21500, 25500, 30500, 34500, 38500].forEach(ms => t.click(ms, '#add8', 'ctx'));
     t.at(43000, () => $('#b8', root).classList.remove('in'));
+  }
+});
+
+/* ---------- 9 · A PROMPT'S JOURNEY (end to end) ---------- */
+const JTAB = ['1 Prompt', '2 Chunks', '3 Backpack', '4 Predict', '5 Repeat', '6 Answer'];
+const JTOK = ['Name', ' a', ' red', ' fruit', '.'];
+const JOUT = ['An', ' apple', '.'];
+const JBAR = [['An', .46], ['Apple', .22], ['A', .14], ['Cherry', .08], ['Strawberry', .06]];
+const inn = s => s.replace(/class="([^"]*?)\bpop\b/, 'class="$1pop in');
+const jtok = (arr, cls = '') => arr.map((tk, i) => `<span class="tok c${i % 7} ${cls}"><span class="tt">${tk.trim()}</span><small>#${(hash(tk) % 9000) + 100}</small></span>`).join('');
+page({
+  name: 'A prompt’s journey',
+  build: () => `
+${ttl('From Prompt to Answer, Step by Step', 'var(--green)')}
+<div id="jt" data-demo="journey">${JTAB.map((n, i) => `<button class="btn pop" data-s="${i}" tabindex="-1" style="${S(80 + i * 296, 180, 280)}--bg:var(--yellow-l);font-size:36px;padding:10px 8px">${n}</button>`).join('')}</div>
+<div class="jp" data-s="0">
+  ${ch('tess', 110, gy('tess', 260), 260, { id: 'jt0' })}
+  ${inn(bub('Name a red fruit.', 80, 440, 560, { tail: 'down', tx: 180, st: 'font-size:56px;font-weight:700;--bg:var(--purple-l);' }))}
+  <div class="cap" style="${S(760, 470, 1060)}font-size:54px"><b>1. You write a prompt.</b><br>To the computer, it is just text.</div>
+</div>
+<div class="jp" data-s="1">
+  <div class="cap" style="${S(100, 330, 1700)}font-size:54px"><b>2. The text is chopped into chunks</b> called <b>tokens</b>.</div>
+  <div style="${S(100, 500, 1700)}">${jtok(JTOK)}</div>
+  <div class="cap" style="${S(100, 760, 1700)}">Each token gets a number, because computers work with numbers.</div>
+</div>
+<div class="jp" data-s="2">
+  <div class="cap" style="${S(100, 330, 1300)}font-size:54px"><b>3. The tokens go in the context window,</b> Robo-Pal&rsquo;s backpack.</div>
+  <div class="box" style="${S(100, 560, 1100, 230)}--bg:#c98a4b;--bd:#5a3a18"><div class="cap" style="position:static;font-size:34px;color:#fff;text-shadow:2px 2px 0 #3a2410">Context window</div><div style="margin-top:4px">${jtok(JTOK)}</div></div>
+  ${ch('robo', 1480, gy('robo', 270), 270, { id: 'jr2' })}
+  ${inn(bub('I read everything in my backpack at once.', 1210, 560, 420, { tail: 'right', ty: 90 }))}
+</div>
+<div class="jp" data-s="3">
+  <div class="cap" style="${S(100, 330, 1700)}font-size:54px"><b>4. Robo-Pal predicts just ONE next token.</b></div>
+  <div style="${S(100, 440, 1250, 480)}">${JBAR.map((b, i) => `<div class="row ${i ? '' : 'pick'}" style="--c:${BARCOL[i]};--w:${b[1] / .5 * 100}%"><span class="w">${b[0]}</span><span class="bw"><i class="fill"></i></span><span class="pc">${Math.round(b[1] * 100)}%</span></div>`).join('')}</div>
+  ${ch('robo', 1500, gy('robo', 260), 260, { id: 'jr3' })}
+  ${inn(bub('Best guess: <b>&ldquo;An&rdquo;</b>', 1380, 560, 330, { tail: 'down', tx: 200 }))}
+</div>
+<div class="jp" data-s="4">
+  <div class="cap" style="${S(100, 320, 1700)}font-size:54px"><b>5. Add it to the context. Predict again. Repeat!</b></div>
+  <div class="box" style="${S(100, 450, 1700, 260)}--bg:#fff"><div class="cap" style="position:static;font-size:32px;color:#5a4a36">Context so far:</div><div id="ctx4"></div></div>
+  <div class="cap" id="cnt4" style="${S(100, 750, 900)}"></div>
+  <div class="cap" id="out4" style="${S(100, 830, 1700)}font-size:60px"></div>
+</div>
+<div class="jp" data-s="5">
+  <div class="cap" style="${S(100, 330, 1700)}font-size:54px"><b>6. A stop token ends it. The tokens are the answer.</b></div>
+  ${ch('robo', 700, gy('robo', 300), 300, { id: 'jr5' })}
+  ${inn(bub('An apple.', 420, 470, 560, { tail: 'right', ty: 80, st: 'font-size:64px;font-weight:700;--bg:var(--green-l);' }))}
+  <div class="cap" style="${S(1080, 500, 780)}">No lookup. No thinking about apples. Just one good guess after another.</div>
+</div>`,
+  script(t) {
+    const root = t.root, tabs = $$('#jt .btn', root), panels = $$('.jp', root);
+    const ctx = $('#ctx4', root), cnt = $('#cnt4', root), out = $('#out4', root);
+    const drawCtx = n => { ctx.innerHTML = jtok(JTOK, 'dim') + jtok(JOUT.slice(0, n)); };
+    const loop = () => {
+      drawCtx(0); cnt.textContent = ''; out.innerHTML = '';
+      JOUT.forEach((_, k) => {
+        t.at(t.time + 800 + k * 2200, () => { cnt.innerHTML = `Prediction <b>#${k + 1}</b>&hellip;`; });
+        t.at(t.time + 1800 + k * 2200, () => { drawCtx(k + 1); out.innerHTML = 'Answer so far: <b>' + JOUT.slice(0, k + 1).join('') + '</b>'; cnt.innerHTML = `Added token <b>#${k + 1}</b>.${k === 2 ? ' That is the stop token!' : ' Go again.'}`; });
+      });
+    };
+    const setStep = i => {
+      panels.forEach((p, k) => p.classList.toggle('on', k === i));
+      tabs.forEach((b, k) => b.classList.toggle('on', k === i));
+      if (i === 4) loop();
+    };
+    tabs.forEach((b, i) => b.addEventListener('click', () => setStep(i)));
+    t.show(700, '.ttl'); tabs.forEach((b, i) => t.show(1000 + i * 150, b));
+    t.at(1800, () => setStep(0));
+    [[11000, 1], [21000, 2], [30000, 3], [40000, 4], [58000, 5]].forEach(([ms, i]) => t.click(ms, tabs[i], 'journey'));
   }
 });
 
