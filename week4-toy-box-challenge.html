@@ -3,8 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<!-- Week 4 check for understanding. Opened as a local file, results stay on the device;
-     the live class results board works only in the published claude.ai version. -->
+<!-- Week 4 check for understanding: self-check feedback for students. -->
 </head>
 <body>
 <title>Toy Box Challenge</title>
@@ -340,7 +339,7 @@ td.num{font-variant-numeric:tabular-nums;font-weight:700}
     <p class="lead">Sixteen quick questions on everything from Week 4: <b>AI, Access &amp; Equity</b>. You'll see right away why each answer is right, and get your results at the end.</p>
     <div class="facts"><span class="fact"><b>16</b>questions</span><span class="fact"><b>8</b>topics</span><span class="fact"><b>~8</b>minutes</span><span class="fact"><b>4</b>question styles</span></div>
     <div class="topics" id="topicList"></div>
-    <p class="savenote" id="saveNote"><span class="dot" id="saveDot"></span><span id="saveText">Checking whether your results can be saved…</span></p>
+    <p class="savenote" id="saveNote" hidden><span class="dot" id="saveDot"></span><span id="saveText"></span></p>
     <button class="go" id="startBtn">Wind me up ▶</button>
   </section>
 
@@ -638,7 +637,7 @@ function answerText(q){
 
 /* ---------------- saving (db + user) ---------------- */
 let db=null, user=null, uid=null, teacher=false, canSave=null;
-function setSaveNote(kind, text){ $('#saveDot').className='dot '+(kind==='on'?'on':kind==='off'?'off':''); $('#saveText').textContent=text; }
+function setSaveNote(kind, text){ $('#saveNote').hidden = kind!=='on'; $('#saveDot').className='dot on'; $('#saveText').textContent = kind==='on' ? text : ''; }
 (async()=>{
   try{
     if(!window.claude || typeof window.claude.use!=='function'){ canSave=false; setSaveNote('off','Your results show on this device only.'); return; }
@@ -655,8 +654,8 @@ function setSaveNote(kind, text){ $('#saveDot').className='dot '+(kind==='on'?'o
 
 async function saveResult(s){
   const out=$('#saveResult');
-  if(canSave===null){ out.textContent='Saving your results…'; return; }
-  if(!canSave){ out.textContent='These results are on this device only. They were not sent to your instructor.'; return; }
+  if(canSave===null){ out.textContent=''; return; }
+  if(!canSave){ out.textContent=''; return; }
   out.textContent='Saving your results…';
   const ref=db.doc('results/'+uid);
   const body=(prev)=>({ last:s.pct, best:Math.max(s.pct, prev&&typeof prev.best==='number'?prev.best:0), attempts:(prev&&typeof prev.attempts==='number'?prev.attempts:0)+1,
