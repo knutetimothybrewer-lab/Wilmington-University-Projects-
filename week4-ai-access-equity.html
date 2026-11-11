@@ -590,6 +590,30 @@ body.bare .slab,body.bare .bshadow{opacity:0}
 .kick,.rc,.pblk,.wagon,.toybtn,.cb,.topic .n,.ev .yr,.ticket .tk,.notanerr,.scene .tagline,.eyebrow,.fcard .front,.ans,.banner,.callout,.chest .lid{background-image:linear-gradient(rgba(255,255,255,.4),rgba(255,255,255,0) 48%,rgba(0,0,0,.12))}
 .kick{box-shadow:0 2px 0 rgba(0,0,0,.25),0 4px 0 rgba(0,0,0,.25),0 8px 12px rgba(0,0,0,.2)}
 .cb{box-shadow:0 3px 0 var(--ink),0 6px 0 var(--ink),0 10px 14px rgba(0,0,0,.3)}
+/* ===== glossary ===== */
+.gloss{display:grid;grid-template-columns:repeat(3,1fr);gap:16px 20px;flex:1;align-content:center}
+.gterm{background:#fff;border:3px solid var(--ink);border-left:14px solid var(--tc);border-radius:16px;padding:10px 16px;font-size:.68em;line-height:1.25;box-shadow:var(--ext)}
+.gterm b:first-child{display:block;font-size:1.28em;margin-bottom:3px;color:var(--ink)}
+/* ===== topic intros ===== */
+.intro-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;gap:16px;padding-top:6px}
+.icube{margin-bottom:22px}
+.of{font-weight:700;background:var(--tc);color:#fff;padding:6px 26px;border-radius:999px;border:4px solid var(--ink);font-size:1em;background-image:linear-gradient(rgba(255,255,255,.4),rgba(255,255,255,0) 48%,rgba(0,0,0,.12))}
+.of.dark{color:var(--ink)}
+.ititle{font-family:var(--display);font-weight:400;font-size:80px;line-height:1.04;color:#fff;-webkit-text-stroke:6px var(--ink);paint-order:stroke fill;max-width:1080px;text-transform:uppercase;
+  text-shadow:0 7px 0 var(--tc),0 13px 0 var(--ink),0 20px 26px rgba(0,0,0,.3)}
+.iq{font-size:1.2em;font-weight:600;background:#fff;border:4px solid var(--ink);border-radius:22px;padding:12px 30px;box-shadow:var(--ext);margin-top:10px}
+.iterms{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center;font-weight:700;font-size:.9em}
+.iterms .chip{background:#fff;font-size:.85em}
+.tdots{display:flex;gap:12px;margin-top:6px}
+.tdots i{width:24px;height:24px;border-radius:7px;background:rgba(255,255,255,.7);border:3px solid var(--ink)}
+.tdots i.done{background:var(--ink)}
+.slide.active .tdots i.on{background:var(--tc);animation:dotPulse 1.2s 1.8s ease-in-out infinite}
+@keyframes dotPulse{50%{transform:scale(1.4) rotate(12deg)}}
+.floaty{position:absolute;top:300px;font-size:120px;line-height:1;filter:drop-shadow(8px 12px 0 rgba(42,26,14,.22));opacity:0}
+.floaty.l{left:-6px}.floaty.r{right:-6px;top:360px}
+.slide.active .floaty{animation:popIn .9s .9s var(--bounce) both,floaty 4.2s 1.8s ease-in-out infinite}
+.slide.active .floaty.r{animation-delay:1.1s,2.2s}
+@keyframes floaty{0%,100%{opacity:1;transform:perspective(600px) translateY(0) rotateY(-28deg) rotate(-6deg)}50%{opacity:1;transform:perspective(600px) translateY(-26px) rotateY(28deg) rotate(6deg)}}
 /* display face reads best in caps */
 .sh h2,.ttl,#night h1,.bubble .nm,.wagon h3,.howwhat,.fcard .front .lbl,.ans,.folder .num,.stat .num,.dial .num,.big-q,.rc .k,.ticket .tk,.notanerr,.stamp,.dismiss{text-transform:uppercase}
 /* calmer motion */
@@ -689,6 +713,12 @@ body.calm .slide.leaving{animation:fadeOut .3s both!important}
     </div>
   </section>
 
+  <!-- GLOSSARY -->
+  <section class="slide" data-bubble="Vocabulary time! Twelve words you'll hear tonight. Every one of them is in the toy box." data-notes="Before we start, here are twelve words you'll hear tonight. Accessibility features are built in for everyone; assistive technology is matched to one person. Accommodations change how a student learns; modifications change what. IEPs and 504 plans are the K-12 legal plans that list those supports. An algorithm is the set of rules behind a score, and algorithmic bias is when those scores consistently favor or harm certain groups, for example in screeners and placement tools. A dialect is a rule-governed variety of a language. The ADA and Section 504 are the civil-rights laws, WCAG 2.1 AA is the technical standard, and the digital divide is the gap in devices, internet, cost, and skills. Don't memorize these now. They'll come back throughout tonight.">
+    <header class="sh"><span class="kick" style="--tc:var(--green)">Before we start</span><h2>Glossary: words to know</h2></header>
+    <div class="gloss"><div class="gterm pop" style="--tc:var(--blue);--d:1"><b><span>🔘</span> Accessibility feature</b>A built-in setting anyone can turn on, like captions, zoom, or a screen reader.</div><div class="gterm pop" style="--tc:var(--green);--d:2"><b><span>🦾</span> Assistive technology (AT)</b>A tool matched to one person to increase, maintain, or improve what they can do.</div><div class="gterm pop" style="--tc:var(--blue);--d:3"><b><span>🪜</span> Accommodation</b>Changes <b>how</b> a student learns or shows learning. Same goal.</div><div class="gterm pop" style="--tc:var(--orange);--d:4"><b><span>⬇️</span> Modification</b>Changes <b>what</b> a student is expected to learn. Different goal.</div><div class="gterm pop" style="--tc:var(--purple);--d:5"><b><span>📋</span> IEP / 504 plan</b>K-12 legal plans listing a student’s services &amp; accommodations.</div><div class="gterm pop" style="--tc:var(--teal);--d:6"><b><span>⚙️</span> Algorithm</b>Step-by-step rules a computer follows to turn data into a score or decision.</div><div class="gterm pop" style="--tc:var(--purple);--d:7"><b><span>🎯</span> Algorithmic bias</b>Errors that <b>consistently</b> favor or harm certain groups.</div><div class="gterm pop" style="--tc:var(--red);--d:8"><b><span>📝</span> Screener / placement tool</b>A quick test that flags or sorts students (reading risk, gifted, course level).</div><div class="gterm pop" style="--tc:var(--teal);--d:9"><b><span>🗣️</span> Dialect</b>A rule-governed variety of a language, like African American English.</div><div class="gterm pop" style="--tc:var(--red);--d:10"><b><span>📜</span> ADA &amp; Section 504</b>Federal civil-rights laws banning disability discrimination, online too.</div><div class="gterm pop" style="--tc:var(--blue);--d:11"><b><span>🌐</span> WCAG 2.1 AA</b>The technical standard for accessible web content and apps.</div><div class="gterm pop" style="--tc:var(--green);--d:12"><b><span>📶</span> Digital divide</b>Gaps in devices, internet, cost, and skills that make access unequal.</div></div>
+  </section>
+
   <!-- 2 AGENDA -->
   <section class="slide" data-bubble="Let's see what's in the toy box tonight. Eight topics, about fifteen minutes. Hold on to your batteries!" data-notes="Here is everything we will cover. We start with what AI can do for students with disabilities, and where it falls short. Then the tools: accessibility features and assistive technology. Then a big distinction every teacher needs: accommodations versus modifications. Then the hard part: bias in screeners, stereotypes and dialects in AI output. We finish with the law, ADA and Section 504, and equity of access.">
     <header class="sh"><span class="kick" style="--tc:var(--red)">Tonight's toy box</span><h2>What we'll unpack</h2></header>
@@ -725,6 +755,19 @@ body.calm .slide.leaving{animation:fadeOut .3s both!important}
       </div>
     </div>
     <div class="callout step" style="margin-top:20px">These are your future students… and some of your classmates right now. 👋</div>
+  </section>
+
+  <!-- TOPIC 1 INTRO -->
+  <section class="slide bare intro" style="--tc:var(--red)" data-bubble="Batteries in! First up: how AI can help students with disabilities… and where it can trip them up." data-notes="Topic one: AI's benefits and limits for students with disabilities. The big question: when does AI open a door, and when does it close one? Listen for these words: text-to-speech, dictation, hallucination, which is when AI confidently makes something up, and FERPA, the federal law protecting student records.">
+    <span class="floaty l" aria-hidden="true">🧩</span><span class="floaty r" aria-hidden="true">🔊</span>
+    <div class="intro-wrap">
+      <div class="cube tcube icube" data-l="1" data-r="★" style="--c:var(--red);--d:0;--s:160px;--ry:24deg"></div>
+      <p class="of pop" style="--d:5">Topic 1 of 8</p>
+      <h2 class="ititle">AI's benefits &amp; limits for students with disabilities</h2>
+      <p class="iq pop" style="--d:9">🤔 When does AI open a door, and when does it close one?</p>
+      <div class="iterms pop" style="--d:11"><span>Words to watch:</span><span class="chip">Text-to-speech</span><span class="chip">Dictation</span><span class="chip">Hallucination</span><span class="chip">FERPA</span></div>
+      <div class="tdots pop" style="--d:12" aria-label="Topic 1 of 8"><i class="on"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></div>
+    </div>
   </section>
 
   <!-- 4 BENEFITS -->
@@ -781,6 +824,19 @@ body.calm .slide.leaving{animation:fadeOut .3s both!important}
     <p class="src pop" style="--d:6;font-size:.66em;margin-top:12px">⚠️ AI can't grant accommodations. That's the IEP/504 team (K-12) or Disability Services (college).</p>
   </section>
 
+  <!-- TOPIC 2 INTRO -->
+  <section class="slide bare intro" style="--tc:var(--blue)" data-bubble="Check your settings menu. There's a whole toy box hiding in there!" data-notes="Topic two: accessibility features. The big question: what's already built into the devices in your pocket? Watch for screen readers, captions, and the curb-cut effect, the idea that designing for disability helps everyone.">
+    <span class="floaty l" aria-hidden="true">⚙️</span><span class="floaty r" aria-hidden="true">📱</span>
+    <div class="intro-wrap">
+      <div class="cube tcube icube" data-l="2" data-r="★" style="--c:var(--blue);--d:0;--s:160px;--ry:24deg"></div>
+      <p class="of pop" style="--d:5">Topic 2 of 8</p>
+      <h2 class="ititle">Accessibility features</h2>
+      <p class="iq pop" style="--d:9">🤔 What's already built into the devices in your pocket?</p>
+      <div class="iterms pop" style="--d:11"><span>Words to watch:</span><span class="chip">Screen reader</span><span class="chip">Captions</span><span class="chip">Curb-cut effect</span></div>
+      <div class="tdots pop" style="--d:12" aria-label="Topic 2 of 8"><i class="done"></i><i class="on"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></div>
+    </div>
+  </section>
+
   <!-- 6 ACCESSIBILITY FEATURES -->
   <section class="slide" data-bubble="Try the buttons! This presentation has accessibility features too. Press C for contrast, T for bigger text." data-notes="Topic two: accessibility features. These are built into the device or app and are available to anyone. No diagnosis or paperwork needed. Screen readers, zoom, live captions, dictation, high contrast, reading mode, and keyboard navigation are already on almost every phone and laptop. Notice the curb-cut effect. Sidewalk curb cuts were made for wheelchairs, but they help strollers, bikes, and suitcases too. Captions help Deaf students and also students in a noisy dorm or learning English. Try the buttons. This deck can read itself aloud, switch to high contrast, and enlarge text.">
     <header class="sh"><span class="kick" style="--tc:var(--blue)">Topic 2</span><h2>Accessibility features</h2></header>
@@ -812,6 +868,19 @@ body.calm .slide.leaving{animation:fadeOut .3s both!important}
     </div>
   </section>
 
+  <!-- TOPIC 3 INTRO -->
+  <section class="slide bare intro" style="--tc:var(--green)" data-bubble="Next stop: assistive tech. Some of it is as simple as a pencil grip!" data-notes="Topic three: assistive technology. The big question: what tools help one specific student do what they couldn't do before? Words to watch: low-tech, high-tech, and AAC, which stands for augmentative and alternative communication.">
+    <span class="floaty l" aria-hidden="true">🦾</span><span class="floaty r" aria-hidden="true">🚂</span>
+    <div class="intro-wrap">
+      <div class="cube tcube icube" data-l="3" data-r="★" style="--c:var(--green);--d:0;--s:160px;--ry:24deg"></div>
+      <p class="of pop" style="--d:5">Topic 3 of 8</p>
+      <h2 class="ititle">Assistive technology</h2>
+      <p class="iq pop" style="--d:9">🤔 What tools help one specific student do what they couldn't before?</p>
+      <div class="iterms pop" style="--d:11"><span>Words to watch:</span><span class="chip">Low-tech</span><span class="chip">High-tech</span><span class="chip">AAC</span></div>
+      <div class="tdots pop" style="--d:12" aria-label="Topic 3 of 8"><i class="done"></i><i class="done"></i><i class="on"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></div>
+    </div>
+  </section>
+
   <!-- 7 ASSISTIVE TECH -->
   <section class="slide" data-bubble="All aboard the AT Express! Assistive tech goes from a pencil grip all the way to eye-gaze computers." data-notes="Topic three: assistive technology, or AT. Federal law under IDEA defines it as any item, piece of equipment, or product system used to increase, maintain, or improve the functional capabilities of a child with a disability. It runs from low-tech, like pencil grips and highlighter tape, through mid-tech, like calculators and audiobooks, to high-tech, like screen readers, AAC devices that speak for a student, eye-gaze systems, and refreshable braille. Here is the key difference from the last slide. Accessibility features are for everyone. Assistive technology is matched to a specific student and is often written into an IEP or 504 plan. AI is now showing up inside AT, with smarter word prediction and more natural AAC voices.">
     <header class="sh"><span class="kick" style="--tc:var(--green)">Topic 3</span><h2>Assistive technology (AT)</h2></header>
@@ -826,6 +895,19 @@ body.calm .slide.leaving{animation:fadeOut .3s both!important}
     <div class="row" style="margin-top:14px">
       <div class="pill step grow" style="font-size:.78em"><b>🔑 Key difference:</b> accessibility features are for <i>everyone</i>; AT is <b>matched to one student</b>, often written into an IEP or 504 plan.</div>
       <div class="pill step grow" style="font-size:.78em;background:#EFE7FF"><b>🤖 Where AI fits:</b> smarter word prediction, natural AAC voices, auto image description.</div>
+    </div>
+  </section>
+
+  <!-- TOPIC 4 INTRO -->
+  <section class="slide bare intro" style="--tc:var(--orange)" data-bubble="This is the big one, team. Ears up!" data-notes="Topic four: accommodations versus modifications. The big question: are we changing how a student learns, or what they learn? Words to watch: IEP, 504 plan, and, for college, Disability Services.">
+    <span class="floaty l" aria-hidden="true">⚖️</span><span class="floaty r" aria-hidden="true">🪜</span>
+    <div class="intro-wrap">
+      <div class="cube tcube icube" data-l="4" data-r="★" style="--c:var(--orange);--d:0;--s:160px;--ry:24deg"></div>
+      <p class="of pop dark" style="--d:5">Topic 4 of 8</p>
+      <h2 class="ititle">Accommodations vs. modifications</h2>
+      <p class="iq pop" style="--d:9">🤔 Are we changing HOW they learn, or WHAT they learn?</p>
+      <div class="iterms pop" style="--d:11"><span>Words to watch:</span><span class="chip">IEP</span><span class="chip">504 plan</span><span class="chip">Disability Services</span></div>
+      <div class="tdots pop" style="--d:12" aria-label="Topic 4 of 8"><i class="done"></i><i class="done"></i><i class="done"></i><i class="on"></i><i class=""></i><i class=""></i><i class=""></i><i class=""></i></div>
     </div>
   </section>
 
@@ -891,6 +973,19 @@ body.calm .slide.leaving{animation:fadeOut .3s both!important}
     </div>
   </section>
 
+  <!-- TOPIC 5 INTRO -->
+  <section class="slide bare intro" style="--tc:var(--purple)" data-bubble="Detective hats on. We're investigating the machines!" data-notes="Topic five: algorithmic bias in screeners and placement tools. The big question: can a computer be unfair? Spoiler: yes. Words to watch: training data, screener, and false positive, when a tool flags someone who shouldn't have been flagged.">
+    <span class="floaty l" aria-hidden="true">🎯</span><span class="floaty r" aria-hidden="true">🕵️</span>
+    <div class="intro-wrap">
+      <div class="cube tcube icube" data-l="5" data-r="★" style="--c:var(--purple);--d:0;--s:160px;--ry:24deg"></div>
+      <p class="of pop" style="--d:5">Topic 5 of 8</p>
+      <h2 class="ititle">Algorithmic bias in screeners &amp; placement tools</h2>
+      <p class="iq pop" style="--d:9">🤔 Can a computer be unfair? (Spoiler: yes.)</p>
+      <div class="iterms pop" style="--d:11"><span>Words to watch:</span><span class="chip">Training data</span><span class="chip">Screener</span><span class="chip">False positive</span></div>
+      <div class="tdots pop" style="--d:12" aria-label="Topic 5 of 8"><i class="done"></i><i class="done"></i><i class="done"></i><i class="done"></i><i class="on"></i><i class=""></i><i class=""></i><i class=""></i></div>
+    </div>
+  </section>
+
   <!-- 10 BIAS PIPELINE -->
   <section class="slide" data-bubble="A toy with a wobbly wheel always veers the same direction. Biased data works the same way." data-notes="Topic five: algorithmic bias. That's when an automated system makes errors that consistently favor or disadvantage certain groups. Here's how it happens. A screener or placement tool learns from past data: who was flagged, who was placed in advanced classes, who graduated. If those past decisions were unfair, the algorithm learns the unfair pattern. Then it repeats it automatically, and now it looks objective because a computer did it. It's like a toy car with a wobbly wheel. It always veers the same way. This shows up in reading and dyslexia screeners, gifted identification, dropout early-warning systems, course placement, and AI-writing detectors.">
     <header class="sh"><span class="kick" style="--tc:var(--purple)">Topic 5</span><h2>Algorithmic bias: how it sneaks in</h2></header>
@@ -946,6 +1041,19 @@ body.calm .slide.leaving{animation:fadeOut .3s both!important}
     </div>
   </section>
 
+  <!-- TOPIC 6 INTRO -->
+  <section class="slide bare intro" style="--tc:var(--teal)" data-bubble="Every voice in the toy box matters. Let's see who AI hears… and who it doesn't." data-notes="Topic six: stereotypes, missing perspectives, and misread dialects. The big question: whose voices does AI get wrong, or leave out entirely? Words to watch: stereotype, dialect, and code-switching.">
+    <span class="floaty l" aria-hidden="true">🗣️</span><span class="floaty r" aria-hidden="true">🌎</span>
+    <div class="intro-wrap">
+      <div class="cube tcube icube" data-l="6" data-r="★" style="--c:var(--teal);--d:0;--s:160px;--ry:24deg"></div>
+      <p class="of pop" style="--d:5">Topic 6 of 8</p>
+      <h2 class="ititle">Stereotypes, missing perspectives &amp; misread dialects</h2>
+      <p class="iq pop" style="--d:9">🤔 Whose voices does AI get wrong, or leave out?</p>
+      <div class="iterms pop" style="--d:11"><span>Words to watch:</span><span class="chip">Stereotype</span><span class="chip">Dialect</span><span class="chip">Code-switching</span></div>
+      <div class="tdots pop" style="--d:12" aria-label="Topic 6 of 8"><i class="done"></i><i class="done"></i><i class="done"></i><i class="done"></i><i class="done"></i><i class="on"></i><i class=""></i><i class=""></i></div>
+    </div>
+  </section>
+
   <!-- 13 STEREOTYPES -->
   <section class="slide" data-bubble="AI learned from the internet… and the internet has some old-fashioned ideas. Let's catch them!" data-notes="Topic six: stereotypes and missing perspectives. AI learns from huge piles of human writing and images, so it absorbs our stereotypes. Ask for two sentences about a nurse and an engineer, and it will often assume the nurse is a woman and the engineer is a man. A 2023 Bloomberg analysis of more than 5,000 AI-generated images found high-paying jobs like CEO were dominated by lighter-skinned men. Missing perspectives are quieter. Ask who the great inventors were, and you may get few women, few disabled inventors, and few people from outside the U.S. and Europe. The fix: prompt for multiple perspectives, check sources, and always ask, whose voice is missing?">
     <header class="sh"><span class="kick" style="--tc:var(--teal)">Topic 6</span><h2>Stereotypes &amp; missing perspectives</h2></header>
@@ -985,6 +1093,19 @@ body.calm .slide.leaving{animation:fadeOut .3s both!important}
     <div class="banner step"><span class="big-q">Dialect ≠ deficit.</span> &nbsp;Also true for Southern, Appalachian, Spanglish &amp; World Englishes. Teach code-switching as a <i>choice</i>, not a correction.</div>
   </section>
 
+  <!-- TOPIC 7 INTRO -->
+  <section class="slide bare intro" style="--tc:var(--blue)" data-bubble="Rule book time! Don't worry, it's shorter than the instructions for assembling a toy." data-notes="Topic seven: ADA and Section 504 digital accessibility. The big question: what does the law say about the documents, videos, and tools we post online? Words to watch: ADA Title II, Section 504, and WCAG 2.1 AA.">
+    <span class="floaty l" aria-hidden="true">📜</span><span class="floaty r" aria-hidden="true">⚖️</span>
+    <div class="intro-wrap">
+      <div class="cube tcube icube" data-l="7" data-r="★" style="--c:var(--blue);--d:0;--s:160px;--ry:24deg"></div>
+      <p class="of pop" style="--d:5">Topic 7 of 8</p>
+      <h2 class="ititle">ADA &amp; Section 504 digital accessibility</h2>
+      <p class="iq pop" style="--d:9">🤔 What does the law say about the things we post online?</p>
+      <div class="iterms pop" style="--d:11"><span>Words to watch:</span><span class="chip">ADA Title II</span><span class="chip">Section 504</span><span class="chip">WCAG 2.1 AA</span></div>
+      <div class="tdots pop" style="--d:12" aria-label="Topic 7 of 8"><i class="done"></i><i class="done"></i><i class="done"></i><i class="done"></i><i class="done"></i><i class="done"></i><i class="on"></i><i class=""></i></div>
+    </div>
+  </section>
+
   <!-- 15 LAW -->
   <section class="slide" data-bubble="Rules of the toy room: everyone gets to play. And yes, that's the LAW." data-notes="Topic seven: the law. Section 504 of the Rehabilitation Act of 1973 bans disability discrimination in any program that receives federal money, which covers nearly every school and college. The Americans with Disabilities Act of 1990 extends that. Title II covers public schools and state colleges, and Title III covers many private ones. Section 508, updated in 1998, covers federal technology. And in 2024, the Department of Justice set a clear technical standard under ADA Title II: web content and mobile apps from public schools and colleges must meet WCAG 2.1 Level AA. Large entities had until April 2026, smaller ones until April 2027. Check your own school's current timeline. The bottom line: if a school posts it, assigns it, or requires it, students with disabilities must be able to use it. That includes AI tools and AI-made materials.">
     <header class="sh"><span class="kick" style="--tc:var(--blue)">Topic 7</span><h2>ADA &amp; Section 504, digitally</h2></header>
@@ -1018,6 +1139,19 @@ body.calm .slide.leaving{animation:fadeOut .3s both!important}
           <li class="tstep"><span class="bx"></span><span>Test it with the <b>keyboard only</b></span></li>
         </ul>
       </div>
+    </div>
+  </section>
+
+  <!-- TOPIC 8 INTRO -->
+  <section class="slide bare intro" style="--tc:var(--green)" data-bubble="Last topic! Same race… but is everyone starting on the same road?" data-notes="Topic eight, our last one: equity of access. The big question: is 'everyone can use AI' actually true? Words to watch: the digital divide, free versus paid tiers, and VPAT, a product's accessibility report.">
+    <span class="floaty l" aria-hidden="true">🌐</span><span class="floaty r" aria-hidden="true">🏁</span>
+    <div class="intro-wrap">
+      <div class="cube tcube icube" data-l="8" data-r="★" style="--c:var(--green);--d:0;--s:160px;--ry:24deg"></div>
+      <p class="of pop" style="--d:5">Topic 8 of 8</p>
+      <h2 class="ititle">Equity of access</h2>
+      <p class="iq pop" style="--d:9">🤔 Is “everyone can use AI” actually true?</p>
+      <div class="iterms pop" style="--d:11"><span>Words to watch:</span><span class="chip">Digital divide</span><span class="chip">Free vs. paid tiers</span><span class="chip">VPAT</span></div>
+      <div class="tdots pop" style="--d:12" aria-label="Topic 8 of 8"><i class="done"></i><i class="done"></i><i class="done"></i><i class="done"></i><i class="done"></i><i class="done"></i><i class="done"></i><i class="on"></i></div>
     </div>
   </section>
 
@@ -1152,7 +1286,7 @@ body.calm .slide.leaving{animation:fadeOut .3s both!important}
   addEventListener('resize', fit); fit();
 
   /* split h2 letters for the hop animation */
-  $$('.sh h2').forEach(h => {
+  $$('.sh h2, .ititle').forEach(h => {
     const txt = h.textContent; h.setAttribute('aria-label', txt); let i = 0;
     h.innerHTML = txt.split(' ').map(w => `<span class="w" aria-hidden="true">${[...w].map(c => `<span class="ch" style="--i:${i++}">${c.replace('&', '&amp;').replace('<', '&lt;')}</span>`).join('')}</span>`).join(' ');
   });
@@ -1287,7 +1421,7 @@ body.calm .slide.leaving{animation:fadeOut .3s both!important}
     cur = n;
     body.classList.toggle('bare', nu.classList.contains('bare'));
     const card = $('#card'); card.classList.remove('jig'); void card.offsetWidth; card.classList.add('jig');
-    if (n === 1) chestOffsets(nu);
+    if ($('.chest', nu)) chestOffsets(nu);
     activate(nu, false);
     if (opts.all) stepsOf(nu).forEach(s => activate(s, true));
     setBubble(nu.dataset.bubble || '');
