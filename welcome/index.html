@@ -326,6 +326,10 @@ html.pb-js .pb-parts li:not(.on){opacity:0;transform:translateX(-14px);border-le
 .wphase{font:700 .72rem/1 var(--sans);letter-spacing:.17em;text-transform:uppercase;color:var(--wilmu-green);margin-bottom:.55rem}
 .wcard h3{font:600 clamp(1.3rem,2.1vw,1.7rem)/1.18 var(--serif);text-wrap:balance}
 .whook{font:italic 400 1.08rem/1.45 var(--serif);color:var(--ink-soft);margin-top:.7rem}
+.wlinks{display:flex;flex-wrap:wrap;gap:8px;margin-top:.8rem}
+.wlink{display:inline-flex;align-items:center;gap:.4em;padding:.5em 1em;border-radius:999px;background:var(--wilmu-green);color:var(--white);font:600 .86rem/1.2 var(--sans);text-decoration:none;transition:background .2s,transform .2s}
+.wlink::after{content:"\2197";font-size:.9em}
+.wlink:hover{background:var(--wilmu-green-deep);transform:translateY(-1px)}
 .wtoggle{display:inline-grid;place-items:center;width:42px;height:42px;border-radius:50%;border:2px solid var(--wilmu-green);background:#fff;color:var(--wilmu-green);cursor:pointer;transition:background .25s,color .25s,transform .35s var(--ease-out)}
 .wtoggle:hover{background:var(--wilmu-green);color:#fff}
 .wtoggle .ico{font-size:1.25rem;transition:transform .35s var(--ease-out)}
@@ -988,7 +992,8 @@ const COURSE_START_TARGET = "_top";   // "_top" leaves the LMS frame (recommende
 
 /* ==========================================================================
    [EDIT ME 3/4]  THE JOURNEY. Edit freely; the page rebuilds from this array.
-   Each entry may also carry an optional "short" label used under its map node.
+   Each entry may also carry an optional "short" label used under its map node,
+   and optional "links": [{ label, href }] shown as buttons on that week's card.
    ========================================================================== */
 const WEEKS = [
   { n: 0, phase: "Understand", title: "Orientation", short: "Orientation", hook: "What does 'AI' actually mean?",
@@ -1015,7 +1020,8 @@ const WEEKS = [
     underTheHood: "Bias: training data shapes defaults and assumptions",
     topics: ["AI and assistive technology", "Accommodations vs. modifications", "Algorithmic bias and equity of access"],
     build: "One material in three readiness levels plus an accommodated version for a fictional student profile",
-    outcome: "Materials that work for more of your students" },
+    outcome: "Materials that work for more of your students",
+    links: [{ label: "Week 4 presentation", href: "../week-4/" }, { label: "Toy Box Challenge (self-check)", href: "../week-4-check/" }] },
   { n: 5, phase: "Design", title: "Assessment in AI-Rich Environments", short: "Assessment", hook: "If students have AI, what are we really measuring?",
     underTheHood: "Why AI should not be the final grader, and why AI detectors are unreliable",
     topics: ["Redesigning assessments to make thinking visible", "Academic integrity", "Student-facing AI tools with teacher oversight"],
@@ -1286,6 +1292,7 @@ function buildJourney() {
         h('div', {}, h('p', { class: 'wphase', text: w.phase + ' · Week ' + w.n }), h('h3', { text: w.title })),
         toggle),
       h('p', { class: 'whook', text: '“' + w.hook + '”' }),
+      w.links && w.links.length ? h('div', { class: 'wlinks' }, w.links.map(l => h('a', { class: 'wlink', href: l.href, target: '_blank', rel: 'noopener', text: l.label }))) : null,
       h('div', { class: 'wbody', id: bodyId },
         h('div', { class: 'wrow hood' }, h('span', { class: 'lbl', text: 'Under the hood' }), h('p', { text: w.underTheHood })),
         h('div', { class: 'wrow' }, h('span', { class: 'lbl', text: 'What we cover' }), h('ul', {}, w.topics.map(t => h('li', { text: t })))),
