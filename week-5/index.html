@@ -13,6 +13,7 @@
     Left arrow / PageUp .............. previous screen
     Home / End ........................ first / last screen
     N ................................. presenter notes on/off
+    F ................................. full screen on/off (Esc also exits)
   The construction tracker at the top jumps to any stage.
   "Quick path" (top right) skips optional screens (about 10 minutes instead of 20-25).
   "Calm motion" turns animation off (it is also turned off automatically
@@ -566,6 +567,7 @@ html.calm *,html.calm *::before,html.calm *::after{animation:none!important;tran
   <div class="controls">
     <button class="tog" id="quickBtn" aria-pressed="false" title="Skip optional screens (about 10 minutes)"><span class="dot" aria-hidden="true"></span>Quick path</button>
     <button class="tog" id="calmBtn" aria-pressed="false" title="Turn animations off"><span class="dot" aria-hidden="true"></span>Calm motion</button>
+    <button class="tog" id="fsBtn" aria-pressed="false" title="Full screen (F)"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M1 5V1h4M9 1h4v4M13 9v4H9M5 13H1V9" fill="none" stroke="currentColor" stroke-width="2"/></svg>Full screen (F)</button>
     <button class="tog" id="notesBtn" aria-pressed="false" aria-controls="notes" title="Presenter notes (N)"><span class="dot" aria-hidden="true"></span>Notes (N)</button>
   </div>
 </header>
@@ -589,7 +591,7 @@ html.calm *,html.calm *::before,html.calm *::after{animation:none!important;tran
   <div class="navmid">
     <div class="count" id="count">Screen 1</div>
     <div class="bar" aria-hidden="true"><i id="barFill"></i></div>
-    <div class="navhint"><kbd>&larr;</kbd> <kbd>&rarr;</kbd> or <kbd>Space</kbd> to move &middot; <kbd>N</kbd> presenter notes</div>
+    <div class="navhint"><kbd>&larr;</kbd> <kbd>&rarr;</kbd> or <kbd>Space</kbd> to move &middot; <kbd>N</kbd> presenter notes &middot; <kbd>F</kbd> full screen</div>
   </div>
   <button class="navbtn" id="nextBtn" aria-label="Next screen">Next &rarr;</button>
 </footer>
@@ -2188,6 +2190,7 @@ document.addEventListener('keydown',e=>{
   if(tag==='INPUT'||tag==='TEXTAREA'||tag==='SELECT'||t.isContentEditable) return;
   const isBtn = tag==='BUTTON'||tag==='A'||tag==='SUMMARY'||t.getAttribute('role')==='button'||t.getAttribute('role')==='switch';
   if(e.key==='n'||e.key==='N'){ setNotes(!state.notes); e.preventDefault(); return; }
+  if((e.key==='f'||e.key==='F') && fsOK){ toggleFS(); e.preventDefault(); return; }
   if(e.key==='ArrowRight'||e.key==='PageDown'){ next(); e.preventDefault(); }
   else if(e.key==='ArrowLeft'||e.key==='PageUp'){ prev(); e.preventDefault(); }
   else if(e.key===' ' && !isBtn){ if(e.shiftKey) prev(); else next(); e.preventDefault(); }
@@ -2201,6 +2204,19 @@ $('#notesBtn').onclick=()=>setNotes(!state.notes); $('#notesClose').onclick=()=>
 $('#quickBtn').onclick=()=>setQuick(!state.quick);
 $('#calmBtn').onclick=()=>setCalm(!root.classList.contains('calm'));
 $('#siteHide').onclick=e=>{ const s=$('#site'); const c=s.classList.toggle('collapsed'); e.currentTarget.textContent=c?'Show site':'Hide site'; e.currentTarget.setAttribute('aria-expanded',!c); };
+
+/* Full screen */
+const fsEl = () => document.fullscreenElement || document.webkitFullscreenElement;
+const fsOK = !!(document.documentElement.requestFullscreen || document.documentElement.webkitRequestFullscreen);
+function toggleFS(){
+  try{
+    if(fsEl()){ (document.exitFullscreen || document.webkitExitFullscreen).call(document); }
+    else { const el=document.documentElement; const r=(el.requestFullscreen||el.webkitRequestFullscreen).call(el); if(r && r.catch) r.catch(()=>{}); }
+  }catch(e){}
+}
+function syncFS(){ const on=!!fsEl(); const b=$('#fsBtn'); b.setAttribute('aria-pressed',on); b.lastChild.textContent = on ? 'Exit full screen (F)' : 'Full screen (F)'; }
+if(fsOK){ $('#fsBtn').onclick=toggleFS; document.addEventListener('fullscreenchange',syncFS); document.addEventListener('webkitfullscreenchange',syncFS); }
+else $('#fsBtn').hidden=true;
 
 /* Start */
 const mq=matchMedia('(prefers-reduced-motion: reduce)');
