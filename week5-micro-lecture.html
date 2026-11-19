@@ -65,6 +65,7 @@ p{margin:0 0 .8em}
 ul,ol{margin:.2em 0 .8em;padding-left:1.3em}
 li{margin:.25em 0}
 a{color:var(--blue)}
+[hidden]{display:none!important}
 .sr{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 :focus{outline:none}
 :focus-visible{outline:3px solid var(--ink);outline-offset:2px;box-shadow:0 0 0 7px var(--yellow);border-radius:8px}
@@ -105,13 +106,13 @@ a{color:var(--blue)}
 /* =====================================================================
    3. MAIN LAYOUT: construction site panel + slide panel
    ===================================================================== */
-.layout{display:grid;grid-template-columns:minmax(280px,32%) 1fr;min-height:0}
+.layout{display:grid;grid-template-columns:minmax(240px,25%) 1fr;min-height:0}
 .site{background:#9FD0F5;border-right:5px solid var(--yellow);display:flex;flex-direction:column;min-height:0;position:relative}
 .site svg#siteSvg{width:100%;flex:1;min-height:0;display:block}
 .site-log{margin:0;padding:.55rem .9rem .7rem;background:#fff;border-top:3px dashed var(--concrete-l);font-size:.86rem;color:var(--ink2);min-height:3.4em}
 .site-log b{color:var(--blue)}
 .site-hide{position:absolute;top:.4rem;right:.4rem;background:rgba(255,255,255,.9);border:2px solid var(--blue);color:var(--blue);border-radius:999px;font-size:.7rem;font-weight:700;padding:.15rem .6rem;display:none}
-.slide{overflow:auto;min-height:0;position:relative;scroll-behavior:smooth}
+.slide{overflow:auto;scrollbar-gutter:stable;min-height:0;position:relative;scroll-behavior:smooth}
 .slide-inner{max-width:1100px;margin:0 auto;padding:1.2rem 2.2rem 1.4rem}
 .slide-inner.enter-next{animation:inNext .45s ease both}
 .slide-inner.enter-prev{animation:inPrev .45s ease both}
@@ -196,8 +197,8 @@ a{color:var(--blue)}
 .callout.green{border-color:var(--green);background:var(--green-l)}
 .callout.red{border-color:var(--red);background:var(--red-l)}
 .big-idea{font-size:1.5rem;font-weight:800;color:var(--blue-d);text-align:center;padding:.8rem;border:4px dashed var(--yellow);border-radius:18px;background:#fff;margin:.8rem 0}
-.copybox{background:#fff;border:2px solid var(--concrete-l);border-radius:12px;padding:.8rem 1rem;white-space:pre-wrap;font-size:.92rem;max-height:none}
-.cite{font-size:.78rem;color:var(--ink2)}
+.copybox{background:#fff;border:2px solid var(--concrete-l);border-radius:12px;padding:.8rem 1rem;white-space:pre-wrap;font-size:.92rem;max-height:34vh;overflow:auto}
+.cite{font-size:.84rem;color:var(--ink2)}
 .cite a{color:var(--blue)}
 details.more{margin:.5rem 0}
 details.more summary{cursor:pointer;font-weight:800;color:var(--blue)}
@@ -288,13 +289,15 @@ kbd{background:#fff;border:2px solid var(--concrete-l);border-bottom-width:4px;b
 
 /* Sorter */
 .sorter .tray{display:flex;flex-wrap:wrap;gap:.5rem;min-height:3rem;padding:.6rem;border:3px dashed var(--concrete-l);border-radius:14px;background:var(--concrete-xl)}
-.sort-card{background:#fff;border:2px solid var(--blue);color:var(--ink);border-radius:12px;padding:.5rem .8rem;font-weight:700;text-align:left;
+.sort-card{background:#fff;border:2px solid var(--blue);color:var(--ink);border-radius:12px;padding:.4rem .75rem;font-size:.95rem;font-weight:700;text-align:left;
   box-shadow:0 3px 0 rgba(11,79,138,.25);touch-action:none;user-select:none;max-width:22rem;min-height:44px;transition:transform .15s}
 .sort-card:hover{transform:translateY(-2px)}
 .sort-card[aria-pressed="true"]{background:var(--yellow);border-color:var(--ink);transform:translateY(-3px) rotate(-1deg)}
 .sort-card.placed{cursor:default;transform:none;box-shadow:none;width:100%;max-width:none}
 .sort-card.ok{border-color:var(--green);background:var(--green-l)}
 .sort-card.no{border-color:var(--orange-d);background:var(--amber-l)}
+.sort-card .fb[hidden]{display:none}
+.sort-card.placed{cursor:pointer}
 .sort-card .fb{display:block;font-weight:500;font-size:.85rem;margin-top:.25rem;color:var(--ink2)}
 .bins{display:grid;grid-template-columns:repeat(var(--cols,2),1fr);gap:.8rem;margin-top:.8rem}
 .bin{border:3px solid var(--concrete-l);border-radius:16px;padding:.6rem;background:#fff;min-height:9rem;transition:background .2s,border-color .2s}
@@ -304,7 +307,7 @@ kbd{background:#fff;border:2px solid var(--concrete-l);border-bottom-width:4px;b
 .bin.b-red{border-color:#F2B2B2} .bin.b-red .bin-btn{background:var(--red)}
 .bin.b-yellow{border-color:#F3D77A} .bin.b-yellow .bin-btn{background:#8A6400}
 .bin.b-green{border-color:#A8DDB8} .bin.b-green .bin-btn{background:var(--green)}
-.bin ul{list-style:none;padding:0;margin:.5rem 0 0;display:grid;gap:.4rem}
+.bin ul{list-style:none;padding:0;margin:.5rem 0 0;display:grid;gap:.4rem;grid-template-columns:repeat(auto-fill,minmax(min(100%,15rem),1fr))}
 .bin li{margin:0}
 .ghost-card{position:fixed;pointer-events:none;z-index:150;opacity:.92;transform:rotate(-3deg);box-shadow:0 12px 24px rgba(0,0,0,.25)}
 .sorter-status{font-weight:800;margin:.6rem 0 0;color:var(--blue-d)}
@@ -368,16 +371,16 @@ input[type=range]{width:100%;height:2.2rem;accent-color:var(--orange-d)}
 .mk-before p{margin:0}
 .mk-ba h4{margin:0 0 .2rem}
 .mk-ba p{margin:0}
-#mkAfter ul{margin:.1rem 0 0;padding-left:1.1rem;font-size:.84rem;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:1.4rem}
+#mkAfter ul{margin:.1rem 0 0;padding-left:1.1rem;font-size:.88rem;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:1.4rem}
 #mkAfter li{margin:.1rem 0}
 .mk-rubric{margin-top:.6rem;padding:.5rem .9rem}
 @media (max-width:900px){.mk-strats,.mk-ba,#mkAfter ul{grid-template-columns:1fr}}
-@media (max-height:800px) and (min-width:1001px){ #mk .scene{--scene-h:21vh} .mk-strats .strat>span>span{display:none} .mk-strats .strat{align-items:center} .mk-rubric table.rubric{font-size:.74rem} .mk-rubric table.rubric th,.mk-rubric table.rubric td{padding:.15rem .35rem} #mkAfter ul{font-size:.8rem} #mk .flagbar{padding:.3rem .7rem;margin:.4rem 0} }
+@media (max-height:800px) and (min-width:1001px){ #mk .scene{--scene-h:21vh} .mk-strats .strat>span>span{display:none} .mk-strats .strat{align-items:center} .mk-rubric table.rubric{font-size:.82rem} .mk-rubric table.rubric th,.mk-rubric table.rubric td{padding:.15rem .35rem} #mkAfter ul{font-size:.86rem} #mk .flagbar{padding:.3rem .7rem;margin:.4rem 0} }
 .strat{display:grid;grid-template-columns:auto 1fr;gap:.5rem;align-items:start;border:2px solid var(--concrete-l);border-radius:12px;padding:.45rem .6rem;margin:.35rem 0;background:#fff;cursor:pointer}
 .strat input{width:1.3rem;height:1.3rem;margin-top:.15rem;accent-color:var(--green)}
 .strat:has(input:checked){border-color:var(--green);background:var(--green-l)}
 .strat b{display:block}
-.strat span{font-size:.85rem;color:var(--ink2)}
+.strat span{font-size:.88rem;color:var(--ink2)}
 .flagbar{display:flex;align-items:center;gap:.6rem;padding:.5rem .8rem;border-radius:12px;font-weight:900;margin:.6rem 0;transition:background .4s}
 .flagbar.red{background:var(--red-l);color:#7A1010}
 .flagbar.green{background:var(--green-l);color:#0B4A26}
@@ -386,7 +389,7 @@ input[type=range]{width:100%;height:2.2rem;accent-color:var(--orange-d)}
 .ba{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-top:.6rem}
 .ba h4{margin:0 0 .3rem}
 .ba ul{font-size:.9rem}
-table.rubric{border-collapse:collapse;width:100%;font-size:.82rem;margin-top:.4rem}
+table.rubric{border-collapse:collapse;width:100%;font-size:.86rem;margin-top:.4rem}
 table.rubric th,table.rubric td{border:1px solid var(--concrete-l);padding:.3rem .4rem;text-align:left;vertical-align:top}
 table.rubric th{background:var(--blue-l)}
 .stopped .arm{animation-play-state:paused!important}
@@ -403,7 +406,7 @@ table.rubric th{background:var(--blue-l)}
 .switch[aria-checked="true"] .sw{background:var(--green)}
 .switch[aria-checked="true"] .sw::after{left:1.25rem}
 .switch b{display:block}
-.switch small{display:block;color:var(--ink2);font-size:.82rem}
+.switch small{display:block;color:var(--ink2);font-size:.86rem}
 .entrance{transition:opacity .5s,transform .6s var(--spring);transform-box:fill-box;transform-origin:center bottom}
 .entrance.off{opacity:.12;transform:scale(.85)}
 .choice-q{border:2px solid var(--concrete-l);border-radius:14px;padding:.7rem .9rem;margin:.6rem 0;background:#fff}
@@ -414,9 +417,9 @@ table.rubric th{background:var(--blue-l)}
 
 /* Tutor + dashboard */
 .split{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
-.phone{border:6px solid var(--ink);border-radius:26px;background:#F7F9FC;padding:.6rem;min-height:22rem;display:flex;flex-direction:column}
+.phone{border:6px solid var(--ink);border-radius:26px;background:#F7F9FC;padding:.6rem;min-height:13rem;display:flex;flex-direction:column}
 .phone .ph-top{display:flex;justify-content:space-between;align-items:center;font-weight:800;font-size:.85rem;padding:.2rem .3rem .5rem;border-bottom:2px solid var(--concrete-l)}
-.chat{flex:1;display:flex;flex-direction:column;gap:.45rem;padding:.6rem .2rem;overflow:auto;max-height:26rem}
+.chat{flex:1;display:flex;flex-direction:column;gap:.45rem;padding:.6rem .2rem;overflow:auto;max-height:min(26rem,26vh)}
 .msg{max-width:88%;padding:.5rem .75rem;border-radius:16px;font-size:.92rem;animation:fadeUp .35s ease both}
 .msg.student{align-self:flex-end;background:var(--blue);color:#fff;border-bottom-right-radius:4px}
 .msg.ai{align-self:flex-start;background:#fff;border:2px solid var(--concrete-l);border-bottom-left-radius:4px}
@@ -431,9 +434,9 @@ table.rubric th{background:var(--blue-l)}
 .flag.warn{background:var(--amber-l);color:#6B2E00}
 .flag.urgent{background:var(--red);color:#fff;animation:blink 1s steps(2) 3}
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:.4rem;margin:.4rem 0}
-.stats div{background:var(--concrete-xl);border-radius:10px;padding:.35rem;text-align:center;font-size:.78rem}
+.stats div{background:var(--concrete-xl);border-radius:10px;padding:.35rem;text-align:center;font-size:.84rem}
 .stats b{display:block;font-size:1.2rem;color:var(--blue-d)}
-.transcript{font-size:.8rem;max-height:7rem;overflow:auto;background:var(--concrete-xl);border-radius:10px;padding:.4rem .6rem;margin:.4rem 0}
+.transcript{font-size:.86rem;max-height:min(7rem,14vh);overflow:auto;background:var(--concrete-xl);border-radius:10px;padding:.4rem .6rem;margin:.4rem 0}
 .transcript p{margin:.15rem 0}
 .outcome{margin-top:.5rem;padding:.6rem .8rem;border-radius:12px;background:var(--blue-l);font-size:.92rem;animation:fadeUp .35s ease both}
 .outcome.best{background:var(--green-l)}
@@ -474,10 +477,49 @@ fieldset{border:2px solid var(--concrete-l);border-radius:12px;padding:.5rem .8r
 .qprog{display:flex;gap:.3rem;margin-bottom:.6rem}
 
 /* Sources */
-.sources{font-size:.8rem}
+.sources{font-size:.86rem}
 .sources li{margin:0 0 .5rem;break-inside:avoid}
 .sources .claim{display:block;font-size:.85rem;color:var(--ink2)}
 
+
+/* Tighter layout used only when a screen would otherwise not fit (added by fitSlide) */
+.compact h2{font-size:1.5rem;margin-bottom:.25em}
+.compact .lead{font-size:1rem}
+.compact p{margin-bottom:.45em}
+.compact .kind{margin-bottom:.3rem}
+.compact .widget{margin:.45rem 0}
+.compact .widget-bar{padding:.2rem .5rem .2rem .8rem}
+.compact .widget-body{padding:.55rem .7rem}
+.compact .card{padding:.5rem .75rem}
+.compact .callout{padding:.4rem .8rem;margin:.45rem 0}
+.compact .grid2,.compact .grid3,.compact .cols2,.compact .cols3{gap:.5rem}
+.compact .scene{--scene-h:30vh}
+.compact .big-idea{font-size:1.2rem;padding:.4rem;margin:.45rem 0}
+.compact .btn{min-height:38px;padding:.3rem .8rem}
+.compact .switch{padding:.3rem .55rem;margin:.2rem 0}
+.compact .chk,.compact .strat{padding:.35rem .55rem}
+.compact ul{margin-bottom:.4em}
+.compact li{margin:.12em 0}
+.cols-auto{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,17rem),1fr));gap:.6rem;align-items:start}
+.cols-auto>.choice-q{margin:0}
+.udl-grid{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:1rem;align-items:start}
+.mk-dense .mk-strats .strat>span>span{display:none}
+.mk-dense .mk-strats .strat{align-items:center}
+.dash .btn{min-height:36px;padding:.25rem .7rem;font-size:.9rem}
+.fbk{padding:.4rem .6rem}
+.switch small .caution{color:var(--orange-d)}
+.udl-tools{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,11.5rem),1fr));gap:.45rem}
+.udl-tools .switch{margin:0;align-items:flex-start}
+.mk-note{display:none}
+.mk-dense .mk-art,.mk-dense .mk-cap{display:none}
+.mk-dense .mk-note{display:block}
+.mk-before-inline{display:none;font-size:.9rem;margin:.1rem 0 .3rem!important}
+.mk-dense .mk-before-inline{display:block}
+.mk-dense .mk-before{display:none}
+.mk-rubric summary{cursor:pointer;color:var(--blue-d)}
+.mk-rubric[open] summary{margin-bottom:.2rem}
+#udlSvg{--scene-h:28vh}
+.switch[data-w][aria-checked="true"] small{display:none}
 /* =====================================================================
    8. CHARACTER + SITE ANIMATIONS (SVG)
    ===================================================================== */
@@ -541,7 +583,8 @@ html.calm *,html.calm *::before,html.calm *::after{animation:none!important;tran
 }
 
 @media (max-width:1560px){ .tracker{order:3;flex-basis:100%} .brand{flex:1} .topbar{row-gap:.3rem} }
-@media (min-width:1101px){
+@media (min-width:1001px) and (max-width:1300px){ .trk .lbl{display:none} .trk[aria-current="step"] .lbl{display:inline} .trk{padding-right:.25rem} .trk[aria-current="step"]{padding-right:.6rem} }
+@media (min-width:1001px){
   .brand>div{display:none}
   .brand{flex:none}
   .tracker{order:0;flex-basis:auto;flex:1}
@@ -557,7 +600,7 @@ html.calm *,html.calm *::before,html.calm *::after{animation:none!important;tran
 /* =====================================================================
    10. RESPONSIVE (tablet and smaller)
    ===================================================================== */
-@media (max-width:1100px){
+@media (max-width:1000px){
   .layout{grid-template-columns:1fr;grid-template-rows:auto 1fr}
   .site{border-right:0;border-bottom:5px solid var(--yellow);flex-direction:row;height:190px}
   .site svg#siteSvg{width:auto;height:100%;flex:none;max-width:52%}
@@ -569,10 +612,10 @@ html.calm *,html.calm *::before,html.calm *::after{animation:none!important;tran
   .site-log{padding-right:6.5rem}
   .brand span{display:none}
 }
-@media (max-width:1100px) and (max-height:820px){ .site{height:140px} }
+@media (max-width:1000px) and (max-height:820px){ .site{height:140px} }
 @media (max-width:900px){
   .slide-inner{padding:1rem 1.1rem 2.5rem}
-  .grid2,.grid3,.hero,.defects,.vs,.mk-grid,.split,.form-grid,.ba,.tally,.cols2,.cols3{grid-template-columns:1fr}
+  .grid2,.grid3,.hero,.defects,.vs,.mk-grid,.split,.form-grid,.ba,.tally,.cols2,.cols3,.udl-grid{grid-template-columns:1fr}
   .roles{grid-template-columns:1fr 1fr}
   .bins{grid-template-columns:1fr}
   .crowd{grid-template-columns:repeat(8,1fr)}
@@ -941,8 +984,8 @@ const CONTENT = {
     html:`<p class="lead">Before students use any AI tool, it should pass this inspection.</p>
       <div data-widget="checklist" data-try="Think of a tool you use. Check each item it meets."></div>` },
 
-  { id:"s4-examples", stage:4, kind:"examples", title:"Real tools: categories, examples, and flags",
-    notes:"Tool names are examples, not endorsements. Features described come from each company's help pages and can change; always check current documentation and your district's approved list. Then sort the green and red flags.",
+  { id:"s4-examples", stage:4, kind:"examples", title:"Real tools: categories and examples",
+    notes:"Tool names are examples, not endorsements. Features described come from each company's help pages and can change; always check current documentation and your district's approved list.",
     html:`<div class="grid2">
         <div class="card"><h3>Common kinds of student-facing AI</h3><ul>
           <li><b>AI tutors</b> that coach through problems</li>
@@ -953,7 +996,11 @@ const CONTENT = {
           <p><b>Khanmigo</b> (Khan Academy): teachers can view students' chat history, and the help center says teachers are emailed when a student's conversation is flagged by moderation.</p>
           <p><b>MagicSchool</b> student tools: teachers choose which tools students can use and can monitor activity; flagged chats send the teacher a dashboard notification.</p>
           <p class="cite">Examples only, not endorsements. Based on each company's help center (checked November 2026). Features change; verify before use.</p></div>
-      </div>
+      </div>` },
+
+  { id:"s4-flags", stage:4, kind:"interactive", title:"Green flags and red flags",
+    notes:"Sort the statements together. Ask participants which red flag they have actually run into with a tool at their school.",
+    html:`<p class="lead">When you look at any AI tool for students, some features are green flags and some are red flags. Sort them.</p>
       <div data-widget="flags" data-try="Sort each statement: green flag or red flag?"></div>` },
 
   { id:"s4-monday", stage:4, kind:"monday", title:"What to do Monday: Stage 4",
@@ -990,10 +1037,14 @@ const CONTENT = {
       </ol>
       <div data-widget="discussCopy" data-try="Copy all three questions."></div>` },
 
-  { id:"s5-sources", stage:5, kind:"examples", title:"Sources",
-    notes:"Every external claim in the lesson is listed here. Samples, scores, chats, and classroom stories marked 'simulated' or 'composite' were written for teaching and are not real data.",
+  { id:"s5-sources", stage:5, kind:"examples", title:"Sources (1 of 2): AI detectors",
+    notes:"Every external claim in the lesson is listed on these two screens. This first page covers the Stage 2 research on AI detectors.",
     html:`<p>Every outside fact in this lesson, with its source. Claims that could not be verified were left out.</p>
-      <div data-widget="sources"></div>
+      <div data-widget="sources" data-from="0" data-to="7"></div>` },
+
+  { id:"s5-sources-2", stage:5, kind:"examples", title:"Sources (2 of 2): guidance and tools",
+    notes:"Samples, scores, chats, and classroom stories marked 'simulated' or 'composite' were written for teaching and are not real data.",
+    html:`<div data-widget="sources" data-from="7" data-to="12"></div>
       <div class="callout"><b>About the simulations:</b> student work samples, detector scores, grader scores, tutor chats, dashboards, and classroom vignettes in this lesson were written for teaching. They are illustrative, not real student data or real tool output. The one exception is the U.S. Constitution excerpt, which is real and was widely reported as flagged by detectors in 2023.</div>
       <div class="big-idea">&#127968; Thanks for building with us. See you in Week 6!</div>` }
   ],
@@ -1601,7 +1652,7 @@ const SITE_DESC = [
 ];
 function fitSite(){
   const svg=$('#siteSvg'); if(!svg) return; let H=390;
-  if(matchMedia('(min-width:1101px)').matches && !$('#site').classList.contains('collapsed')){ const r=svg.getBoundingClientRect(); if(r.width>0 && r.height>0) H=Math.max(390, Math.min(1100, 600*r.height/r.width)); }
+  if(matchMedia('(min-width:1001px)').matches && !$('#site').classList.contains('collapsed')){ const r=svg.getBoundingClientRect(); if(r.width>0 && r.height>0) H=Math.max(390, Math.min(1100, 600*r.height/r.width)); }
   svg.setAttribute('viewBox','0 '+Math.round(430-H)+' 600 '+Math.round(H));
 }
 window.addEventListener('resize', fitSite);
@@ -1808,13 +1859,15 @@ function sorter(body, cfg, mode){
     b.classList.add('placed', ok?'ok':'no'); b.setAttribute('aria-pressed','false'); b.setAttribute('aria-disabled','true'); b.style.opacity='';
     const fb=document.createElement('span'); fb.className='fb';
     fb.textContent = ok ? '✓ '+c.why : (mode==='suggest' ? 'Many teachers choose '+bl(c.bin)+': '+c.why : 'Not quite. Best fit: '+bl(c.bin)+'. '+c.why);
+    $$('.sort-card.placed .fb',body).forEach(x=>{ x.hidden=true; x.parentElement.setAttribute('aria-expanded','false'); });
+    b.setAttribute('aria-expanded','true'); b.removeAttribute('aria-disabled');
     b.appendChild(fb); li.appendChild(b); $('.bin[data-bin="'+binId+'"] ul',body).appendChild(li);
-    placed++; if(ok) match++; sel=null;
+    placed++; if(ok) match++; sel=null; tray.hidden = !tray.querySelector('.sort-card');
     if(placed===n){ say(mode==='suggest' ? 'All sorted! '+match+' of '+n+' match common choices. A different choice can be fine if you can name the skill you’re measuring.' : 'All sorted! '+match+' of '+n+' on the first try.'+(match===n?' Perfect inspection!':' Read the notes on the orange cards.')); }
     else { say((ok?'✓ Good fit. ':'Placed. ')+'Sorted '+placed+' of '+n+'.'); const nx=$('.sort-card:not(.placed)',tray); if(nx) nx.focus(); }
   }
   tray.addEventListener('click',e=>{ const b=e.target.closest('.sort-card'); if(!b) return; if(suppress){ suppress=false; return; } select(b); });
-  $$('.bin',body).forEach(bin=>bin.addEventListener('click',e=>{ if(e.target.closest('.sort-card')) return; if(sel) place(sel, bin.dataset.bin); else say('First tap a card, then tap this bin.'); }));
+  $$('.bin',body).forEach(bin=>bin.addEventListener('click',e=>{ const pc=e.target.closest('.sort-card.placed'); if(pc){ const f=$('.fb',pc); if(f){ f.hidden=!f.hidden; pc.setAttribute('aria-expanded', !f.hidden); } return; } if(e.target.closest('.sort-card')) return; if(sel) place(sel, bin.dataset.bin); else say('First tap a card, then tap this bin.'); }));
   /* pointer drag (mouse, pen, touch) */
   let drag=null;
   tray.addEventListener('pointerdown',e=>{ const b=e.target.closest('.sort-card'); if(!b||b.classList.contains('placed')||e.button>0) return;
@@ -1975,23 +2028,24 @@ W.makeover = function(body){
     '<g class="walk-in" id="mkR" style="transform:translateX(0px)">'+robot(330,168,{bob:true})+'</g>'+inspector(30,166,{tool:'stop',anim:''})+'</svg>'; }
   function open(i){
     const m=D.makeover[i]; $$('.pick .tab',body).forEach(t=>t.setAttribute('aria-pressed', +t.dataset.i===i?'true':'false'));
-    $('#mk',body).innerHTML='<div class="mk-grid"><div class="mk-left">'+scene(m)+'<div class="flagbar red" id="mkFlag" aria-live="polite">&#128721; '+esc(m.whyRed)+'</div>'+
-      '<p class="small" style="margin:.2rem 0"><b>How well does this show real learning?</b></p><div class="meter" aria-hidden="true"><i id="mkMeter" style="width:12%"></i></div>'+
-      '<p class="small muted" style="margin:.3rem 0">Skill being measured: <b>'+esc(m.skill)+'</b></p></div>'+
+    $('#mk',body).innerHTML='<div class="mk-grid"><div class="mk-left"><div class="mk-art">'+scene(m)+'</div><div class="flagbar red" id="mkFlag" aria-live="polite">&#128721; '+esc(m.whyRed)+'</div>'+
+      '<p class="small mk-cap" style="margin:.2rem 0"><b>How well does this show real learning?</b></p><div class="meter" aria-hidden="true"><i id="mkMeter" style="width:12%"></i></div>'+
+      '<p class="small muted" style="margin:.3rem 0">Skill being measured: <b>'+esc(m.skill)+'</b></p>'+
+      '<p class="small muted mk-note" style="margin:.3rem 0">The crew is back at work. Uncheck a few strategies to see the drawing again.</p></div>'+
       '<div><p style="margin:0 0 .3rem"><b>Choose redesign strategies</b> (2 or more turns it green):</p><div class="mk-strats">'+D.strategies.map(s=>'<label class="strat" title="'+esc(s.plain)+'"><input type="checkbox" value="'+s.id+'"><span><b>'+s.name+'</b><span>'+s.plain+'</span></span></label>').join('')+'</div><div class="card red mk-before"><h4>BEFORE</h4><p>\u201C'+esc(m.before)+'\u201D</p></div></div></div>'+
       '<div class="mk-ba"><div class="card green" id="mkAfter"><h4>AFTER</h4><p class="muted">Check strategies to build your redesigned version.</p></div></div>'+
-      '<div class="card mk-rubric"><h4 style="margin:0">Mini rubric snippet</h4><table class="rubric"><thead><tr><th scope="col">Criterion</th><th scope="col">Beginning</th><th scope="col">Developing</th><th scope="col">Strong</th></tr></thead><tbody>'+
-      m.rubric.map(r=>'<tr><th scope="row">'+esc(r[0])+'</th><td>'+esc(r[1])+'</td><td>'+esc(r[2])+'</td><td>'+esc(r[3])+'</td></tr>').join('')+'<tr id="mkRow" hidden></tr></tbody></table></div>';
+      '<details class="card mk-rubric"><summary><b>Mini rubric snippet</b> <span class="small muted">(click to open)</span></summary><table class="rubric"><thead><tr><th scope="col">Criterion</th><th scope="col">Beginning</th><th scope="col">Developing</th><th scope="col">Strong</th></tr></thead><tbody>'+
+      m.rubric.map(r=>'<tr><th scope="row">'+esc(r[0])+'</th><td>'+esc(r[1])+'</td><td>'+esc(r[2])+'</td><td>'+esc(r[3])+'</td></tr>').join('')+'<tr id="mkRow" hidden></tr></tbody></table></details>';
     const svg=$('#mkSvg',body);
     requestAnimationFrame(()=>{ svg.classList.remove('idle'); svg.classList.add('stopped'); });
     $$('.strat input',body).forEach(cb=>cb.addEventListener('change',()=>{
       const on=$$('.strat input:checked',body).map(x=>x.value); const green=on.length>=2;
       $('#mkMeter',body).style.width=Math.min(100,12+on.length*16)+'%';
-      svg.classList.toggle('stopped',!green); svg.classList.toggle('going',green);
+      svg.classList.toggle('stopped',!green); svg.classList.toggle('going',green); const wasDense=body.classList.contains('mk-dense'), dense=on.length>=4; body.classList.toggle('mk-dense', dense); if(dense && !wasDense){ const r=$('.mk-rubric',body); if(r) r.open=false; }
       $('#mkRed',svg).style.display=green?'none':''; $('#mkGreen',svg).style.display=green?'':'none'; $('#mkR',svg).style.transform=green?'translateX(40px)':'translateX(0px)';
       const fl=$('#mkFlag',body); fl.className='flagbar '+(green?'green':'red');
       fl.innerHTML = green ? '&#9989; Work resumes! Now the task shows what the student can actually do.' : (on.length===1 ? '&#9888;&#65039; Better! Add one more strategy to get the crew working again.' : '&#128721; '+esc(m.whyRed));
-      $('#mkAfter',body).innerHTML='<h4>AFTER</h4>'+(on.length? '<ul>'+on.map(id=>'<li style="animation:fadeUp .35s ease both"><b>'+D.strategies.find(s=>s.id===id).name+':</b> '+esc(m.ex[id])+'</li>').join('')+'</ul>' : '<p class="muted">Check strategies to build your redesigned version.</p>');
+      $('#mkAfter',body).innerHTML='<h4>AFTER</h4><p class="mk-before-inline"><b>Before:</b> \u201C'+esc(m.before)+'\u201D</p>'+(on.length? '<ul>'+on.map(id=>'<li style="animation:fadeUp .35s ease both"><b>'+D.strategies.find(s=>s.id===id).name+':</b> '+esc(m.ex[id])+'</li>').join('')+'</ul>' : '<p class="muted">Check strategies to build your redesigned version.</p>');
       const row=$('#mkRow',body); const pr=on.includes('process')||on.includes('reflect')||on.includes('live');
       row.hidden=!pr; if(pr) row.innerHTML='<th scope="row">Shows own thinking (new)</th><td>Can’t explain own work</td><td>Explains with prompting</td><td>Explains choices and changes clearly</td>';
     }));
@@ -2008,28 +2062,29 @@ W.udl = function(body){
     visual:'<g class="entrance off" data-e="visual"><rect x="98" y="134" width="74" height="54" fill="#FFF5D1" stroke="#8A5428" stroke-width="4"/><rect x="106" y="142" width="22" height="16" fill="#E8590C"/><rect x="134" y="142" width="30" height="10" fill="#0B4F8A"/><rect x="134" y="156" width="20" height="24" fill="#13703A"/><text x="135" y="128" font-size="11" font-weight="900" text-anchor="middle" fill="#0B4F8A">Visual</text></g>',
     demo:'<g class="entrance off" data-e="demo"><rect x="14" y="186" width="66" height="74" fill="#C9CED6" stroke="#5B6472" stroke-width="2"/><path d="M18 200 h58 M18 214 h58 M18 228 h58 M18 242 h58" stroke="#8C96A3" stroke-width="2"/><text x="47" y="178" font-size="11" font-weight="900" text-anchor="middle" fill="#0B4F8A">Demo</text>'+person(47,290,{s:.7,anim:'hammer',tool:'hammer',skin:SKIN[4]})+'</g>'
   };
-  body.innerHTML='<div class="grid2"><div><svg class="scene" id="udlSvg" viewBox="0 0 420 300" role="img" aria-label="A house whose entrances open as you turn on more ways to show learning" font-family="Arial,sans-serif">'+
+  body.innerHTML='<div class="udl-grid"><div><svg class="scene" id="udlSvg" viewBox="0 0 420 300" role="img" aria-label="A house whose entrances open as you turn on more ways to show learning" font-family="Arial,sans-serif">'+
     '<rect y="260" width="420" height="40" fill="#86B95B"/><polygon points="70,122 210,40 350,122" fill="#8B3A2B"/><rect x="80" y="120" width="260" height="140" fill="#F5EFE3" stroke="#B9AE98" stroke-width="2"/>'+
     '<rect x="250" y="140" width="60" height="40" fill="#8EC5F0" stroke="#fff" stroke-width="3"/>'+u.ways.map(w=>ent[w.id]).join('')+'</svg>'+
     '<p class="found-count" id="udlCount" aria-live="polite">Entrances open: 0 of 4</p></div>'+
     '<div><p style="margin:0 0 .2rem"><b>Ways to show what you know</b></p>'+u.ways.map(w=>'<button type="button" class="switch" role="switch" aria-checked="false" data-w="'+w.id+'"><span class="sw" aria-hidden="true"></span><span><b>'+w.name+'</b><small>'+w.ex+' <i>('+w.door+')</i></small></span></button>').join('')+
-    '</div></div><p style="margin:.6rem 0 .2rem"><b>AI-supported accessibility tools</b></p><div class="cols3">'+u.tools.map(t=>'<button type="button" class="switch" role="switch" aria-checked="false" data-t="'+t.id+'"><span class="sw" aria-hidden="true"></span><span><b>'+t.name+'</b><small>'+t.help+'</small></span></button>').join('')+'</div>'+
+    '</div></div><p style="margin:.6rem 0 .2rem"><b>AI-supported accessibility tools</b></p><div class="udl-tools">'+u.tools.map(t=>'<button type="button" class="switch" role="switch" aria-checked="false" data-t="'+t.id+'"><span class="sw" aria-hidden="true"></span><span><b>'+t.name+'</b><small>'+t.help+'</small></span></button>').join('')+'</div>'+
     '<div id="udlTools" aria-live="polite"></div><div class="callout red"><b>&#9888;&#65039; Caution:</b> '+esc(u.warning)+'</div>';
   const svg=$('#udlSvg',body);
   $$('.switch[data-w]',body).forEach(b=>b.onclick=()=>{ const on=b.getAttribute('aria-checked')!=='true'; b.setAttribute('aria-checked',on); $('.entrance[data-e="'+b.dataset.w+'"]',svg).classList.toggle('off',!on);
     const n=$$('.switch[data-w][aria-checked="true"]',body).length; $('#udlCount',body).textContent='Entrances open: '+n+' of 4'+(n===4?'. Everyone can get in, and the house didn’t get any less sturdy.':''); });
   $$('.switch[data-t]',body).forEach(b=>b.onclick=()=>{ b.setAttribute('aria-checked', b.getAttribute('aria-checked')!=='true');
     const on=$$('.switch[data-t][aria-checked="true"]',body).map(x=>u.tools.find(t=>t.id===x.dataset.t));
-    $('#udlTools',body).innerHTML = on.length ? '<div class="card yellow" style="margin-top:.6rem"><b>Check before you use it:</b><ul>'+on.map(t=>'<li><b>'+t.name+':</b> '+esc(t.caution)+'</li>').join('')+'</ul></div>' : ''; });
+    $$('.switch[data-t]',body).forEach(x=>{ const t=u.tools.find(tt=>tt.id===x.dataset.t); $('small',x).innerHTML = x.getAttribute('aria-checked')==='true' ? '<b class="caution">Check:</b> '+esc(t.caution) : esc(t.help); }); });
 };
 
 /* ---------- Stage 3: support or shortcut? ---------- */
 W.skill = function(body){
   let right=0, done=0;
-  body.innerHTML='<div class="cols2">'+D.skill.map((s,i)=>'<div class="choice-q" data-i="'+i+'"><p style="margin:0"><b>'+(i+1)+'. '+esc(s.tool)+'</b> for '+esc(s.student)+'.<br><span class="muted">Skill being measured:</span> <b>'+esc(s.measuring)+'</b></p>'+
+  body.innerHTML='<div class="cols-auto">'+D.skill.map((s,i)=>'<div class="choice-q" data-i="'+i+'"><p style="margin:0"><b>'+(i+1)+'. '+esc(s.tool)+'</b> for '+esc(s.student)+'.<span class="skl"><br><span class="muted">Skill being measured:</span> <b>'+esc(s.measuring)+'</b></span></p>'+
     '<div class="btnrow"><button type="button" class="btn green" data-a="support">&#9855; Supports the skill</button><button type="button" class="btn" data-a="replace">&#9986;&#65039; Replaces the skill</button></div><div class="fb-slot" aria-live="polite"></div></div>').join('')+'</div><p class="sorter-status" id="skStat" aria-live="polite"></p>';
   $$('.choice-q',body).forEach(q=>{ const s=D.skill[+q.dataset.i]; $$('.btn',q).forEach(b=>b.onclick=()=>{ $$('.btn',q).forEach(x=>{x.disabled=true; if(x===b) x.setAttribute('aria-pressed','true');}); const ok=b.dataset.a===s.answer; if(ok) right++; done++;
-    $('.fb-slot',q).innerHTML='<div class="fbk '+(ok?'ok':'no')+'">'+(ok?'✓ Yes. ':'Look again: it '+(s.answer==='support'?'supports':'replaces')+' the skill. ')+esc(s.why)+'</div>';
+    $('.btnrow',q).hidden=true; $('.skl',q).hidden=true;
+    $('.fb-slot',q).innerHTML='<div class="fbk '+(ok?'ok':'no')+'">'+(ok?'\u2713 Yes, it '+(s.answer==='support'?'supports':'replaces')+' the skill. ':'You chose \u201C'+(b.dataset.a==='support'?'supports':'replaces')+'.\u201D Look again: it '+(s.answer==='support'?'supports':'replaces')+' the skill. ')+esc(s.why)+'</div>';
     if(done===D.skill.length) $('#skStat',body).textContent='You got '+right+' of '+D.skill.length+'. Same tools, different answers. It always depends on the skill you’re measuring.'; }); });
 };
 
@@ -2114,8 +2169,8 @@ W.plan = function(body){
   const P=D.plan;
   body.innerHTML='<div class="grid2"><div class="form-grid"><div class="field"><label for="plType">Type of assignment</label><select id="plType">'+P.types.map(t=>'<option value="'+t.id+'">'+t.name+'</option>').join('')+'</select></div>'+
     '<div class="field"><label for="plName">Its name (optional)</label><input type="text" id="plName" placeholder="e.g., Unit 3 persuasive essay"></div>'+
-    '<fieldset class="field"><legend>AI-use level</legend>'+['red','yellow','green'].map(l=>'<label class="radio"><input type="radio" name="plLevel" value="'+l+'"> '+P.levels[l].split(':')[0]+': '+P.levels[l].split(':')[1].split('.')[0]+'</label>').join('')+'</fieldset>'+
-    '<fieldset class="field"><legend>Add strategies (optional)</legend>'+D.strategies.map(s=>'<label class="radio"><input type="checkbox" name="plStrat" value="'+s.id+'"> '+s.name+'</label>').join('')+'</fieldset></div>'+
+    '<fieldset class="field"><legend>AI-use level</legend>'+['red','yellow','green'].map(l=>'<label class="radio"><input type="radio" name="plLevel" value="'+l+'"> '+({red:'RED: No AI',yellow:'YELLOW: AI allowed with disclosure',green:'GREEN: AI encouraged'})[l]+'</label>').join('')+'</fieldset>'+
+    '<fieldset class="field"><legend>Add strategies (optional)</legend><div class="cols2" style="gap:0 .8rem">'+D.strategies.map(s=>'<label class="radio"><input type="checkbox" name="plStrat" value="'+s.id+'"> '+s.name+'</label>').join('')+'</div></fieldset></div>'+
     '<div><div class="plan-out" id="plOut" aria-live="polite" tabindex="0" aria-label="Your action plan" style="margin-top:0"></div><div class="btnrow"><button type="button" class="btn" id="plCopy">&#128203; Copy to clipboard</button></div></div></div>';
   let touchedLevel=false;
   function build(){ const t=P.types.find(x=>x.id===$('#plType',body).value); const name=$('#plName',body).value.trim();
@@ -2156,7 +2211,8 @@ W.quiz = function(body){
 
 /* ---------- Sources ---------- */
 W.sources = function(body){
-  body.innerHTML='<ol class="sources" style="columns:2 22rem;column-gap:1.4rem">'+D.sources.map(s=>'<li>'+s.cite+' <a href="'+esc(s.url)+'" target="_blank" rel="noopener noreferrer">'+esc(s.url.replace(/^https?:\/\//,'').replace(/\/$/,'').slice(0,70))+(s.url.length>78?'…':'')+'</a><span class="claim">Supports: '+esc(s.claim)+'</span></li>').join('')+'</ol>';
+  const host=body.closest('[data-widget]'), from=+(host.dataset.from||0), to=+(host.dataset.to||D.sources.length);
+  body.innerHTML='<ol class="sources" start="'+(from+1)+'" style="columns:2 22rem;column-gap:1.4rem">'+D.sources.slice(from,to).map(s=>'<li>'+s.cite+' <a href="'+esc(s.url)+'" target="_blank" rel="noopener noreferrer">'+esc(s.url.replace(/^https?:\/\//,'').replace(/\/$/,'').slice(0,70))+(s.url.length>78?'…':'')+'</a><span class="claim">Supports: '+esc(s.claim)+'</span></li>').join('')+'</ol>';
 };
 
 /* =====================================================================
@@ -2169,25 +2225,43 @@ const slideEl = $('#slide'), inner = $('#slideInner');
 
 /* Fit-to-screen: on larger screens, shrink the current screen (CSS zoom) so it
    fits without scrolling. Re-fits on resize, full screen, and when an activity grows.
-   Will not shrink below FIT_MIN; very long screens scroll instead. */
-const FIT_MIN = 0.6, FIT_FROM_WIDTH = 1000, INNER_MAX = 1100;
+   It never shrinks body text below MIN_TEXT_PX; if a screen still does not fit,
+   it switches to a tighter layout (.compact) at that same smallest size. */
+/* MIN_TEXT_PX: body text never shrinks below this many screen pixels (readable on a video call). */
+const MIN_TEXT_PX = 14, FIT_FROM_WIDTH = 1000, INNER_MAX = 1100;
+const minZoom = () => Math.min(1, MIN_TEXT_PX / (parseFloat(getComputedStyle(document.documentElement).fontSize) || 16));
 const canZoom = !!(window.CSS && CSS.supports && CSS.supports('zoom','0.5'));
 let fitRaf = 0;
 function fitSlide(){
   if(!canZoom) return;
   const set = z => { inner.style.zoom = z===1 ? '' : z; inner.style.maxWidth = z===1 ? '' : (INNER_MAX/z)+'px'; };
-  set(1);
+  inner.classList.remove('compact'); set(1);
   if(innerWidth < FIT_FROM_WIDTH) return;
   const avail = slideEl.clientHeight, h = () => inner.getBoundingClientRect().height;
-  if(h() <= avail) return;
-  set(FIT_MIN); if(h() > avail) return;
-  let lo = FIT_MIN, hi = 1;
-  for(let i=0;i<7;i++){ const m=(lo+hi)/2; set(m); if(h() <= avail) lo=m; else hi=m; }
-  set(Math.floor(lo*1000)/1000);
+  const tryFit = minZ => {
+    set(1); if(h() <= avail) return true;
+    set(minZ); if(h() > avail) return false;
+    let lo = minZ, hi = 1;
+    for(let i=0;i<7;i++){ const m=(lo+hi)/2; set(m); if(h() <= avail) lo=m; else hi=m; }
+    set(Math.floor(lo*1000)/1000); return true;
+  };
+  const zMin = minZoom();
+  if(tryFit(zMin)) return;
+  inner.classList.add('compact');
+  tryFit(zMin);
 }
 const requestFit = () => { cancelAnimationFrame(fitRaf); fitRaf = requestAnimationFrame(fitSlide); };
 window.addEventListener('resize', requestFit);
-if(window.ResizeObserver){ let last=0; new ResizeObserver(()=>{ const hh=Math.round(inner.getBoundingClientRect().height); if(hh!==last){ last=hh; requestFit(); } }).observe(inner); }
+/* Re-fit when content grows or shrinks. A loop guard stops back-and-forth re-fitting:
+   bursts of changes are bundled into one re-fit, and more than 12 re-fits in one second pause them. */
+if(window.ResizeObserver){
+  let last=0, burst=[], roTimer=0;
+  new ResizeObserver(()=>{
+    const hh=Math.round(inner.getBoundingClientRect().height); if(Math.abs(hh-last)<=2) return; last=hh;
+    clearTimeout(roTimer);
+    roTimer=setTimeout(()=>{ const now=performance.now(); burst=burst.filter(t=>now-t<1000); if(burst.length>=12) return; burst.push(now); requestFit(); }, 120);
+  }).observe(inner);
+}
 
 function buildTracker(){
   $('#tracker').innerHTML = CONTENT.stages.map((s,k)=>'<li><button type="button" class="trk" data-stage="'+k+'" aria-label="'+esc(s.name)+'"><span class="n" aria-hidden="true">'+(k?k:'⌂')+'</span><span class="lbl">'+s.short+'</span></button></li>').join('');
