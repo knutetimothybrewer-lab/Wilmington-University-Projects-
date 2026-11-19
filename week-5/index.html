@@ -105,14 +105,14 @@ a{color:var(--blue)}
 /* =====================================================================
    3. MAIN LAYOUT: construction site panel + slide panel
    ===================================================================== */
-.layout{display:grid;grid-template-columns:minmax(300px,36%) 1fr;min-height:0}
+.layout{display:grid;grid-template-columns:minmax(280px,32%) 1fr;min-height:0}
 .site{background:#9FD0F5;border-right:5px solid var(--yellow);display:flex;flex-direction:column;min-height:0;position:relative}
 .site svg#siteSvg{width:100%;flex:1;min-height:0;display:block}
 .site-log{margin:0;padding:.55rem .9rem .7rem;background:#fff;border-top:3px dashed var(--concrete-l);font-size:.86rem;color:var(--ink2);min-height:3.4em}
 .site-log b{color:var(--blue)}
 .site-hide{position:absolute;top:.4rem;right:.4rem;background:rgba(255,255,255,.9);border:2px solid var(--blue);color:var(--blue);border-radius:999px;font-size:.7rem;font-weight:700;padding:.15rem .6rem;display:none}
 .slide{overflow:auto;min-height:0;position:relative;scroll-behavior:smooth}
-.slide-inner{max-width:1100px;margin:0 auto;padding:1.4rem 2.2rem 3rem}
+.slide-inner{max-width:1100px;margin:0 auto;padding:1.2rem 2.2rem 1.4rem}
 .slide-inner.enter-next{animation:inNext .45s ease both}
 .slide-inner.enter-prev{animation:inPrev .45s ease both}
 @keyframes inNext{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:none}}
@@ -220,7 +220,12 @@ details.more summary{cursor:pointer;font-weight:800;color:var(--blue)}
 .widget-bar .try b{color:var(--yellow);margin-right:.3rem}
 .reset{background:#fff;color:var(--blue);border:0;border-radius:999px;font-weight:800;padding:.3rem .8rem;min-height:38px;font-size:.82rem}
 .widget-body{padding:1rem}
-.scene{width:100%;height:auto;display:block;border-radius:12px;background:linear-gradient(#D7ECFB,#F2F8FE)}
+.scene{width:min(100%, calc(var(--scene-h,44vh) * var(--ar,2)));height:auto;aspect-ratio:var(--ar,2);display:block;margin-inline:auto;border-radius:12px;background:linear-gradient(#D7ECFB,#F2F8FE)}
+.cols2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.6rem;align-items:start}
+.cols3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.7rem;align-items:start}
+.cols2>.choice-q,.cols2>.chk{margin:0}
+.cols3 .predict-sent{font-size:1.15rem}
+.cols3 .prob{grid-template-columns:minmax(0,7rem) 1fr 2.6rem;font-size:.9rem}
 
 /* =====================================================================
    7. INTERACTIVE-SPECIFIC STYLES
@@ -329,7 +334,7 @@ kbd{background:#fff;border:2px solid var(--concrete-l);border-bottom-width:4px;b
 /* Threshold */
 .slider-row{display:grid;grid-template-columns:auto 1fr auto;gap:.8rem;align-items:center;margin:.4rem 0 .8rem;font-weight:800}
 input[type=range]{width:100%;height:2.2rem;accent-color:var(--orange-d)}
-.crowd{display:grid;grid-template-columns:repeat(12,1fr);gap:.2rem;background:linear-gradient(#EAF4FD,#F8FBFF);border-radius:12px;padding:.5rem}
+.crowd{width:min(100%,64vh);margin-inline:auto;display:grid;grid-template-columns:repeat(12,1fr);gap:.2rem;background:linear-gradient(#EAF4FD,#F8FBFF);border-radius:12px;padding:.5rem}
 .person{position:relative;text-align:center}
 .person svg{width:100%;height:auto;display:block}
 .person .tag{position:absolute;left:50%;top:-2px;transform:translateX(-50%);font-size:.56rem;font-weight:900;padding:0 .25em;border-radius:4px;white-space:nowrap}
@@ -434,7 +439,7 @@ table.rubric th{background:var(--blue-l)}
 @keyframes glow{from{opacity:.55}to{opacity:1}}
 
 /* Plan builder */
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
+.form-grid{display:grid;grid-template-columns:1fr;gap:.6rem}
 .field label,.field legend{display:block;font-weight:800;margin-bottom:.25rem}
 .field select,.field input[type=text]{width:100%;border:2px solid var(--concrete);border-radius:10px;padding:.45rem .6rem;min-height:44px;background:#fff}
 fieldset{border:2px solid var(--concrete-l);border-radius:12px;padding:.5rem .8rem;margin:0}
@@ -453,7 +458,8 @@ fieldset{border:2px solid var(--concrete-l);border-radius:12px;padding:.5rem .8r
 .qprog{display:flex;gap:.3rem;margin-bottom:.6rem}
 
 /* Sources */
-.sources li{margin:.55rem 0}
+.sources{font-size:.8rem}
+.sources li{margin:0 0 .5rem;break-inside:avoid}
 .sources .claim{display:block;font-size:.85rem;color:var(--ink2)}
 
 /* =====================================================================
@@ -519,6 +525,19 @@ html.calm *,html.calm *::before,html.calm *::after{animation:none!important;tran
 }
 
 @media (max-width:1560px){ .tracker{order:3;flex-basis:100%} .brand{flex:1} .topbar{row-gap:.3rem} }
+@media (min-width:1101px){
+  .brand>div{display:none}
+  .brand{flex:none}
+  .tracker{order:0;flex-basis:auto;flex:1}
+  .navhint{display:none}
+  .topbar{padding-block:.3rem}
+  .trk,.tog{min-height:36px}
+  .tracker ol{flex-wrap:nowrap}
+  .tracker li+li::before{width:.45rem;margin-right:.2rem}
+  .trk{font-size:.72rem;padding-right:.5rem;gap:.3rem}
+  .trk .n{width:1.45rem;height:1.45rem}
+  .tog{font-size:.72rem;padding-inline:.55rem}
+}
 /* =====================================================================
    10. RESPONSIVE (tablet and smaller)
    ===================================================================== */
@@ -537,7 +556,7 @@ html.calm *,html.calm *::before,html.calm *::after{animation:none!important;tran
 @media (max-width:1100px) and (max-height:820px){ .site{height:140px} }
 @media (max-width:900px){
   .slide-inner{padding:1rem 1.1rem 2.5rem}
-  .grid2,.grid3,.hero,.defects,.vs,.mk-grid,.split,.form-grid,.ba,.tally{grid-template-columns:1fr}
+  .grid2,.grid3,.hero,.defects,.vs,.mk-grid,.split,.form-grid,.ba,.tally,.cols2,.cols3{grid-template-columns:1fr}
   .roles{grid-template-columns:1fr 1fr}
   .bins{grid-template-columns:1fr}
   .crowd{grid-template-columns:repeat(8,1fr)}
@@ -1600,6 +1619,7 @@ function mountWidgets(rootEl){
     const rb = $('.reset', el); if(rb) rb.addEventListener('click', () => { run(); const f = body.querySelector('button:not([disabled]),input,select,[tabindex="0"]'); if(f) f.focus(); });
     run();
   });
+  $$('svg.scene', rootEl).forEach(s=>{ const v=s.viewBox&&s.viewBox.baseVal; if(v&&v.height) s.style.setProperty('--ar', v.width/v.height); });
 }
 function copyWidget(text){ return function(body){ body.innerHTML = '<div class="copybox" tabindex="0" aria-label="Text to copy">'+esc(text)+'</div><div class="btnrow"><button type="button" class="btn">&#128203; Copy to clipboard</button></div>'; $('.btn',body).onclick = e => copyText(text, e.currentTarget); }; }
 W.script = copyWidget(D.script);
@@ -1650,9 +1670,9 @@ W.roles = function(body){
 
 /* ---------- Stage 1: predict the next word ---------- */
 W.predict = function(body, ctx){
-  body.innerHTML = D.predict.map((p,i)=>'<div class="card" style="margin:.5rem 0" data-i="'+i+'"><div class="predict-sent">“'+esc(p.before)+' <span class="blank">?</span>”</div>'+
+  body.innerHTML = '<div class="cols3">'+D.predict.map((p,i)=>'<div class="card" data-i="'+i+'"><div class="predict-sent">“'+esc(p.before)+' <span class="blank">?</span>”</div>'+
     '<div class="probs">'+p.options.map(o=>'<div class="prob"><span>'+esc(o[0])+'</span><span class="track"><span class="fill" data-w="'+o[1]+'"></span></span><span class="pct">?</span></div>').join('')+'</div>'+
-    '<div class="btnrow"><button type="button" class="btn blue">Let the AI guess</button></div><p class="pnote" aria-live="polite"></p></div>').join('')+
+    '<div class="btnrow"><button type="button" class="btn blue">Let the AI guess</button></div><p class="pnote" aria-live="polite"></p></div>').join('')+'</div>'+
     '<span class="sim">Simulated example for teaching</span>';
   $$('.card',body).forEach(card=>{
     const p = D.predict[+card.dataset.i];
@@ -1977,7 +1997,7 @@ W.udl = function(body){
     '<rect x="250" y="140" width="60" height="40" fill="#8EC5F0" stroke="#fff" stroke-width="3"/>'+u.ways.map(w=>ent[w.id]).join('')+'</svg>'+
     '<p class="found-count" id="udlCount" aria-live="polite">Entrances open: 0 of 4</p></div>'+
     '<div><p style="margin:0 0 .2rem"><b>Ways to show what you know</b></p>'+u.ways.map(w=>'<button type="button" class="switch" role="switch" aria-checked="false" data-w="'+w.id+'"><span class="sw" aria-hidden="true"></span><span><b>'+w.name+'</b><small>'+w.ex+' <i>('+w.door+')</i></small></span></button>').join('')+
-    '<p style="margin:.6rem 0 .2rem"><b>AI-supported accessibility tools</b></p>'+u.tools.map(t=>'<button type="button" class="switch" role="switch" aria-checked="false" data-t="'+t.id+'"><span class="sw" aria-hidden="true"></span><span><b>'+t.name+'</b><small>'+t.help+'</small></span></button>').join('')+'</div></div>'+
+    '</div></div><p style="margin:.6rem 0 .2rem"><b>AI-supported accessibility tools</b></p><div class="cols3">'+u.tools.map(t=>'<button type="button" class="switch" role="switch" aria-checked="false" data-t="'+t.id+'"><span class="sw" aria-hidden="true"></span><span><b>'+t.name+'</b><small>'+t.help+'</small></span></button>').join('')+'</div>'+
     '<div id="udlTools" aria-live="polite"></div><div class="callout red"><b>&#9888;&#65039; Caution:</b> '+esc(u.warning)+'</div>';
   const svg=$('#udlSvg',body);
   $$('.switch[data-w]',body).forEach(b=>b.onclick=()=>{ const on=b.getAttribute('aria-checked')!=='true'; b.setAttribute('aria-checked',on); $('.entrance[data-e="'+b.dataset.w+'"]',svg).classList.toggle('off',!on);
@@ -1990,8 +2010,8 @@ W.udl = function(body){
 /* ---------- Stage 3: support or shortcut? ---------- */
 W.skill = function(body){
   let right=0, done=0;
-  body.innerHTML=D.skill.map((s,i)=>'<div class="choice-q" data-i="'+i+'"><p style="margin:0"><b>'+(i+1)+'. '+esc(s.tool)+'</b> for '+esc(s.student)+'.<br><span class="muted">Skill being measured:</span> <b>'+esc(s.measuring)+'</b></p>'+
-    '<div class="btnrow"><button type="button" class="btn green" data-a="support">&#9855; Supports the skill</button><button type="button" class="btn" data-a="replace">&#9986;&#65039; Replaces the skill</button></div><div class="fb-slot" aria-live="polite"></div></div>').join('')+'<p class="sorter-status" id="skStat" aria-live="polite"></p>';
+  body.innerHTML='<div class="cols2">'+D.skill.map((s,i)=>'<div class="choice-q" data-i="'+i+'"><p style="margin:0"><b>'+(i+1)+'. '+esc(s.tool)+'</b> for '+esc(s.student)+'.<br><span class="muted">Skill being measured:</span> <b>'+esc(s.measuring)+'</b></p>'+
+    '<div class="btnrow"><button type="button" class="btn green" data-a="support">&#9855; Supports the skill</button><button type="button" class="btn" data-a="replace">&#9986;&#65039; Replaces the skill</button></div><div class="fb-slot" aria-live="polite"></div></div>').join('')+'</div><p class="sorter-status" id="skStat" aria-live="polite"></p>';
   $$('.choice-q',body).forEach(q=>{ const s=D.skill[+q.dataset.i]; $$('.btn',q).forEach(b=>b.onclick=()=>{ $$('.btn',q).forEach(x=>{x.disabled=true; if(x===b) x.setAttribute('aria-pressed','true');}); const ok=b.dataset.a===s.answer; if(ok) right++; done++;
     $('.fb-slot',q).innerHTML='<div class="fbk '+(ok?'ok':'no')+'">'+(ok?'✓ Yes. ':'Look again: it '+(s.answer==='support'?'supports':'replaces')+' the skill. ')+esc(s.why)+'</div>';
     if(done===D.skill.length) $('#skStat',body).textContent='You got '+right+' of '+D.skill.length+'. Same tools, different answers. It always depends on the skill you’re measuring.'; }); });
@@ -2049,7 +2069,7 @@ W.tutor = function(body, ctx){
 /* ---------- Stage 4: oversight checklist ---------- */
 W.checklist = function(body){
   const n=D.oversight.length;
-  body.innerHTML='<div class="grid2"><div>'+D.oversight.map((o,i)=>'<label class="chk"><input type="checkbox" data-i="'+i+'"><span><b>'+esc(o.text)+'</b><details class="more"><summary>Why it matters</summary><small>'+gl(o.why)+'</small></details></span></label>').join('')+'</div>'+
+  body.innerHTML='<div class="card" style="display:flex;flex-wrap:wrap;align-items:center;gap:.4rem 1.2rem;margin-bottom:.6rem"><b>Inspection progress</b><div class="meter" style="flex:1;min-width:8rem"><i id="ckM"></i></div><b id="ckN" aria-live="polite">0 of '+n+'</b><span id="ckStamp"></span><span class="small muted" id="ckMsg" style="flex-basis:100%">Check each item the tool meets.</span></div>'+'<div class="cols2">'+D.oversight.map((o,i)=>'<label class="chk"><input type="checkbox" data-i="'+i+'"><span><b>'+esc(o.text)+'</b><details class="more"><summary>Why it matters</summary><small>'+gl(o.why)+'</small></details></span></label>').join('')+'</div>';
     '<div><div class="card" style="text-align:center;position:sticky;top:0"><h3>Inspection progress</h3><div class="meter"><i id="ckM"></i></div><p class="score" id="ckN" aria-live="polite">0 of '+n+'</p><div id="ckStamp" style="min-height:3rem"></div><p class="small muted" id="ckMsg">Check each item the tool meets.</p></div></div></div>';
   $$('.chk input',body).forEach(cb=>cb.addEventListener('change',()=>{ const k=$$('.chk input:checked',body).length; $('#ckM',body).style.width=(k/n*100)+'%'; $('#ckN',body).textContent=k+' of '+n;
     $('#ckStamp',body).innerHTML = k===n ? '<span class="stamp approved pop">Passed inspection</span>' : (k>=n-2 ? '<span class="stamp review">Almost there</span>' : '');
@@ -2076,11 +2096,11 @@ W.rooms = function(body){
 /* ---------- Stage 5: build your own plan ---------- */
 W.plan = function(body){
   const P=D.plan;
-  body.innerHTML='<div class="form-grid"><div class="field"><label for="plType">Type of assignment</label><select id="plType">'+P.types.map(t=>'<option value="'+t.id+'">'+t.name+'</option>').join('')+'</select></div>'+
+  body.innerHTML='<div class="grid2"><div class="form-grid"><div class="field"><label for="plType">Type of assignment</label><select id="plType">'+P.types.map(t=>'<option value="'+t.id+'">'+t.name+'</option>').join('')+'</select></div>'+
     '<div class="field"><label for="plName">Its name (optional)</label><input type="text" id="plName" placeholder="e.g., Unit 3 persuasive essay"></div>'+
     '<fieldset class="field"><legend>AI-use level</legend>'+['red','yellow','green'].map(l=>'<label class="radio"><input type="radio" name="plLevel" value="'+l+'"> '+P.levels[l].split(':')[0]+': '+P.levels[l].split(':')[1].split('.')[0]+'</label>').join('')+'</fieldset>'+
     '<fieldset class="field"><legend>Add strategies (optional)</legend>'+D.strategies.map(s=>'<label class="radio"><input type="checkbox" name="plStrat" value="'+s.id+'"> '+s.name+'</label>').join('')+'</fieldset></div>'+
-    '<div class="plan-out" id="plOut" aria-live="polite" tabindex="0" aria-label="Your action plan"></div><div class="btnrow"><button type="button" class="btn" id="plCopy">&#128203; Copy to clipboard</button></div>';
+    '<div><div class="plan-out" id="plOut" aria-live="polite" tabindex="0" aria-label="Your action plan" style="margin-top:0"></div><div class="btnrow"><button type="button" class="btn" id="plCopy">&#128203; Copy to clipboard</button></div></div></div>';
   let touchedLevel=false;
   function build(){ const t=P.types.find(x=>x.id===$('#plType',body).value); const name=$('#plName',body).value.trim();
     if(!touchedLevel) $$('input[name=plLevel]',body).forEach(r=>r.checked = r.value===t.level);
@@ -2120,7 +2140,7 @@ W.quiz = function(body){
 
 /* ---------- Sources ---------- */
 W.sources = function(body){
-  body.innerHTML='<ol class="sources">'+D.sources.map(s=>'<li>'+s.cite+' <a href="'+esc(s.url)+'" target="_blank" rel="noopener noreferrer">'+esc(s.url.replace(/^https?:\/\//,'').replace(/\/$/,'').slice(0,70))+(s.url.length>78?'…':'')+'</a><span class="claim">Supports: '+esc(s.claim)+'</span></li>').join('')+'</ol>';
+  body.innerHTML='<ol class="sources" style="columns:2 22rem;column-gap:1.4rem">'+D.sources.map(s=>'<li>'+s.cite+' <a href="'+esc(s.url)+'" target="_blank" rel="noopener noreferrer">'+esc(s.url.replace(/^https?:\/\//,'').replace(/\/$/,'').slice(0,70))+(s.url.length>78?'…':'')+'</a><span class="claim">Supports: '+esc(s.claim)+'</span></li>').join('')+'</ol>';
 };
 
 /* =====================================================================
@@ -2130,6 +2150,28 @@ const KIND = { concept:'Concept', metaphor:'On the job site', interactive:'Try i
 const state = { i:0, quick:false, notes:false };
 const visible = () => CONTENT.slides.filter(s => !(state.quick && s.optional));
 const slideEl = $('#slide'), inner = $('#slideInner');
+
+/* Fit-to-screen: on larger screens, shrink the current screen (CSS zoom) so it
+   fits without scrolling. Re-fits on resize, full screen, and when an activity grows.
+   Will not shrink below FIT_MIN; very long screens scroll instead. */
+const FIT_MIN = 0.6, FIT_FROM_WIDTH = 1000, INNER_MAX = 1100;
+const canZoom = !!(window.CSS && CSS.supports && CSS.supports('zoom','0.5'));
+let fitRaf = 0;
+function fitSlide(){
+  if(!canZoom) return;
+  const set = z => { inner.style.zoom = z===1 ? '' : z; inner.style.maxWidth = z===1 ? '' : (INNER_MAX/z)+'px'; };
+  set(1);
+  if(innerWidth < FIT_FROM_WIDTH) return;
+  const avail = slideEl.clientHeight, h = () => inner.getBoundingClientRect().height;
+  if(h() <= avail) return;
+  set(FIT_MIN); if(h() > avail) return;
+  let lo = FIT_MIN, hi = 1;
+  for(let i=0;i<7;i++){ const m=(lo+hi)/2; set(m); if(h() <= avail) lo=m; else hi=m; }
+  set(Math.floor(lo*1000)/1000);
+}
+const requestFit = () => { cancelAnimationFrame(fitRaf); fitRaf = requestAnimationFrame(fitSlide); };
+window.addEventListener('resize', requestFit);
+if(window.ResizeObserver){ let last=0; new ResizeObserver(()=>{ const hh=Math.round(inner.getBoundingClientRect().height); if(hh!==last){ last=hh; requestFit(); } }).observe(inner); }
 
 function buildTracker(){
   $('#tracker').innerHTML = CONTENT.stages.map((s,k)=>'<li><button type="button" class="trk" data-stage="'+k+'" aria-label="'+esc(s.name)+'"><span class="n" aria-hidden="true">'+(k?k:'⌂')+'</span><span class="lbl">'+s.short+'</span></button></li>').join('');
@@ -2155,6 +2197,7 @@ function render(dir){
   $('#prevBtn').disabled = state.i===0; $('#nextBtn').disabled = state.i===v.length-1;
   $('#notesBody').innerHTML='<p><b>'+esc(CONTENT.stages[s.stage].name)+(s.title?' — '+esc(stripTags(s.title)):'')+'</b></p><p>'+esc(s.notes||'')+'</p>';
   slideEl.scrollTop=0;
+  fitSlide();
   try{ history.replaceState(null,'','#'+s.id); }catch(e){}
   document.title = (s.title?stripTags(s.title)+' · ':'')+'Week 5: Building Assessments You Can Trust';
 }
