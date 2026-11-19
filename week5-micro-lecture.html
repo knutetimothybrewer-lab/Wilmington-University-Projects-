@@ -357,6 +357,22 @@ input[type=range]{width:100%;height:2.2rem;accent-color:var(--orange-d)}
 /* Makeover workshop */
 .pick{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:.8rem}
 .mk-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;align-items:start}
+#mk .scene{--scene-h:26vh}
+#mk .mk-grid{grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:.8rem}
+.mk-strats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.35rem}
+.mk-strats .strat{margin:0;padding:.35rem .5rem}
+.mk-ba{display:grid;grid-template-columns:1fr;gap:.6rem;margin-top:.6rem;align-items:start}
+.mk-ba .card,.mk-before{padding:.5rem .9rem}
+.mk-before{margin-top:.5rem}
+.mk-before h4{margin:0}
+.mk-before p{margin:0}
+.mk-ba h4{margin:0 0 .2rem}
+.mk-ba p{margin:0}
+#mkAfter ul{margin:.1rem 0 0;padding-left:1.1rem;font-size:.84rem;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:1.4rem}
+#mkAfter li{margin:.1rem 0}
+.mk-rubric{margin-top:.6rem;padding:.5rem .9rem}
+@media (max-width:900px){.mk-strats,.mk-ba,#mkAfter ul{grid-template-columns:1fr}}
+@media (max-height:800px) and (min-width:1001px){ #mk .scene{--scene-h:21vh} .mk-strats .strat>span>span{display:none} .mk-strats .strat{align-items:center} .mk-rubric table.rubric{font-size:.74rem} .mk-rubric table.rubric th,.mk-rubric table.rubric td{padding:.15rem .35rem} #mkAfter ul{font-size:.8rem} #mk .flagbar{padding:.3rem .7rem;margin:.4rem 0} }
 .strat{display:grid;grid-template-columns:auto 1fr;gap:.5rem;align-items:start;border:2px solid var(--concrete-l);border-radius:12px;padding:.45rem .6rem;margin:.35rem 0;background:#fff;cursor:pointer}
 .strat input{width:1.3rem;height:1.3rem;margin-top:.15rem;accent-color:var(--green)}
 .strat:has(input:checked){border-color:var(--green);background:var(--green-l)}
@@ -1959,12 +1975,12 @@ W.makeover = function(body){
     '<g class="walk-in" id="mkR" style="transform:translateX(0px)">'+robot(330,168,{bob:true})+'</g>'+inspector(30,166,{tool:'stop',anim:''})+'</svg>'; }
   function open(i){
     const m=D.makeover[i]; $$('.pick .tab',body).forEach(t=>t.setAttribute('aria-pressed', +t.dataset.i===i?'true':'false'));
-    $('#mk',body).innerHTML='<div class="mk-grid"><div>'+scene(m)+'<div class="flagbar red" id="mkFlag" aria-live="polite">&#128721; '+esc(m.whyRed)+'</div>'+
+    $('#mk',body).innerHTML='<div class="mk-grid"><div class="mk-left">'+scene(m)+'<div class="flagbar red" id="mkFlag" aria-live="polite">&#128721; '+esc(m.whyRed)+'</div>'+
       '<p class="small" style="margin:.2rem 0"><b>How well does this show real learning?</b></p><div class="meter" aria-hidden="true"><i id="mkMeter" style="width:12%"></i></div>'+
       '<p class="small muted" style="margin:.3rem 0">Skill being measured: <b>'+esc(m.skill)+'</b></p></div>'+
-      '<div><p style="margin:0 0 .3rem"><b>Choose redesign strategies</b> (2 or more turns it green):</p>'+D.strategies.map(s=>'<label class="strat"><input type="checkbox" value="'+s.id+'"><span><b>'+s.name+'</b><span>'+s.plain+'</span></span></label>').join('')+'</div></div>'+
-      '<div class="ba"><div class="card red"><h4>BEFORE</h4><p>“'+esc(m.before)+'”</p></div><div class="card green" id="mkAfter"><h4>AFTER</h4><p class="muted">Check strategies to build your redesigned version.</p></div></div>'+
-      '<div class="card" style="margin-top:.8rem"><h4 style="margin:0">Mini rubric snippet</h4><table class="rubric"><thead><tr><th scope="col">Criterion</th><th scope="col">Beginning</th><th scope="col">Developing</th><th scope="col">Strong</th></tr></thead><tbody>'+
+      '<div><p style="margin:0 0 .3rem"><b>Choose redesign strategies</b> (2 or more turns it green):</p><div class="mk-strats">'+D.strategies.map(s=>'<label class="strat" title="'+esc(s.plain)+'"><input type="checkbox" value="'+s.id+'"><span><b>'+s.name+'</b><span>'+s.plain+'</span></span></label>').join('')+'</div><div class="card red mk-before"><h4>BEFORE</h4><p>\u201C'+esc(m.before)+'\u201D</p></div></div></div>'+
+      '<div class="mk-ba"><div class="card green" id="mkAfter"><h4>AFTER</h4><p class="muted">Check strategies to build your redesigned version.</p></div></div>'+
+      '<div class="card mk-rubric"><h4 style="margin:0">Mini rubric snippet</h4><table class="rubric"><thead><tr><th scope="col">Criterion</th><th scope="col">Beginning</th><th scope="col">Developing</th><th scope="col">Strong</th></tr></thead><tbody>'+
       m.rubric.map(r=>'<tr><th scope="row">'+esc(r[0])+'</th><td>'+esc(r[1])+'</td><td>'+esc(r[2])+'</td><td>'+esc(r[3])+'</td></tr>').join('')+'<tr id="mkRow" hidden></tr></tbody></table></div>';
     const svg=$('#mkSvg',body);
     requestAnimationFrame(()=>{ svg.classList.remove('idle'); svg.classList.add('stopped'); });
