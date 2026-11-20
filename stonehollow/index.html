@@ -569,7 +569,7 @@ textarea.copybox{width:100%;min-height:150px;margin-top:8px;border-radius:12px;b
    Optional "act" on a line triggers a little animation: look, hop, pulse, brow, sniff, hammer, impact, enter.
    ===================================================================== */
 const CONFIG = {
-  version: "1.1.0",
+  version: "1.2.0",
   title: "Stonehollow: The Oracle Rock",
   courseLine: "Made for AI Literacy for Educators",
   storageKey: "stonehollow.v1",
@@ -616,18 +616,18 @@ const CONFIG = {
           ],
           prompt: "Oog feeds the same cave-wall essay to Sparkstone three times, with the same rubric. The scores come back 82, 74, and 88. What does this show?",
           options: [
-            { id: "A", text: "Sparkstone is broken and should be thrown in the river." },
-            { id: "B", text: "Language models generate output probabilistically, so identical input can produce different results; a single AI score isn't a reliable final judgment." },
-            { id: "C", text: "The rubric was too long." },
-            { id: "D", text: "The essay changed overnight." }
+            { id: "A", text: "Sparkstone is broken. A working grader gives the exact same score every time, so this rock belongs at the bottom of the river." },
+            { id: "B", text: "The rubric was too long and vague, so Sparkstone weighed its criteria differently on each run." },
+            { id: "C", text: "Models generate text probabilistically, so the same essay can score differently. One AI score can't be the final grade." },
+            { id: "D", text: "The essay changed overnight. Cave paint fades, so Sparkstone was reading a slightly different essay each time." }
           ],
-          correct: "B", eliminate: ["A", "D"],
+          correct: "C", eliminate: ["B", "D"],
           hints: [
             "Did anything about the essay or rubric change between runs?",
             "Think about how a model produces text: one word at a time, with built-in randomness."
           ],
-          explain3: "We've ruled out two options. Nothing about the essay changed, and Sparkstone isn't broken; it did exactly what language models do. They build each response one word at a time, sampling from probabilities, so the same input can produce a different output on every run.",
-          reveal: "The answer is B. Language models generate output probabilistically, so identical input can produce different results. That's why one AI score can't be the final judgment. Select B and check to continue.",
+          explain3: "We've ruled out two options: the essay and the rubric were identical on every run. And Sparkstone isn't broken; it did exactly what language models do. They build each response one word at a time, sampling from probabilities, so the same input can produce a different output on every run.",
+          reveal: "The answer is C. Language models generate output probabilistically, so identical input can produce different results. That's why one AI score can't be the final judgment. Select C and check to continue.",
           why: "Same essay, same rubric, three scores. Models sample their output, so one AI score is a single draw, not a verdict, and it can't stand alone as the final grade."
         },
         {
@@ -639,11 +639,11 @@ const CONFIG = {
           ],
           prompt: "Which of these are real risks of letting AI assign the final grade? Choose 3.",
           options: [
-            { id: "a", text: "Inconsistent scores across runs", correct: true },
-            { id: "b", text: "“AI gets tired and grades harsher after essay 100.”", correct: false },
-            { id: "c", text: "Bias toward polish, length, or familiar writing styles", correct: true },
-            { id: "d", text: "“AI always scores higher than teachers.”", correct: false },
-            { id: "e", text: "Confident-sounding feedback that is wrong or invented", correct: true }
+            { id: "a", text: "Scores that shift when the same essay is graded again", correct: true },
+            { id: "b", text: "Growing tired over a long stack of essays and grading the later ones more harshly", correct: false },
+            { id: "c", text: "Favoring polished, longer, or familiar-sounding writing over the actual ideas", correct: true },
+            { id: "d", text: "Always scoring higher than a teacher would", correct: false },
+            { id: "e", text: "Confident-sounding feedback that's wrong or invented", correct: true }
           ],
           progress: "You've found {k} of the 3 real risks.",
           hints: [
@@ -651,7 +651,7 @@ const CONFIG = {
             "Think consistency, bias, and confident errors (hallucination)."
           ],
           explain3: "We grayed out the two myths: models don't get tired, and there's no rule that AI always scores higher. The three left (inconsistent scores, bias toward polish, length, or familiar styles, and confident-but-wrong feedback) are the real risks.",
-          reveal: "The three real risks are inconsistent scores across runs; bias toward polish, length, or familiar writing styles; and confident-sounding feedback that's wrong or invented. They're highlighted. Select those three and check.",
+          reveal: "The three real risks are scores that shift when the same essay is graded again; favoring polish, length, or familiar writing styles; and confident-sounding feedback that's wrong or invented. They're highlighted. Select those three and check.",
           why: "Inconsistency, bias toward surface features, and confident errors (hallucinations) are known weaknesses of language models. Fatigue is a human problem, and “always higher” isn't a reliable pattern."
         },
         {
@@ -687,18 +687,18 @@ const CONFIG = {
           ],
           prompt: "A student disputes a grade that Sparkstone produced. Who is accountable for that grade?",
           options: [
-            { id: "A", text: "The AI vendor." },
-            { id: "B", text: "The teacher: accountability for the grade stays with the educator." },
-            { id: "C", text: "Nobody; it's the algorithm's decision." },
-            { id: "D", text: "The student, for submitting it." }
+            { id: "A", text: "The AI vendor, since its product produced the score and the company answers for how it grades." },
+            { id: "B", text: "Nobody in particular. The score came from an algorithm, so there's no person's judgment to challenge." },
+            { id: "C", text: "The student, for submitting the work." },
+            { id: "D", text: "The teacher. Using AI to produce a grade doesn't hand off accountability for it." }
           ],
-          correct: "B", eliminate: ["C", "D"],
+          correct: "D", eliminate: ["B", "C"],
           hints: [
             "If a family asks, “Who gave my child this grade?”, whose name is on the gradebook?",
             "Tools can assist, but the person who records a grade has to be able to explain and defend it."
           ],
           explain3: "We've ruled out two. An algorithm can't be held responsible, and students aren't accountable for how their work is graded. The vendor built the tool, but didn't decide to use it for this grade or record it.",
-          reveal: "The answer is B. The teacher is accountable. Using AI doesn't transfer responsibility for a grade. Select B and check to continue.",
+          reveal: "The answer is D. The teacher is accountable. Using AI doesn't transfer responsibility for a grade. Select D and check to continue.",
           why: "Accountability stays with the educator. If you can't explain a grade without saying “the AI said so,” it isn't ready to be final.",
           sidebar: { who: "tuff", text: "Before pasting student work into any AI tool, check district approval and data-privacy rules, and remove names and identifiers." }
         }
@@ -724,18 +724,18 @@ const CONFIG = {
           ],
           prompt: "How do most AI detectors actually work?",
           options: [
-            { id: "A", text: "They compare the text to a giant database of all AI output." },
-            { id: "B", text: "They estimate how statistically predictable the text is (e.g., perplexity and “burstiness”) and guess from that." },
-            { id: "C", text: "They read a hidden watermark present in all AI text." },
-            { id: "D", text: "They measure how fast the student typed." }
+            { id: "A", text: "They estimate how predictable the text looks (perplexity and “burstiness”) and make a statistical guess." },
+            { id: "B", text: "They compare the text against a giant database containing everything AI tools have ever written for anyone." },
+            { id: "C", text: "They read a hidden watermark that every AI tool secretly stamps into all of the text it generates." },
+            { id: "D", text: "They check how fast the student typed and flag any work that appeared faster than a person could write it." }
           ],
-          correct: "B", eliminate: ["C", "D"],
+          correct: "A", eliminate: ["C", "D"],
           hints: [
             "Is there a master list of everything AI ever wrote? Is there a universal watermark?",
             "It's a statistical guess about how predictable the writing is."
           ],
           explain3: "We've ruled out two. A pasted essay carries no typing speed, and there's no universal watermark in all AI text. There's no master database of everything AI has ever written, either. What's left is a statistical estimate of how predictable the writing looks.",
-          reveal: "The answer is B. Most detectors estimate how statistically predictable the text is (perplexity and “burstiness”) and guess from that. Select B and check to continue.",
+          reveal: "The answer is A. Most detectors estimate how statistically predictable the text is (perplexity and “burstiness”) and guess from that. Select A and check to continue.",
           why: "Detectors make a statistical guess about predictability. A guess about writing style isn't evidence about who did the writing."
         },
         {
@@ -747,18 +747,18 @@ const CONFIG = {
           ],
           prompt: "Sniff-o-Saurus declares Dot's honest cave painting “AI-made!” Dot is an English-language learner. Why might that happen?",
           options: [
-            { id: "A", text: "Dot secretly used Sparkstone." },
-            { id: "B", text: "Research has found detectors misclassify writing by non-native English speakers as AI-generated far more often, because simpler vocabulary and sentence structure looks more “predictable.”" },
-            { id: "C", text: "Detectors only flag illustrated work." },
-            { id: "D", text: "Sniff-o-Saurus has a cold." }
+            { id: "A", text: "Dot secretly asked Sparkstone for help, and the detector correctly picked up on Sparkstone's writing style in the painting." },
+            { id: "B", text: "Detectors are built to flag illustrated and visual work, so any painting looks suspicious to them, no matter who made it." },
+            { id: "C", text: "Research found detectors flag non-native English writing as AI far more often: simpler wording looks “predictable.”" },
+            { id: "D", text: "Sniff-o-Saurus has a stuffy nose tonight, so absolutely everything around the campfire smells a little like AI." }
           ],
-          correct: "B", eliminate: ["C", "D"],
+          correct: "C", eliminate: ["B", "D"],
           hints: [
             "What kinds of writing look the most predictable to a statistical model?",
             "Think about who writes with simpler, more common word choices."
           ],
           explain3: "We've ruled out two. Detectors don't care about illustrations, and colds don't affect algorithms. Simpler vocabulary and sentence structure, common in writing by English-language learners, look more “predictable” to a detector, which is exactly what it flags.",
-          reveal: "The answer is B. Research has found detectors misclassify writing by non-native English speakers as AI-generated far more often. Select B and check to continue.",
+          reveal: "The answer is C. Research has found detectors misclassify writing by non-native English speakers as AI-generated far more often, because simpler vocabulary and sentence structure looks more “predictable.” Select C and check to continue.",
           why: "Detectors flag predictable-looking writing, and English-language learners often write that way through no fault of their own. A detector flag can land hardest on the students who most need fairness.",
           footnote: "Source: Liang et al. (2023), “GPT detectors are biased against non-native English writers,” Patterns."
         },
@@ -858,18 +858,18 @@ const CONFIG = {
           ],
           prompt: "Why do we say “AI-resistant” rather than “AI-proof”?",
           options: [
-            { id: "A", text: "It sounds friendlier." },
-            { id: "B", text: "No assessment is fully immune; the goal is to make student thinking visible and make outsourcing less useful." },
-            { id: "C", text: "Because AI detectors fill the gap." },
-            { id: "D", text: "Because AI-proof tests are too expensive." }
+            { id: "A", text: "No assessment is fully immune. The goal is to make thinking visible and outsourcing less useful." },
+            { id: "B", text: "It sounds friendlier to students and families than “AI-proof,” which can come across as a threat." },
+            { id: "C", text: "AI detectors can catch whatever slips through, so the assessment itself doesn't need to be airtight." },
+            { id: "D", text: "Truly AI-proof tests do exist, but they take too much time and money for most schools to build and run." }
           ],
-          correct: "B", eliminate: ["A", "D"],
+          correct: "A", eliminate: ["B", "D"],
           hints: [
             "Can any take-home task truly be immune to a tool students can reach anytime?",
             "“Resistant” admits limits. The goal is visible thinking, not a perfect lock."
           ],
           explain3: "We've ruled out two. And detectors can't fill the gap: Module 2 showed they're unreliable. Nothing is fully AI-proof, so we design to make thinking visible and make outsourcing less useful.",
-          reveal: "The answer is B. No assessment is fully immune, so the goal is to make student thinking visible and make outsourcing less useful. Select B and check to continue.",
+          reveal: "The answer is A. No assessment is fully immune, so the goal is to make student thinking visible and make outsourcing less useful. Select A and check to continue.",
           why: "No assessment is fully AI-proof. “AI-resistant” is honest about that, and it keeps the focus on seeing student thinking."
         },
         {
@@ -879,18 +879,18 @@ const CONFIG = {
           ],
           prompt: "Which assignment statement is the clearest AI-use policy?",
           options: [
-            { id: "A", text: "“No AI, ever.”" },
-            { id: "B", text: "“Use AI however you like.”" },
-            { id: "C", text: "“For this task you may use AI to brainstorm. Include your prompt log and a 100-word reflection on what you kept, changed, and why.”" },
-            { id: "D", text: "(No statement at all)" }
+            { id: "A", text: "“No AI, ever. Any use of an AI tool at any stage of this assignment will be treated as an academic-integrity violation.”" },
+            { id: "B", text: "“You may use AI to brainstorm. Include your prompt log and a 100-word reflection on what you kept, changed, and why.”" },
+            { id: "C", text: "“Use AI however you like on this assignment, as long as the final essay you turn in is your best work.”" },
+            { id: "D", text: "(No statement at all. Students can work out what's expected from the rubric and from past assignments.)" }
           ],
-          correct: "C", eliminate: ["B", "D"],
+          correct: "B", eliminate: ["C", "D"],
           hints: [
             "Which version tells students exactly what is allowed and makes their thinking visible?",
             "Look for permitted use plus transparency."
           ],
           explain3: "We've ruled out two. No statement leaves students guessing, and “however you like” gives no guidance and no transparency. A blanket ban is short, but it's hard to verify and closes the door on teaching responsible use. Look for permitted use plus transparency.",
-          reveal: "The answer is C. It says exactly what's allowed for this task and asks for a prompt log and reflection. Select C and check to continue.",
+          reveal: "The answer is B. It says exactly what's allowed for this task and asks for a prompt log and reflection. Select B and check to continue.",
           why: "It names what's allowed for this task and asks for a prompt log and reflection, so expectations are clear and student thinking stays visible."
         },
         {
@@ -907,7 +907,7 @@ const CONFIG = {
             { id: "conference", tag: "process", text: "Short live conference where students explain their argument." },
             { id: "detector", tag: "bad", text: "Run every essay through an AI detector and fail anything above 50%." },
             { id: "critique", tag: "ai", text: "Students critique an AI-generated draft and document what they fixed." },
-            { id: "sparkgrade", tag: "bad", text: "Have Sparkstone assign the final grade from the rubric." },
+            { id: "sparkgrade", tag: "bad", text: "Have Sparkstone assign the final grade from the rubric to save grading time." },
             { id: "promptlog", tag: "ai", text: "Prompt log plus a reflection on how AI shaped their thinking." }
           ],
           suggest: ["checkpoint", "critique", "promptlog"],
